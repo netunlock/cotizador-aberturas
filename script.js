@@ -55,7 +55,7 @@ const VERSIONES = [
     fecha:     "2026-08-29",
     estado:    "estable",
     tamano:    "68 MB",
-    url:       "https://github.com/USUARIO/REPOSITORIO/releases/download/v3.0.0/CotizadorAberturas_v3.0.0.zip",
+    url:       "https://github.com/netunlock/cotizador-aberturas/releases/download/v3.0.0/CotizadorAberturas_v3.0.0.zip",
     destacada: true,
     notas: [
       "Módulo de órdenes de trabajo con despiece congelado",
@@ -70,7 +70,7 @@ const VERSIONES = [
     fecha:     "2026-06-15",
     estado:    "estable",
     tamano:    "61 MB",
-    url:       "https://github.com/USUARIO/REPOSITORIO/releases/download/v2.2.0/CotizadorAberturas_v2.2.0.zip",
+    url:       "https://github.com/netunlock/cotizador-aberturas/releases/download/v2.2.0/CotizadorAberturas_v2.2.0.zip",
     destacada: false,
     notas: [
       "Dos modos de costeo del aluminio: por kilo y por barra",
@@ -83,7 +83,7 @@ const VERSIONES = [
     fecha:     "2026-04-02",
     estado:    "estable",
     tamano:    "58 MB",
-    url:       "https://github.com/USUARIO/REPOSITORIO/releases/download/v2.1.0/CotizadorAberturas_v2.1.0.zip",
+    url:       "https://github.com/netunlock/cotizador-aberturas/releases/download/v2.1.0/CotizadorAberturas_v2.1.0.zip",
     destacada: false,
     notas: [
       "Importación de precios desde Excel",

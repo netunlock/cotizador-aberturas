@@ -13,32 +13,26 @@ landing-cotizador/
 
 ---
 
-## 1. Subirlo a GitHub y activar GitHub Pages
+## 1. Dónde está publicado
 
-> Se hace desde el navegador, no hace falta instalar git.
+- **Repositorio:** https://github.com/netunlock/cotizador-aberturas
+- **Web online:** https://netunlock.github.io/cotizador-aberturas/
 
-1. **Creá el repositorio.** Entrá a [github.com](https://github.com), botón **+** (arriba a la
-   derecha) → **New repository**.
-   - *Repository name*: `cotizador-aberturas`
-   - Marcá **Public** (con cuenta gratis, Pages sólo funciona en repos públicos).
-   - No tildes "Add a README".
-   - **Create repository**.
+Pages está configurado como *Deploy from a branch* → rama **main**, carpeta **/ (root)**.
+Cada vez que se sube un cambio a `main`, la web se actualiza sola en 1 o 2 minutos.
 
-2. **Subí los archivos.** En el repo vacío, clic en **uploading an existing file**.
-   Arrastrá **el contenido** de la carpeta `landing-cotizador` (los archivos `index.html`,
-   `styles.css`, `script.js`, `favicon.svg`), **no la carpeta entera**.
-   `index.html` tiene que quedar en la raíz del repositorio.
-   Abajo, botón verde **Commit changes**.
+### Para actualizar la web
 
-3. **Activá Pages.** Pestaña **Settings** → menú izquierdo **Pages** →
-   - *Source*: **Deploy from a branch**
-   - *Branch*: **main** y carpeta **/ (root)** → **Save**.
+**Opción A — desde el navegador (rápido para un texto o un color):** entrás al archivo en GitHub,
+clic en el lápiz ✏️, editás y **Commit changes**.
 
-4. **Esperá 1 o 2 minutos** y recargá esa misma pantalla: aparece el link.
-   Queda en `https://TU-USUARIO.github.io/cotizador-aberturas/`
+**Opción B — desde esta carpeta con git:**
 
-Para actualizar la web más adelante: entrás al archivo en GitHub, clic en el lápiz ✏️, editás,
-**Commit changes**. En un minuto se ve el cambio online.
+```bash
+git add -A
+git commit -m "Nueva version 3.1.0"
+git push
+```
 
 ---
 
@@ -57,7 +51,7 @@ repo se vuelve pesado. Usá **Releases**, que además te arma el historial solo:
 Queda con esta forma:
 
 ```
-https://github.com/TU-USUARIO/cotizador-aberturas/releases/download/v3.0.0/CotizadorAberturas_v3.0.0.zip
+https://github.com/netunlock/cotizador-aberturas/releases/download/v3.0.0/CotizadorAberturas_v3.0.0.zip
 ```
 
 ---
