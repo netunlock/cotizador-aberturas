@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- ============================================================
+       SEO / METADATOS  ·  EDITAR: título, descripción
+       ============================================================ -->
+  <title>Cotizador de Aberturas — Presupuestos de aluminio en minutos</title>
+  <meta name="description" content="Software de escritorio para cotizar aberturas de aluminio: despiece automático, costos reales, órdenes de trabajo y PDF profesional. Descarga gratuita con licencia de prueba de 7 días." />
+  <meta name="theme-color" content="#2563eb" />
+
+  <!-- Redes sociales: esto es lo que se ve al compartir el link por WhatsApp o Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Cotizador de Aberturas de Aluminio" />
+  <meta property="og:description" content="Despiece automático, costos reales y presupuestos en PDF. Probalo gratis 7 días." />
+  <meta property="og:locale" content="es_AR" />
+
+  <!-- Favicon: archivo suelto, chiquito. Si querés cambiar el ícono, editá favicon.svg -->
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+
+  <!-- Tipografía (opcional). Si preferís cero dependencias externas, borrá estas 3 líneas:
+       styles.css ya tiene la fuente del sistema configurada como respaldo. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <!-- Accesibilidad: permite saltar la navegación usando el teclado -->
+  <a class="skip-link" href="#contenido">Saltar al contenido</a>
+
+  <!-- ============================================================
+       ENCABEZADO / NAVEGACIÓN
+       ============================================================ -->
+  <header class="header" id="header">
+    <div class="container header__inner">
+
+      <a class="brand" href="#inicio" aria-label="Cotizador de Aberturas — inicio">
+        <span class="brand__mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" />
+            <line x1="12" y1="3" x2="12" y2="21" />
+            <line x1="3" y1="12" x2="12" y2="12" />
+          </svg>
+        </span>
+        <span class="brand__text">
+          <strong>Cotizador</strong>
+          <small>de Aberturas</small>
+        </span>
+      </a>
+
+      <!-- Botón hamburguesa: sólo se ve en celular -->
+      <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navMenu" aria-label="Abrir menú">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav class="nav" id="navMenu" aria-label="Navegación principal">
+        <ul class="nav__list">
+          <li><a href="#caracteristicas">Características</a></li>
+          <li><a href="#descargas">Descargas</a></li>
+          <li><a href="#faq">FAQs</a></li>
+          <li><a href="#contacto">Contacto</a></li>
+        </ul>
+        <a class="btn btn--primary btn--sm" href="#descargas">Descargar</a>
+      </nav>
+
+    </div>
+  </header>
+
+  <main id="contenido">
+
+    <!-- ============================================================
+         1) HERO · descripción principal del programa
+         ============================================================ -->
+    <section class="hero" id="inicio">
+      <div class="container hero__grid">
+
+        <div class="hero__content">
+          <p class="badge">
+            <span class="badge__dot" aria-hidden="true"></span>
+            <span data-version-badge>Versión disponible</span> · Windows
+          </p>
+
+          <h1 class="hero__title">
+            Presupuestá aberturas de aluminio
+            <span class="text-gradient">en minutos, no en horas</span>
+          </h1>
+
+          <p class="hero__subtitle">
+            Un programa de escritorio que hace el trabajo pesado por vos: calcula el
+            <strong>despiece</strong> perfil por perfil, aplica tus <strong>precios reales</strong> de
+            aluminio, vidrio y accesorios, y te entrega un <strong>presupuesto en PDF</strong> listo
+            para mandarle al cliente. Sin planillas rotas y sin cuentas a mano.
+          </p>
+
+          <div class="hero__actions">
+            <a class="btn btn--primary btn--lg" href="#descargas">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M12 3v12" /><path d="m7 10 5 5 5-5" /><path d="M5 21h14" />
+              </svg>
+              Descargar gratis
+            </a>
+            <a class="btn btn--ghost btn--lg" href="#faq">Ver preguntas frecuentes</a>
+          </div>
+
+          <ul class="hero__points">
+            <li>Prueba gratuita de 7 días</li>
+            <li>Tus datos quedan en tu PC</li>
+            <li>Se actualiza sin perder tu información</li>
+          </ul>
+        </div>
+
+        <!-- Mockup decorativo hecho con CSS puro: no hay que subir ninguna imagen -->
+        <div class="hero__visual" aria-hidden="true">
+          <div class="mockup">
+            <div class="mockup__bar">
+              <span class="mockup__dot"></span><span class="mockup__dot"></span><span class="mockup__dot"></span>
+              <span class="mockup__title">Presupuesto #0142 — Aberturas del Sur</span>
+            </div>
+            <div class="mockup__body">
+              <div class="mockup__row mockup__row--head">
+                <span>Ítem</span><span>Medidas</span><span>Cant.</span><span>Subtotal</span>
+              </div>
+              <div class="mockup__row"><span>Ventana corrediza A30</span><span>1,50 × 1,10 m</span><span>4</span><span>$ 1.284.000</span></div>
+              <div class="mockup__row"><span>Paño fijo A30</span><span>0,80 × 1,10 m</span><span>2</span><span>$ 386.400</span></div>
+              <div class="mockup__row"><span>Puerta de abrir Módena</span><span>0,90 × 2,05 m</span><span>1</span><span>$ 742.900</span></div>
+              <div class="mockup__row mockup__row--muted"><span>DVH 4/9/4 incoloro</span><span>—</span><span>7</span><span>$ 511.300</span></div>
+              <div class="mockup__total">
+                <span>Total con IVA</span>
+                <strong>$ 2.924.600</strong>
+              </div>
+              <div class="mockup__chips">
+                <span class="chip">Despiece OK</span>
+                <span class="chip">PDF generado</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ============================================================
+         2) CARACTERÍSTICAS / MÓDULOS
+         ============================================================ -->
+    <section class="section" id="caracteristicas">
+      <div class="container">
+        <header class="section__head">
+          <p class="eyebrow">Qué incluye</p>
+          <h2 class="section__title">Todo el circuito, de la medida al presupuesto</h2>
+          <p class="section__lead">
+            Módulos que trabajan sobre la misma base de datos: lo que cargás una vez te sirve
+            para siempre.
+          </p>
+        </header>
+
+        <!-- EDITAR: para agregar o sacar una característica, copiá o borrá un bloque <article class="card"> -->
+        <div class="grid grid--3">
+
+          <article class="card">
+            <div class="card__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7h18M3 12h18M3 17h18"/></svg>
+            </div>
+            <h3>Motor de despiece</h3>
+            <p>Fórmulas paramétricas por tipología: el programa calcula cada perfil, su largo y su
+               cantidad a partir del ancho y el alto que cargás.</p>
+          </article>
+
+          <article class="card">
+            <div class="card__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20"/><path d="M17 6H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            </div>
+            <h3>Costos reales, no estimados</h3>
+            <p>Precios de aluminio por kilo o por barra, vidrios, accesorios y mano de obra.
+               Márgenes, descuentos e IVA se aplican solos.</p>
+          </article>
+
+          <article class="card">
+            <div class="card__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+            </div>
+            <h3>Presupuestos en PDF</h3>
+            <p>Un PDF profesional con los datos de tu empresa y esquemas de cada abertura.
+               Listo para mandar por WhatsApp o por mail.</p>
+          </article>
+
+          <article class="card">
+            <div class="card__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/></svg>
+            </div>
+            <h3>Órdenes de trabajo</h3>
+            <p>Convertí un presupuesto aprobado en orden de taller con el despiece congelado:
+               lo que se fabrica es exactamente lo que se cotizó.</p>
+          </article>
+
+          <article class="card">
+            <div class="card__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21 16-9 5-9-5V8l9-5 9 5z"/><path d="m3 8 9 5 9-5"/><path d="M12 13v8"/></svg>
+            </div>
+            <h3>Inventario opcional</h3>
+            <p>Control de saldos de barras, vidrios y accesorios con libro mayor de movimientos.
+               Si no lo necesitás, simplemente no lo usás.</p>
+          </article>
+
+          <article class="card">
+            <div class="card__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <h3>Tus datos son tuyos</h3>
+            <p>Todo se guarda local, en tu PC. Las actualizaciones nunca pisan tu base de precios
+               ni tus presupuestos anteriores.</p>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         3) DESCARGAS · la lista se arma sola desde VERSIONES (script.js)
+         ============================================================ -->
+    <section class="section section--alt" id="descargas">
+      <div class="container">
+
+        <header class="section__head">
+          <p class="eyebrow">Descargas</p>
+          <h2 class="section__title">Descargá el programa</h2>
+          <p class="section__lead">Windows 10 y 11 · versión portable, no requiere instalación.</p>
+        </header>
+
+        <!-- ---------- AVISO DE LICENCIA (destacado) ---------- -->
+        <div class="alert" role="note">
+          <div class="alert__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 9v4"/><path d="M12 17h.01"/>
+              <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            </svg>
+          </div>
+          <div class="alert__body">
+            <h3 class="alert__title">Importante: activá tu licencia de prueba</h3>
+            <p>
+              Una vez descargado el programa, <strong>comunicate con nosotros para generarte una
+              licencia de prueba gratuita de 7 días</strong>. Es un trámite de un minuto: abrís el
+              programa, nos pasás el código que aparece en pantalla y te devolvemos la clave.
+            </p>
+            <div class="alert__actions">
+              <!-- El enlace real de WhatsApp lo completa script.js desde el objeto CONTACTO -->
+              <a class="btn btn--warning" data-wa-licencia href="#contacto">
+                <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2m0 1.67c2.2 0 4.27.86 5.83 2.42a8.2 8.2 0 0 1 2.41 5.82c0 4.54-3.7 8.24-8.25 8.24a8.23 8.23 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24m-2.6 4.1c-.19 0-.5.07-.77.36-.26.29-1 .98-1 2.38s1.03 2.76 1.17 2.95c.14.19 2.01 3.07 4.87 4.19 2.38.94 2.86.75 3.38.7.51-.05 1.66-.68 1.9-1.33.23-.66.23-1.22.16-1.34-.07-.11-.26-.18-.54-.32-.29-.15-1.7-.84-1.96-.93-.26-.1-.45-.15-.64.14-.19.29-.73.93-.9 1.12-.16.19-.33.21-.62.07-.29-.14-1.21-.45-2.31-1.43-.85-.76-1.43-1.7-1.6-1.99-.16-.29-.01-.44.13-.59.13-.13.29-.34.43-.51.15-.17.19-.29.29-.48.1-.19.05-.36-.02-.5-.07-.15-.63-1.56-.88-2.13-.21-.48-.43-.49-.63-.5h-.53z"/></svg>
+                Pedir mi licencia de prueba
+              </a>
+              <a class="btn btn--ghost" href="#faq">¿Cómo funciona la licencia?</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- ---------- VERSIÓN DESTACADA (la genera script.js) ---------- -->
+        <div id="descargaDestacada" class="download-featured">
+          <noscript>
+            <p class="note">
+              Necesitás activar JavaScript para ver los enlaces de descarga. Si no podés,
+              escribinos a <a href="mailto:cotizadoraberturas@gmail.com">cotizadoraberturas@gmail.com</a>
+              y te lo mandamos.
+            </p>
+          </noscript>
+        </div>
+
+        <!-- ---------- HISTORIAL DE VERSIONES (lo genera script.js) ---------- -->
+        <div class="versions" id="bloqueVersiones" hidden>
+          <div class="versions__head">
+            <h3 class="versions__title">Historial de versiones</h3>
+            <button class="btn btn--ghost btn--sm" id="toggleVersiones" aria-expanded="false" aria-controls="listaVersiones">
+              Ver versiones anteriores
+            </button>
+          </div>
+          <ul class="versions__list" id="listaVersiones" hidden></ul>
+        </div>
+
+        <p class="note">¿Dudas antes de descargar? Escribinos y te mostramos el programa funcionando.</p>
+
+      </div>
+    </section>
+
+    <!-- ============================================================
+         4) FAQs
+         ============================================================ -->
+    <section class="section" id="faq">
+      <div class="container container--narrow">
+
+        <header class="section__head">
+          <p class="eyebrow">FAQs</p>
+          <h2 class="section__title">Preguntas frecuentes</h2>
+        </header>
+
+        <!-- EDITAR: cada pregunta es un bloque <details>. Copiá uno entero y cambiale el texto. -->
+        <div class="faq">
+
+          <details class="faq__item">
+            <summary>¿Cómo obtengo la licencia de prueba de 7 días?</summary>
+            <div class="faq__answer">
+              <p>Descargás el programa, lo abrís y en la pantalla de activación vas a ver un
+                 <strong>código HWID</strong> de 16 caracteres (algo como <code>00C0-5CF4-A01D-964C</code>).
+                 Nos lo mandás por WhatsApp o por mail y te devolvemos la clave de prueba. La pegás
+                 en el programa y ya podés trabajar.</p>
+            </div>
+          </details>
+
+          <details class="faq__item">
+            <summary>¿Qué necesito para que funcione?</summary>
+            <div class="faq__answer">
+              <p>Una PC con <strong>Windows 10 u 11</strong>. La versión portable no requiere
+                 instalación: descomprimís la carpeta y hacés doble clic en el ejecutable.
+                 Tampoco necesita internet para trabajar.</p>
+            </div>
+          </details>
+
+          <details class="faq__item">
+            <summary>¿La licencia sirve para varias computadoras?</summary>
+            <div class="faq__answer">
+              <p>No. Cada licencia habilita <strong>un equipo</strong>, porque se genera a partir del
+                 código de esa PC. Si necesitás usarlo en la oficina y en el taller, avisanos y te
+                 emitimos una licencia por equipo.</p>
+            </div>
+          </details>
+
+          <details class="faq__item">
+            <summary>¿Puedo cargar mis propios precios y perfiles?</summary>
+            <div class="faq__answer">
+              <p>Sí, es la idea. El programa trae una precarga para arrancar, pero todo es editable:
+                 líneas de perfilería, precio del aluminio, vidrios, accesorios, mano de obra,
+                 márgenes y descuentos.</p>
+            </div>
+          </details>
+
+          <details class="faq__item">
+            <summary>Si actualizo a una versión nueva, ¿pierdo mis datos?</summary>
+            <div class="faq__answer">
+              <p>No. La actualización sólo reemplaza el programa. Tu base de datos, tus presupuestos
+                 y tu configuración quedan intactos, y el sistema hace copias de respaldo
+                 automáticas.</p>
+            </div>
+          </details>
+
+          <details class="faq__item">
+            <summary>¿Qué pasa cuando se vencen los 7 días?</summary>
+            <div class="faq__answer">
+              <p>El programa deja de abrir hasta cargar una licencia nueva, pero
+                 <strong>tus datos siguen ahí</strong>. Si querés continuar, nos escribís y renovamos
+                 la licencia sin desinstalar ni volver a cargar nada.</p>
+            </div>
+          </details>
+
+          <details class="faq__item">
+            <summary>Encontré un error o se me ocurre una mejora, ¿a dónde escribo?</summary>
+            <div class="faq__answer">
+              <p>Al botón <strong>Consultas y Sugerencias</strong> de acá abajo, o directamente por
+                 WhatsApp. El programa se mejora justamente con lo que reportan los que lo usan todos
+                 los días.</p>
+            </div>
+          </details>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         5) CONTACTO
+         ============================================================ -->
+    <section class="section section--alt" id="contacto">
+      <div class="container">
+
+        <header class="section__head">
+          <p class="eyebrow">Contacto</p>
+          <h2 class="section__title">Hablemos</h2>
+          <p class="section__lead">
+            Consultas, licencias, sugerencias o una demo: te respondemos por donde te quede
+            más cómodo.
+          </p>
+        </header>
+
+        <div class="grid grid--2 contact">
+
+          <!-- Tarjeta WhatsApp · script.js le arma el href con el mensaje prellenado -->
+          <a class="contact-card contact-card--wa" data-wa-contacto href="https://wa.me/5492215929482" target="_blank" rel="noopener">
+            <div class="contact-card__icon">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2m0 1.67c2.2 0 4.27.86 5.83 2.42a8.2 8.2 0 0 1 2.41 5.82c0 4.54-3.7 8.24-8.25 8.24a8.23 8.23 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24m-2.6 4.1c-.19 0-.5.07-.77.36-.26.29-1 .98-1 2.38s1.03 2.76 1.17 2.95c.14.19 2.01 3.07 4.87 4.19 2.38.94 2.86.75 3.38.7.51-.05 1.66-.68 1.9-1.33.23-.66.23-1.22.16-1.34-.07-.11-.26-.18-.54-.32-.29-.15-1.7-.84-1.96-.93-.26-.1-.45-.15-.64.14-.19.29-.73.93-.9 1.12-.16.19-.33.21-.62.07-.29-.14-1.21-.45-2.31-1.43-.85-.76-1.43-1.7-1.6-1.99-.16-.29-.01-.44.13-.59.13-.13.29-.34.43-.51.15-.17.19-.29.29-.48.1-.19.05-.36-.02-.5-.07-.15-.63-1.56-.88-2.13-.21-.48-.43-.49-.63-.5h-.53z"/></svg>
+            </div>
+            <div class="contact-card__body">
+              <h3>WhatsApp</h3>
+              <p class="contact-card__value" data-wa-visible>221 592-9482</p>
+              <p class="contact-card__meta">Federico · la vía más rápida</p>
+            </div>
+            <span class="contact-card__arrow" aria-hidden="true">→</span>
+          </a>
+
+          <!-- Tarjeta Email -->
+          <a class="contact-card" data-mail-contacto href="mailto:cotizadoraberturas@gmail.com">
+            <div class="contact-card__icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 6 10-6"/>
+              </svg>
+            </div>
+            <div class="contact-card__body">
+              <h3>Email</h3>
+              <p class="contact-card__value" data-mail-visible>cotizadoraberturas@gmail.com</p>
+              <p class="contact-card__meta">Para licencias y consultas detalladas</p>
+            </div>
+            <span class="contact-card__arrow" aria-hidden="true">→</span>
+          </a>
+
+        </div>
+
+        <!-- Botones pedidos: Consultas y Sugerencias + FAQs -->
+        <div class="cta-row">
+          <a class="btn btn--primary btn--lg" data-consultas href="mailto:cotizadoraberturas@gmail.com">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            </svg>
+            Consultas y Sugerencias
+          </a>
+          <a class="btn btn--outline btn--lg" href="#faq">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/>
+            </svg>
+            FAQs
+          </a>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============================================================
+       PIE
+       ============================================================ -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div class="footer__brand">
+        <strong>Cotizador de Aberturas</strong>
+        <p>Software de cotización y despiece para carpinterías de aluminio.</p>
+      </div>
+      <nav class="footer__links" aria-label="Enlaces del pie">
+        <a href="#caracteristicas">Características</a>
+        <a href="#descargas">Descargas</a>
+        <a href="#faq">FAQs</a>
+        <a data-mail-contacto href="mailto:cotizadoraberturas@gmail.com">Email</a>
+        <a data-wa-contacto href="https://wa.me/5492215929482" target="_blank" rel="noopener">WhatsApp</a>
+      </nav>
+      <p class="footer__copy">© <span data-anio>2026</span> Cotizador de Aberturas · Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <script src="script.js" defer></script>
+</body>
+</html>
