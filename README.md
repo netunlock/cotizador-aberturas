@@ -5,30 +5,29 @@ Sitio estático (HTML + CSS + JS, sin backend) publicado en GitHub Pages.
 ```
 landing-cotizador/
 ├── index.html            Estructura y textos de la página
-├── styles.css            Diseño. Los colores están arriba de todo, en :root
+├── styles.css            Diseño y los DOS temas (Blanco / Silver)
 ├── script.js             Versiones, datos de contacto y formulario de descarga
 ├── favicon.svg           Ícono de la pestaña
+├── img/                  Fotos de la galería  ← reemplazables (ver punto 5)
 ├── apps-script/
-│   └── Codigo.gs         Script de Google que guarda los datos y manda el mail
+│   └── Codigo.gs         Script de Google: base de datos + mail con el link
 └── README.md             Este archivo
 ```
-
----
-
-## 1. Dónde está publicado
 
 - **Repositorio:** https://github.com/netunlock/cotizador-aberturas
 - **Web online:** https://netunlock.github.io/cotizador-aberturas/
 
+---
+
+## 1. Actualizar la web
+
 Pages está configurado como *Deploy from a branch* → rama **main**, carpeta **/ (root)**.
-Cada vez que se sube un cambio a `main`, la web se actualiza sola en 1 o 2 minutos.
+Todo lo que se suba a `main` sale online en 1 o 2 minutos.
 
-### Para actualizar la web
+**Desde el navegador** (rápido para un texto o un color): entrás al archivo en GitHub, clic en el
+lápiz ✏️, editás y **Commit changes**.
 
-**Opción A — desde el navegador (rápido para un texto o un color):** entrás al archivo en GitHub,
-clic en el lápiz ✏️, editás y **Commit changes**.
-
-**Opción B — desde esta carpeta con git:**
+**Desde esta carpeta:**
 
 ```bash
 git add -A
@@ -40,100 +39,191 @@ git push
 
 ## 2. Cómo funciona la descarga
 
-La descarga es gratuita pero **pide los datos primero**. El circuito es:
-
 1. El visitante toca *Descargar* y se abre un formulario: nombre y apellido, localidad,
    email y WhatsApp.
 2. La página valida el formato (nombre con apellido, mail bien escrito, WhatsApp argentino
    de 10 dígitos) y descarta los correos temporales tipo `mailinator.com`.
 3. Los datos se mandan al script de Google, que **guarda la fila en tu planilla** y
-   **le envía el link de descarga al mail que dejó**.
+   **le envía el link de MediaFire al mail que dejó**.
 4. Vos recibís un aviso con sus datos para poder contactarlo.
 
 **Por qué el link llega por mail y no aparece en pantalla:** es la única verificación real
 posible en un sitio sin servidor. Validar el formato del mail con JavaScript no prueba nada —
-cualquiera escribe `juan@gmail.com`. Si el correo es falso, el link nunca le llega, y punto.
+cualquiera escribe `juan@gmail.com`. Si el correo es falso, el link nunca le llega.
 
-Por eso también **el link no está en el código de la página**: vive únicamente dentro del
-script de Google. Si estuviera en `script.js`, alcanzaría con abrir el código fuente para
-saltearse el formulario.
-
-> El .zip **no debe subirse a un Release público de GitHub**: los releases son visibles para
-> cualquiera y el formulario dejaría de filtrar. Va en Drive, compartido por link.
+El link tampoco está en el código de la página: vive únicamente dentro del script de Google.
 
 ---
 
-## 3. Puesta en marcha (una sola vez)
+## 3. LA BASE DE DATOS: dónde la ves
 
-### 3.1 Subir los .zip a Google Drive
+La base de datos es **una planilla de Google Sheets tuya**, en tu propia cuenta
+`fgpereyra.92@gmail.com`. No hay ningún servidor ni servicio de terceros de por medio.
 
-1. Entrá a [drive.google.com](https://drive.google.com) y creá una carpeta,
-   por ejemplo **Cotizador — Descargas**.
-2. Arrastrá adentro los `.zip` de la carpeta `entregas/`.
-3. Botón derecho sobre cada archivo → **Compartir** → en *Acceso general* poné
-   **Cualquier persona con el enlace · Lector** → **Copiar vínculo**.
-4. De ese vínculo te interesa el ID:
+**Dónde entrar**, de las tres formas:
+
+- Desde la compu: [sheets.google.com](https://sheets.google.com) → aparece
+  **Descargas — Cotizador** entre tus planillas.
+- Desde [drive.google.com](https://drive.google.com), como cualquier archivo.
+- Desde el celular: app **Google Sheets** (Android/iOS), con la misma cuenta.
+
+La hoja se llama **Descargas** y cada persona que pide el programa entra como una fila nueva,
+**en el momento**. Las columnas son:
+
+| Columna | Qué trae |
+|---|---|
+| **Fecha** | Día y hora del pedido |
+| **Nombre** | Nombre y apellido que cargó |
+| **Localidad** | De dónde es (te sirve para ordenar por zona) |
+| **Email** | El correo al que le llegó el link — está verificado, porque si fuera falso no lo habría recibido |
+| **WhatsApp** | Número normalizado, en formato internacional |
+| **Escribirle** | Un link que dice *Escribir*: lo tocás y se abre el chat de WhatsApp con esa persona |
+| **Versión** | Qué versión descargó |
+| **Estado** | Desplegable: Nuevo · Contactado · Probando · Interesado · Vendido · Descartado |
+| **Notas** | Para lo que quieras anotar de cada contacto |
+
+La fila de encabezados tiene **filtro activado**: podés ordenar por localidad, ver sólo los
+"Nuevo", o buscar a alguien por nombre. Y siempre la podés bajar a Excel con
+*Archivo → Descargar → Microsoft Excel*.
+
+Además de la planilla, **cada pedido te llega también por mail** a
+`cotizadoraberturas@gmail.com`, con el nombre, la localidad, el mail, el WhatsApp y un link
+directo para escribirle. Así te enterás en el momento aunque no estés mirando la planilla.
+
+---
+
+## 4. Puesta en marcha (una sola vez)
+
+### 4.1 Subir los .zip a MediaFire
+
+1. Entrá a [mediafire.com](https://www.mediafire.com) con tu cuenta.
+2. Botón **SUBIR** → *Añadir archivo* → elegí los `.zip` de la carpeta `entregas/`.
+3. Cuando terminen de subir, en cada archivo → **Copiar vínculo**. Queda así:
 
 ```
-https://drive.google.com/file/d/1A2B3C4D5E6F7G8H9I/view?usp=sharing
-                                └────── el ID ──────┘
+https://www.mediafire.com/file/abc123xyz/CotizadorAberturas_v3.0.0.zip/file
 ```
 
-### 3.2 Crear la planilla y el script
+### 4.2 Crear la planilla y el script
 
 1. Creá una planilla nueva en [sheets.new](https://sheets.new) y llamala
    **Descargas — Cotizador**.
 2. Menú **Extensiones → Apps Script**. Se abre el editor.
 3. Borrá lo que haya y pegá **todo** el contenido de `apps-script/Codigo.gs`.
-4. Arriba del archivo, en el objeto `LINKS`, reemplazá cada `PEGAR_ACA_EL_ID_...`
-   por el ID de Drive que copiaste en el paso anterior.
+4. Arriba del archivo, en el objeto `LINKS`, reemplazá cada `PEGAR_ACA_EL_LINK_...`
+   por el vínculo de MediaFire correspondiente.
 5. Guardá (💾).
-6. Probá que funcione: elegí la función **probar** en el desplegable y tocá **▶ Ejecutar**.
-   La primera vez Google te va a pedir permiso para enviar mails y escribir la planilla:
-   *Revisar permisos* → elegí tu cuenta → *Configuración avanzada* → *Ir a (nombre del proyecto)*
-   → **Permitir**. Si todo está bien, aparece una fila en la planilla y te llegan dos mails.
+6. Probá: elegí la función **probar** en el desplegable y tocá **▶ Ejecutar**.
+   La primera vez Google pide permiso: *Revisar permisos* → tu cuenta → *Configuración avanzada*
+   → *Ir a (nombre del proyecto)* → **Permitir**. Si salió bien, aparece una fila en la planilla
+   y te llegan dos mails.
 
-### 3.3 Publicar el script
+### 4.3 Publicar el script
 
-1. En el editor, botón azul **Implementar → Nueva implementación**.
+1. Botón azul **Implementar → Nueva implementación**.
 2. Engranaje ⚙️ → tipo **Aplicación web**.
-3. Completá:
-   - *Ejecutar como*: **Yo** (tu cuenta)
-   - *Quién tiene acceso*: **Cualquier usuario** ← imprescindible, si no la página no puede escribirle
+3. *Ejecutar como*: **Yo** · *Quién tiene acceso*: **Cualquier usuario** ← imprescindible.
 4. **Implementar** y copiá la **URL de la aplicación web** (termina en `/exec`).
 
-### 3.4 Conectar la página con el script
+### 4.4 Conectar la página con el script
 
-Abrí `script.js`, buscá el **BLOQUE 3** y pegá la URL:
+En `script.js`, **BLOQUE 3**, pegá la URL:
 
 ```js
 const ENDPOINT = "https://script.google.com/macros/s/AKfy...../exec";
 ```
 
-Subí el cambio con `git push` y listo: el formulario ya manda los mails.
+`git push` y listo.
 
 > Mientras `ENDPOINT` esté vacío, el formulario valida los datos igual pero le ofrece al
-> visitante pedirte el link por WhatsApp, así la página nunca queda rota.
+> visitante pedirte el link por WhatsApp: la página nunca queda rota.
 
-**Cada vez que edites el script** (por ejemplo para agregar una versión nueva a `LINKS`),
-acordate de **Implementar → Administrar implementaciones → ✏️ → Versión: Nueva → Implementar**,
-o los cambios no salen a producción.
+**Cada vez que edites el script** (por ejemplo para sumar una versión a `LINKS`), acordate de
+**Implementar → Administrar implementaciones → ✏️ → Versión: Nueva → Implementar**, o los
+cambios no salen a producción.
 
 ---
 
-## 4. Qué editar en el código
+## 5. IMÁGENES: rutas y nombres exactos
 
-### Publicar una versión nueva
+Todas viven en la carpeta **`img/`**. Para poner tus propias fotos, guardalas con
+**exactamente estos nombres** y reemplazá los archivos. No hay que tocar nada de código.
+
+| Ruta y nombre exacto | Dónde se ve | Medida ideal |
+|---|---|---|
+| `img/galeria-01-ventana-corrediza.jpg` | Galería, 1° | 1200 × 900 px |
+| `img/galeria-02-puerta-abrir.jpg` | Galería, 2° | 1200 × 900 px |
+| `img/galeria-03-pano-fijo.jpg` | Galería, 3° | 1200 × 900 px |
+| `img/galeria-04-perfiles-aluminio.jpg` | Galería, 4° | 1200 × 900 px |
+| `img/galeria-05-vidrio-dvh.jpg` | Galería, 5° | 1200 × 900 px |
+| `img/galeria-06-taller.jpg` | Galería, 6° | 1200 × 900 px |
+| `img/portada.jpg` | Miniatura al compartir el link por WhatsApp o Facebook | 1200 × 630 px |
+
+Reglas para que salgan bien:
+
+- **Formato `.jpg`** y el nombre en minúsculas, igual al de la tabla (Windows no distingue
+  mayúsculas, pero el servidor de GitHub sí: `Galeria-01.JPG` no lo encuentra).
+- **Apaisadas** (más anchas que altas). Las de la galería se recortan solas a 4:3 con
+  `object-fit: cover`, centradas: **nunca se deforman**, sólo se recorta lo que sobra
+  de los bordes. Por eso conviene que el motivo esté centrado.
+- Podés subir fotos más grandes sin problema; **más chicas que 1200 px de ancho se ven
+  borrosas** en pantallas grandes.
+- Pesá las fotos antes de subirlas (idealmente menos de 300 KB cada una): la página carga
+  más rápido. Las de la galería ya se cargan de a poco (`loading="lazy"`).
+
+Para cambiar el **texto** que aparece sobre cada foto, editá el `<figcaption>` de esa imagen
+en `index.html`, sección `<section id="galeria">`.
+
+Para agregar o sacar fotos, copiá o borrá un bloque `<figure class="galeria__item">` entero:
+la grilla se reacomoda sola (3 columnas en escritorio, 2 en tablet, 1 en celular).
+
+---
+
+## 6. Los dos temas: Blanco y Silver
+
+El selector está en la barra de arriba y usa **las mismas paletas del programa**
+(`ui/tema.py`): *Blanco* es la paleta `claro` y *Silver* es la paleta `silver`.
+La elección de cada visitante queda guardada en su navegador.
+
+Los colores están en `styles.css`, arriba de todo, en dos bloques:
+
+```css
+:root, :root[data-tema="blanco"] { ... }   /* paleta claro  */
+:root[data-tema="silver"]        { ... }   /* paleta silver */
+```
+
+**Si cambiás un color, cambialo en los dos bloques**, con el mismo nombre de variable; si no,
+un tema queda desparejo. Los principales:
+
+| Variable | Para qué sirve |
+|---|---|
+| `--color-primary` | Color de marca: botones, links, ícono del logo |
+| `--color-primary-hover` | El mismo, al pasar el mouse |
+| `--color-primary-soft` | Fondo suave de íconos y etiquetas |
+| `--color-sobre-primario` | Color del texto que va encima del color de marca |
+| `--color-accent` | Segundo color del degradé del título |
+| `--color-warning` | Cartel del aviso de licencia |
+| `--color-text` / `--color-text-body` | Títulos / párrafos |
+| `--color-bg` / `--color-bg-alt` | Fondo general / secciones alternadas |
+| `--color-surface` | Tarjetas |
+| `--color-campo` | Fondo de los campos del formulario |
+
+Si cambiás `--color-primary`, cambiá también el `fill="#2563eb"` de `favicon.svg` y el color
+del botón del mail (`#2563eb` en `apps-script/Codigo.gs`).
+
+---
+
+## 7. Publicar una versión nueva del programa
 
 Son dos lugares:
 
-1. **`apps-script/Codigo.gs`** → agregá el ID del nuevo .zip al objeto `LINKS`:
+1. **`apps-script/Codigo.gs`** → agregá el link de MediaFire al objeto `LINKS`
+   (y re-implementá el script, ver punto 4.4).
 
 ```js
 var LINKS = {
-  "3.1.0": "1NUEVO_ID_DE_DRIVE",
-  "3.0.0": "1A2B3C4D5E6F7G8H9I",
-  ...
+  "3.1.0": "https://www.mediafire.com/file/.../CotizadorAberturas_v3.1.0.zip/file",
+  "3.0.0": "...",
 };
 ```
 
@@ -147,66 +237,40 @@ var LINKS = {
   estado:    "estable",          // "estable" o "beta"
   tamano:    "32 MB",
   destacada: true,
-  notas: [
-    "Novedad principal",
-    "Otra novedad"
-  ]
+  notas: ["Novedad principal", "Otra novedad"]
 },
 ```
 
-Con eso se actualizan solos la tarjeta grande de descarga, el cartel del hero
-("Versión 3.1.0 disponible") y el historial.
-
-### Teléfono, mail o mensajes → `script.js`, BLOQUE 1
-
-En `CONTACTO` está el WhatsApp (formato internacional, sin +, sin 0 y sin 15), el mail y los
-mensajes que aparecen ya escritos cuando el visitante toca un botón.
-
-### Colores → `styles.css`, bloque `:root` (arriba de todo)
-
-Cambiá sólo los valores HEX de ese bloque; el resto de la hoja los toma solos.
-
-| Variable | Para qué sirve |
-|---|---|
-| `--color-primary` | Color de marca: botones, links, ícono del logo |
-| `--color-primary-dark` | El mismo, más oscuro (hover de los botones) |
-| `--color-primary-soft` | Fondo suave de íconos y etiquetas |
-| `--color-accent` | Segundo color del degradé del título |
-| `--color-warning` | Cartel del aviso de licencia |
-| `--color-text` | Títulos |
-| `--color-bg-alt` | Fondo de las secciones grises |
-| `--color-footer-bg` | Fondo del pie |
-
-Si cambiás `--color-primary`, cambiá también el `fill="#2563eb"` de `favicon.svg` y el color
-del botón dentro del mail (`#2563eb` en `apps-script/Codigo.gs`).
-
-### Textos, características y preguntas frecuentes → `index.html`
-
-- Cada característica es un bloque `<article class="card">`: copialo o borralo.
-- Cada pregunta frecuente es un bloque `<details class="faq__item">`: mismo criterio.
-- El aviso de licencia está en la sección `#descargas`, bloque `<div class="alert">`.
-- El formulario de descarga está al final, en `<div class="modal" id="modalDescarga">`.
+Con eso se actualizan solos la tarjeta grande de descarga, el cartel del hero y el historial.
 
 ---
 
-## 5. Probarlo en tu PC antes de subirlo
+## 8. Otros textos
 
-Desde esta carpeta:
+- **Teléfono, mail y mensajes automáticos:** `script.js`, BLOQUE 1 (objeto `CONTACTO`).
+  Cambiándolo ahí se actualizan todos los botones y textos de la página.
+- **Características:** cada una es un `<article class="card">` en `index.html`.
+- **Preguntas frecuentes:** cada una es un `<details class="faq__item">`.
+- **Aviso de licencia:** sección `#descargas`, bloque `<div class="alert">`.
+- **Formulario de descarga:** al final del `index.html`, en `<div class="modal" id="modalDescarga">`.
+
+---
+
+## 9. Probarlo en tu PC antes de subirlo
 
 ```bash
 python -m http.server 8010
 ```
 
-y abrí `http://localhost:8010` en el navegador.
+y abrí `http://localhost:8010`.
 
 ---
 
-## 6. Límites que conviene tener presentes
+## 10. Límites que conviene tener presentes
 
 - **Mails por día:** una cuenta de Gmail común permite ~100 destinatarios por día desde Apps
   Script. Para el volumen esperado sobra.
-- **Archivos grandes en Drive:** arriba de 25 MB, la descarga directa muestra un aviso de
-  "no se pudo analizar en busca de virus". Por eso el mail lleva a la pantalla normal de Drive,
-  con su botón *Descargar*, que no tiene ese problema.
-- **El link se puede reenviar.** Quien lo recibe puede pasárselo a otro. La puerta sirve para
-  saber quién pide el programa, no para impedir que circule.
+- **MediaFire gratuito** muestra publicidad y una pantalla intermedia antes de la descarga.
+  No rompe nada, pero es lo que va a ver el interesado.
+- **El link se puede reenviar.** No importa: sin licencia el programa no se usa, y para la
+  licencia te tienen que escribir igual. La puerta sirve para tener el registro de quién lo pidió.

@@ -44,8 +44,8 @@ const CONTACTO = {
    mirando el código de la página y saltearse el formulario.
 
    CÓMO PUBLICAR UNA VERSIÓN NUEVA:
-     1. Subí el .zip a tu Google Drive y copiá su ID.
-     2. Agregá ese ID en el objeto LINKS del script de Google.
+     1. Subí el .zip a MediaFire y copiá el link para compartir.
+     2. Pegá ese link en el objeto LINKS del script de Google.
      3. Copiá un bloque { ... } de acá abajo, pegalo ARRIBA DE TODO,
         y poné destacada: true en el nuevo (sacáselo al anterior).
 
@@ -524,7 +524,43 @@ function activarModal() {
 }
 
 
-/* --- 4.5 Navegación en celular -------------------------------------------- */
+/* --- 4.5 Selector de tema (Blanco / Silver) -------------------------------
+   Son los mismos dos temas del programa. El tema se guarda en el navegador de
+   cada visitante, así lo encuentra igual la próxima vez que entre.
+   El tema inicial se aplica en el <head> de index.html para que no parpadee.
+   ------------------------------------------------------------------------- */
+const TEMAS = ["blanco", "silver"];
+
+function aplicarTema(tema) {
+  if (TEMAS.indexOf(tema) === -1) tema = "blanco";
+
+  document.documentElement.setAttribute("data-tema", tema);
+
+  // Marca cuál de los dos botones está activo
+  $$("[data-tema-btn]").forEach((b) => {
+    b.setAttribute("aria-pressed", String(b.dataset.temaBtn === tema));
+  });
+
+  // El color de la barra del navegador en celular acompaña al tema
+  const meta = $('meta[name="theme-color"]');
+  if (meta) meta.setAttribute("content", tema === "silver" ? "#2B2D42" : "#FFFFFF");
+
+  try { localStorage.setItem("tema", tema); } catch (e) { /* modo incógnito: no pasa nada */ }
+}
+
+function activarSelectorTema() {
+  let guardado = "blanco";
+  try { guardado = localStorage.getItem("tema") || "blanco"; } catch (e) { /* ignorar */ }
+
+  aplicarTema(guardado);
+
+  $$("[data-tema-btn]").forEach((boton) => {
+    boton.addEventListener("click", () => aplicarTema(boton.dataset.temaBtn));
+  });
+}
+
+
+/* --- 4.6 Navegación en celular -------------------------------------------- */
 function activarMenuMovil() {
   const boton = $("#navToggle");
   const menu  = $("#navMenu");
@@ -550,7 +586,7 @@ function activarMenuMovil() {
 }
 
 
-/* --- 4.6 Sombra del encabezado al hacer scroll ---------------------------- */
+/* --- 4.7 Sombra del encabezado al hacer scroll ---------------------------- */
 function activarHeaderScroll() {
   const header = $("#header");
   if (!header) return;
@@ -561,7 +597,7 @@ function activarHeaderScroll() {
 }
 
 
-/* --- 4.7 Año del pie ------------------------------------------------------ */
+/* --- 4.8 Año del pie ------------------------------------------------------ */
 function pintarAnio() {
   $$("[data-anio]").forEach((el) => { el.textContent = new Date().getFullYear(); });
 }
@@ -575,6 +611,7 @@ document.addEventListener("DOMContentLoaded", () => {
   pintarHistorial();
   activarModal();
   prepararWhatsAppRespaldo(null);   // por si el visitante llega al paso de error sin datos
+  activarSelectorTema();
   activarMenuMovil();
   activarHeaderScroll();
   pintarAnio();

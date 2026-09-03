@@ -23,24 +23,21 @@
    ========================================================================== */
 
 /**
- * ID de cada archivo en tu Google Drive.
+ * Link de descarga de cada versión en MediaFire.
  *
- * Para sacar el ID: abrí el .zip en Drive → "Compartir" → "Copiar vínculo".
- * Te da algo así:
- *     https://drive.google.com/file/d/1A2B3C4D5E6F7G8H9I/view?usp=sharing
- *                                     └────── esto es el ID ──────┘
+ * Para sacarlo: subí el .zip a MediaFire, botón derecho sobre el archivo →
+ * "Copiar vínculo" (o el botón de compartir). Queda algo así:
+ *     https://www.mediafire.com/file/abc123xyz/CotizadorAberturas_v3.0.0.zip/file
+ *
+ * Pegá el vínculo completo, tal cual, entre las comillas.
  *
  * La clave (a la izquierda) tiene que coincidir EXACTO con el campo "version"
  * del array VERSIONES de script.js.
- *
- * IMPORTANTE: en Drive, cada archivo tiene que estar compartido como
- * "Cualquier persona con el enlace · Lector". Si no, el interesado recibe el
- * mail pero no puede abrirlo.
  */
 var LINKS = {
-  "3.0.0": "PEGAR_ACA_EL_ID_DEL_ZIP_3_0_0",
-  "2.2.0": "PEGAR_ACA_EL_ID_DEL_ZIP_2_2_0",
-  "2.1.0": "PEGAR_ACA_EL_ID_DEL_ZIP_2_1_0"
+  "3.0.0": "PEGAR_ACA_EL_LINK_DE_MEDIAFIRE_3_0_0",
+  "2.2.0": "PEGAR_ACA_EL_LINK_DE_MEDIAFIRE_2_2_0",
+  "2.1.0": "PEGAR_ACA_EL_LINK_DE_MEDIAFIRE_2_1_0"
 };
 
 /** Tu mail: acá te llega el aviso cada vez que alguien pide la descarga. */
@@ -119,7 +116,7 @@ function validar(d) {
   if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(email))    return "El correo no es válido.";
   if (whatsapp.length < 12 || whatsapp.length > 13)    return "El WhatsApp no es válido.";
   if (!LINKS[version])                                 return "Esa versión no está disponible.";
-  if (String(LINKS[version]).indexOf("PEGAR_ACA") === 0) return "La descarga todavía no está configurada.";
+  if (String(LINKS[version]).indexOf("http") !== 0)    return "La descarga todavía no está configurada.";
 
   return "";
 }
@@ -129,17 +126,42 @@ function validar(d) {
    PLANILLA
    ========================================================================== */
 
-/** Agrega una fila con el pedido. Crea la hoja y los encabezados si no existen. */
-function guardarFila(d) {
+/* Columnas de la planilla, en orden. Si agregás una, sumala también acá. */
+var COLUMNAS = [
+  "Fecha", "Nombre", "Localidad", "Email", "WhatsApp",
+  "Escribirle", "Versión", "Estado", "Notas"
+];
+
+/* Opciones del desplegable de la columna Estado: es tu embudo de venta. */
+var ESTADOS = ["Nuevo", "Contactado", "Probando", "Interesado", "Vendido", "Descartado"];
+
+/** Devuelve la hoja de descargas; si no existe, la crea con todo el formato. */
+function obtenerHoja() {
   var libro = SpreadsheetApp.getActiveSpreadsheet();
   var hoja  = libro.getSheetByName(HOJA);
+  if (hoja) return hoja;
 
-  if (!hoja) {
-    hoja = libro.insertSheet(HOJA);
-    hoja.appendRow(["Fecha", "Nombre", "Localidad", "Email", "WhatsApp", "Versión", "Contactado"]);
-    hoja.getRange("A1:G1").setFontWeight("bold");
-    hoja.setFrozenRows(1);
-  }
+  hoja = libro.insertSheet(HOJA);
+  hoja.appendRow(COLUMNAS);
+
+  // Encabezado fijo y destacado
+  var encabezado = hoja.getRange(1, 1, 1, COLUMNAS.length);
+  encabezado.setFontWeight("bold").setBackground("#1B3A57").setFontColor("#FFFFFF");
+  hoja.setFrozenRows(1);
+
+  // Anchos cómodos para leer de un vistazo
+  var anchos = [140, 190, 170, 230, 140, 100, 90, 120, 320];
+  for (var i = 0; i < anchos.length; i++) hoja.setColumnWidth(i + 1, anchos[i]);
+
+  // Filtro en la fila de encabezados, para ordenar por localidad o estado
+  hoja.getRange(1, 1, hoja.getMaxRows(), COLUMNAS.length).createFilter();
+
+  return hoja;
+}
+
+/** Agrega una fila con el pedido y la deja lista para trabajarla. */
+function guardarFila(d) {
+  var hoja = obtenerHoja();
 
   hoja.appendRow([
     new Date(),
@@ -147,9 +169,28 @@ function guardarFila(d) {
     d.localidad,
     d.email,
     "+" + d.whatsapp,             // el + evita que la planilla lo trate como número
+    "",                           // se completa abajo con una fórmula
     d.version,
-    ""                            // columna para que vos marques a quién ya contactaste
+    "Nuevo",
+    ""
   ]);
+
+  var fila = hoja.getLastRow();
+
+  // Columna "Escribirle": un link que abre el chat de WhatsApp con esa persona
+  hoja.getRange(fila, 6).setFormula(
+    '=HYPERLINK("https://wa.me/' + d.whatsapp + '","Escribir")'
+  );
+
+  // Columna "Estado": desplegable con las etapas de la venta
+  var opciones = SpreadsheetApp.newDataValidation()
+    .requireValueInList(ESTADOS, true)
+    .setAllowInvalid(false)
+    .build();
+  hoja.getRange(fila, 8).setDataValidation(opciones);
+
+  // Fecha legible
+  hoja.getRange(fila, 1).setNumberFormat("dd/MM/yyyy HH:mm");
 }
 
 
@@ -157,12 +198,9 @@ function guardarFila(d) {
    MAILS
    ========================================================================== */
 
-/** Arma el link de descarga a partir del ID de Drive. */
+/** Devuelve el link de descarga de esa versión (el de MediaFire, tal cual). */
 function linkDeDescarga(version) {
-  // La pantalla de Drive con el botón "Descargar". Es la más prolija para
-  // archivos grandes: la descarga directa (uc?export=download) muestra un
-  // aviso de "no se pudo analizar en busca de virus" arriba de los 25 MB.
-  return "https://drive.google.com/file/d/" + LINKS[version] + "/view";
+  return LINKS[version];
 }
 
 /** Mail que recibe el interesado, con el link. */

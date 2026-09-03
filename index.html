@@ -16,9 +16,26 @@
   <meta property="og:title" content="Cotizador de Aberturas de Aluminio" />
   <meta property="og:description" content="Despiece automático, costos reales y presupuestos en PDF. Probalo gratis 7 días." />
   <meta property="og:locale" content="es_AR" />
+  <meta property="og:url" content="https://netunlock.github.io/cotizador-aberturas/" />
+  <!-- Imagen que se ve al compartir el link. Reemplazá img/portada.jpg y listo. -->
+  <meta property="og:image" content="https://netunlock.github.io/cotizador-aberturas/img/portada.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
 
   <!-- Favicon: archivo suelto, chiquito. Si querés cambiar el ícono, editá favicon.svg -->
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+
+  <!-- Tema guardado: se aplica ANTES de pintar la página, así no parpadea.
+       La lógica completa del selector está en script.js. -->
+  <script>
+    (function () {
+      try {
+        var guardado = localStorage.getItem("tema");
+        document.documentElement.setAttribute("data-tema", guardado === "silver" ? "silver" : "blanco");
+      } catch (e) {
+        document.documentElement.setAttribute("data-tema", "blanco");
+      }
+    })();
+  </script>
 
   <!-- Tipografía (opcional). Si preferís cero dependencias externas, borrá estas 3 líneas:
        styles.css ya tiene la fuente del sistema configurada como respaldo. -->
@@ -65,6 +82,13 @@
           <li><a href="#faq">FAQs</a></li>
           <li><a href="#contacto">Contacto</a></li>
         </ul>
+
+        <!-- Selector de tema: los mismos dos que tiene el programa -->
+        <div class="tema" role="group" aria-label="Tema de color">
+          <button class="tema__btn" type="button" data-tema-btn="blanco" aria-pressed="true">Blanco</button>
+          <button class="tema__btn" type="button" data-tema-btn="silver" aria-pressed="false">Silver</button>
+        </div>
+
         <a class="btn btn--primary btn--sm" href="#descargas">Descargar</a>
       </nav>
 
@@ -220,6 +244,63 @@
     </section>
 
     <!-- ============================================================
+         2.b) GALERÍA
+         ------------------------------------------------------------
+         ★ CÓMO CAMBIAR ESTAS FOTOS ★
+         Las imágenes están en la carpeta  img/  de este mismo proyecto.
+         Poné tus fotos con EXACTAMENTE el mismo nombre de archivo,
+         reemplazá las que están y listo: no hay que tocar nada de código.
+         Se recortan solas y quedan siempre parejas y responsive.
+         Recomendado: fotos apaisadas, 1200 x 900 px o más grandes.
+         ============================================================ -->
+    <section class="section" id="galeria">
+      <div class="container">
+        <header class="section__head">
+          <p class="eyebrow">Galería</p>
+          <h2 class="section__title">Lo que vas a estar cotizando</h2>
+          <p class="section__lead">
+            Tipologías, perfilería y vidrios: el programa trabaja con las líneas que
+            usás todos los días.
+          </p>
+        </header>
+
+        <div class="galeria">
+
+          <figure class="galeria__item">
+            <img src="img/galeria-01-ventana-corrediza.jpg" alt="Ventana corrediza de aluminio" loading="lazy" width="1200" height="900" />
+            <figcaption class="galeria__pie">Ventanas corredizas</figcaption>
+          </figure>
+
+          <figure class="galeria__item">
+            <img src="img/galeria-02-puerta-abrir.jpg" alt="Puerta de abrir de aluminio" loading="lazy" width="1200" height="900" />
+            <figcaption class="galeria__pie">Puertas de abrir</figcaption>
+          </figure>
+
+          <figure class="galeria__item">
+            <img src="img/galeria-03-pano-fijo.jpg" alt="Paño fijo de aluminio y vidrio" loading="lazy" width="1200" height="900" />
+            <figcaption class="galeria__pie">Paños fijos</figcaption>
+          </figure>
+
+          <figure class="galeria__item">
+            <img src="img/galeria-04-perfiles-aluminio.jpg" alt="Perfiles de aluminio" loading="lazy" width="1200" height="900" />
+            <figcaption class="galeria__pie">Perfilería de aluminio</figcaption>
+          </figure>
+
+          <figure class="galeria__item">
+            <img src="img/galeria-05-vidrio-dvh.jpg" alt="Vidrio doble DVH en corte" loading="lazy" width="1200" height="900" />
+            <figcaption class="galeria__pie">Vidrios y DVH</figcaption>
+          </figure>
+
+          <figure class="galeria__item">
+            <img src="img/galeria-06-taller.jpg" alt="Barras de aluminio en el taller" loading="lazy" width="1200" height="900" />
+            <figcaption class="galeria__pie">Taller y despiece</figcaption>
+          </figure>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
          3) DESCARGAS · la lista se arma sola desde VERSIONES (script.js)
          ============================================================ -->
     <section class="section section--alt" id="descargas">
@@ -245,6 +326,8 @@
               Una vez descargado el programa, <strong>comunicate con nosotros para generarte una
               licencia de prueba gratuita de 7 días</strong>. Es un trámite de un minuto: abrís el
               programa, nos pasás el código que aparece en pantalla y te devolvemos la clave.
+              Escribinos al WhatsApp <strong data-wa-visible>221 592-9482</strong> o al mail
+              <strong data-mail-visible>cotizadoraberturas@gmail.com</strong>.
             </p>
             <div class="alert__actions">
               <!-- El enlace real de WhatsApp lo completa script.js desde el objeto CONTACTO -->
@@ -386,8 +469,10 @@
           <p class="eyebrow">Contacto</p>
           <h2 class="section__title">Hablemos</h2>
           <p class="section__lead">
-            Consultas, licencias, sugerencias o una demo: te respondemos por donde te quede
-            más cómodo.
+            Todas las consultas, licencias y sugerencias son al mail
+            <strong data-mail-visible>cotizadoraberturas@gmail.com</strong> o al WhatsApp
+            <strong data-wa-visible>221 592-9482</strong>. Respondemos por el canal que te
+            quede más cómodo.
           </p>
         </header>
 

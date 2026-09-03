@@ -21,61 +21,145 @@
 /* ============================================================================
    1. VARIABLES  ·  ★★★ ACÁ SE CAMBIAN TODOS LOS COLORES DE LA WEB ★★★
    ----------------------------------------------------------------------------
-   Cambiá sólo los valores de este bloque y toda la página se reconfigura sola.
-   Están puestos en gris/azul neutro para que los reemplaces por los de tu
-   programa. Los colores están en HEX común (podés pegarlos de cualquier
-   selector de color).
+   Hay DOS temas, los mismos que tiene el programa (ui/tema.py):
+
+       data-tema="blanco"   paleta Claro   (es el que se ve por defecto)
+       data-tema="silver"   paleta Silver
+
+   El atributo lo pone script.js en la etiqueta <html> y lo recuerda en el
+   navegador de cada visitante.
+
+   Para cambiar un color, tocá el mismo nombre de variable en LOS DOS bloques:
+   si sólo lo cambiás en uno, el otro tema queda desparejo.
    ========================================================================== */
+
+/* --- Valores que no dependen del tema --------------------------------- */
 :root {
+  --color-whatsapp: #25d366;         /* Verde oficial de WhatsApp */
 
-  /* --- Color de marca (botones, links, acentos) ------------------------- */
-  --color-primary:        #2563eb;   /* Azul principal. EDITAR */
-  --color-primary-dark:   #1d4ed8;   /* Variante oscura: hover de botones */
-  --color-primary-light:  #60a5fa;   /* Variante clara: degradés y detalles */
-  --color-primary-soft:   #eff6ff;   /* Fondo muy suave: badges, íconos */
-
-  /* --- Color de apoyo (degradé del título, chips) ----------------------- */
-  --color-accent:         #0ea5e9;   /* EDITAR */
-
-  /* --- Colores de estado ------------------------------------------------ */
-  --color-warning:        #d97706;   /* Aviso de licencia (borde y botón) */
-  --color-warning-soft:   #fffbeb;   /* Fondo del aviso de licencia */
-  --color-warning-border: #fcd34d;
-  --color-success:        #16a34a;   /* Punto verde "versión disponible" */
-  --color-whatsapp:       #25d366;   /* Verde oficial de WhatsApp */
-
-  /* --- Textos ----------------------------------------------------------- */
-  --color-text:           #0f172a;   /* Títulos y texto fuerte */
-  --color-text-body:      #334155;   /* Párrafos */
-  --color-text-muted:     #64748b;   /* Texto secundario / metadatos */
-
-  /* --- Fondos y superficies --------------------------------------------- */
-  --color-bg:             #ffffff;   /* Fondo general */
-  --color-bg-alt:         #f8fafc;   /* Fondo de secciones alternadas */
-  --color-surface:        #ffffff;   /* Tarjetas */
-  --color-border:         #e2e8f0;   /* Bordes y separadores */
-  --color-footer-bg:      #0f172a;   /* Fondo del pie (oscuro) */
-  --color-footer-text:    #cbd5e1;
-
-  /* --- Tipografía -------------------------------------------------------- */
   --font-base: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
                "Helvetica Neue", Arial, sans-serif;
   --font-mono: "SFMono-Regular", ui-monospace, Consolas, "Liberation Mono", monospace;
 
-  /* --- Formas, sombras y espaciados ------------------------------------- */
   --radius-sm: 8px;
   --radius:    14px;
   --radius-lg: 22px;
   --radius-pill: 999px;
 
-  --shadow-sm: 0 1px 2px rgba(15, 23, 42, .06);
-  --shadow:    0 6px 20px rgba(15, 23, 42, .07);
-  --shadow-lg: 0 24px 60px rgba(15, 23, 42, .12);
-
-  --container: 1140px;        /* Ancho máximo del contenido */
-  --section-y: 96px;          /* Aire vertical entre secciones */
+  --container: 1140px;               /* Ancho máximo del contenido */
+  --section-y: 96px;                 /* Aire vertical entre secciones */
 
   --transition: .22s cubic-bezier(.4, 0, .2, 1);
+}
+
+
+/* ---------------------------------------------------------------------------
+   TEMA BLANCO  ·  paleta "claro" del programa
+   --------------------------------------------------------------------------- */
+:root,
+:root[data-tema="blanco"] {
+
+  /* Marca */
+  --color-primary:         #1B3A57;   /* primario */
+  --color-primary-hover:   #2A5580;   /* primario_hover */
+  --color-primary-light:   #4A7BA7;   /* detalles y bordes al pasar el mouse */
+  --color-primary-soft:    #E8EDF3;   /* superficie_3: fondo de íconos y etiquetas */
+  --color-sobre-primario:  #FFFFFF;   /* texto arriba del color de marca */
+  --color-accent:          #0F766E;   /* acento */
+
+  /* Estados */
+  --color-warning:         #B45309;   /* alerta */
+  --color-warning-soft:    #FEF6E7;   /* alerta_fondo */
+  --color-warning-border:  #F0D5AC;
+  --color-warning-text:    #7C3E06;
+  --color-sobre-alerta:    #FFFFFF;   /* texto arriba del color de alerta */
+  --color-success:         #15803D;   /* ok */
+  --color-error:           #B91C1C;   /* error */
+  --color-error-soft:      #FDE7E7;
+
+  /* Textos */
+  --color-text:            #16202B;   /* texto */
+  --color-text-body:       #3E5163;   /* párrafos (entre texto y texto_suave) */
+  --color-text-muted:      #8A98A6;   /* texto_tenue */
+
+  /* Fondos y superficies */
+  --color-bg:              #FFFFFF;   /* superficie */
+  --color-bg-alt:          #EEF1F5;   /* ventana */
+  --color-surface:         #FFFFFF;
+  --color-border:          #D3DAE3;   /* borde */
+  --color-header-bg:       rgba(255, 255, 255, .85);
+  --color-overlay:         rgba(22, 32, 43, .55);
+
+  /* Campos de formulario */
+  --color-campo:           #FFFFFF;   /* campo */
+  --color-campo-borde:     #C3CCD8;   /* campo_borde */
+
+  /* Pie */
+  --color-footer-bg:       #16202B;
+  --color-footer-text:     #B4BECD;
+
+  /* Sombras */
+  --shadow-sm: 0 1px 2px rgba(22, 32, 43, .06);
+  --shadow:    0 6px 20px rgba(22, 32, 43, .08);
+  --shadow-lg: 0 24px 60px rgba(22, 32, 43, .14);
+}
+
+
+/* ---------------------------------------------------------------------------
+   TEMA SILVER  ·  paleta "silver" del programa
+   --------------------------------------------------------------------------- */
+:root[data-tema="silver"] {
+
+  /* Marca */
+  --color-primary:         #8D99AE;   /* primario */
+  --color-primary-hover:   #A6B1C4;   /* primario_hover */
+  --color-primary-light:   #B4BECD;
+  --color-primary-soft:    #464A68;   /* superficie_3 */
+  --color-sobre-primario:  #23253A;   /* sobre_primario */
+  --color-accent:          #6EC1A7;   /* acento */
+
+  /* Estados */
+  --color-warning:         #E0A458;   /* alerta */
+  --color-warning-soft:    #463F32;   /* alerta_fondo */
+  --color-warning-border:  #6B5C42;
+  --color-warning-text:    #F2D8B4;
+  --color-sobre-alerta:    #23253A;   /* texto arriba del color de alerta */
+  --color-success:         #7FD1A8;   /* ok */
+  --color-error:           #E87A7A;   /* error */
+  --color-error-soft:      #4A2F35;
+
+  /* Textos */
+  --color-text:            #EDF0F6;   /* texto */
+  --color-text-body:       #B4BECD;   /* texto_suave */
+  --color-text-muted:      #8D99AE;   /* texto_tenue */
+
+  /* Fondos y superficies */
+  --color-bg:              #2B2D42;   /* ventana */
+  --color-bg-alt:          #363950;   /* superficie_2 */
+  --color-surface:         #3D405B;   /* superficie */
+  --color-border:          #525777;   /* borde */
+  --color-header-bg:       rgba(43, 45, 66, .88);
+  --color-overlay:         rgba(16, 17, 28, .68);
+
+  /* Campos de formulario */
+  --color-campo:           #343751;   /* campo */
+  --color-campo-borde:     #565B7C;   /* campo_borde */
+
+  /* Pie */
+  --color-footer-bg:       #23253A;
+  --color-footer-text:     #B4BECD;
+
+  /* Sombras: en oscuro tienen que ser más marcadas para que se noten */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, .25);
+  --shadow:    0 6px 20px rgba(0, 0, 0, .32);
+  --shadow-lg: 0 24px 60px rgba(0, 0, 0, .45);
+}
+
+/* Suaviza el cambio de tema en vez de que salte de golpe */
+body, .header, .card, .contact-card, .modal__dialog, .version-item,
+.faq__item, .download-featured, .alert, .campo input, .mockup {
+  transition: background-color var(--transition), border-color var(--transition),
+              color var(--transition);
 }
 
 
@@ -106,17 +190,20 @@ h1, h2, h3, h4 {
 
 p { margin: 0 0 1em; }
 ul { margin: 0; padding: 0; list-style: none; }
+figure { margin: 0; }        /* el navegador le pone 40px de margen lateral */
 
 a { color: var(--color-primary); text-decoration: none; transition: color var(--transition); }
-a:hover { color: var(--color-primary-dark); }
+a:hover { color: var(--color-primary-hover); }
 
-img, svg { max-width: 100%; }
+/* height:auto es imprescindible: sin eso, el atributo height="900" del HTML
+   le gana al aspect-ratio y las fotos salen estiradas. */
+img, svg { max-width: 100%; height: auto; }
 
 code {
   font-family: var(--font-mono);
   font-size: .9em;
   background: var(--color-primary-soft);
-  color: var(--color-primary-dark);
+  color: var(--color-primary-hover);
   padding: .15em .45em;
   border-radius: 6px;
 }
@@ -131,10 +218,10 @@ code {
 /* Enlace "saltar al contenido": oculto hasta que se navega con TAB */
 .skip-link {
   position: absolute; left: -9999px; top: 0; z-index: 999;
-  background: var(--color-primary); color: #fff;
+  background: var(--color-primary); color: var(--color-sobre-primario);
   padding: .75rem 1.25rem; border-radius: 0 0 var(--radius-sm) 0;
 }
-.skip-link:focus { left: 0; color: #fff; }
+.skip-link:focus { left: 0; color: var(--color-sobre-primario); }
 
 
 /* ============================================================================
@@ -212,10 +299,10 @@ code {
 
 .btn--primary {
   background: var(--color-primary);
-  color: #fff;
+  color: var(--color-sobre-primario);
   box-shadow: 0 8px 20px -8px var(--color-primary);
 }
-.btn--primary:hover { background: var(--color-primary-dark); color: #fff; }
+.btn--primary:hover { background: var(--color-primary-hover); color: var(--color-sobre-primario); }
 
 .btn--outline {
   background: transparent;
@@ -234,10 +321,10 @@ code {
 
 .btn--warning {
   background: var(--color-warning);
-  color: #fff;
+  color: var(--color-sobre-alerta);
   box-shadow: 0 8px 20px -8px var(--color-warning);
 }
-.btn--warning:hover { filter: brightness(.94); color: #fff; }
+.btn--warning:hover { filter: brightness(.94); color: var(--color-sobre-alerta); }
 
 .btn--wa { background: var(--color-whatsapp); color: #04331a; }
 .btn--wa:hover { filter: brightness(.95); color: #04331a; }
@@ -248,7 +335,7 @@ code {
    ========================================================================== */
 .header {
   position: sticky; top: 0; z-index: 100;
-  background: rgba(255, 255, 255, .85);
+  background: var(--color-header-bg);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid transparent;
   transition: border-color var(--transition), box-shadow var(--transition);
@@ -267,7 +354,7 @@ code {
   width: 40px; height: 40px;
   border-radius: 11px;
   background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
-  color: #fff;
+  color: var(--color-sobre-primario);
 }
 .brand__mark svg { width: 22px; height: 22px; }
 .brand__text { display: flex; flex-direction: column; line-height: 1.1; }
@@ -288,6 +375,31 @@ code {
 }
 .nav__list a:hover { color: var(--color-primary); }
 .nav__list a:hover::after { width: 100%; }
+
+/* ---- Selector de tema Blanco / Silver ----------------------------------- */
+.tema {
+  display: inline-flex; align-items: center; gap: 2px;
+  padding: 3px;
+  background: var(--color-bg-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+}
+
+.tema__btn {
+  font-family: inherit; font-size: .78rem; font-weight: 600;
+  padding: .42em .85em;
+  border: none; border-radius: var(--radius-pill);
+  background: transparent; color: var(--color-text-muted);
+  cursor: pointer; white-space: nowrap;
+  transition: background var(--transition), color var(--transition);
+}
+.tema__btn:hover { color: var(--color-text); }
+
+/* El tema activo queda marcado con el color de marca */
+.tema__btn[aria-pressed="true"] {
+  background: var(--color-primary);
+  color: var(--color-sobre-primario);
+}
 
 /* Hamburguesa (oculta en escritorio) */
 .nav-toggle {
@@ -404,9 +516,9 @@ code {
   margin-top: 14px; padding: 14px 16px;
   background: var(--color-primary-soft);
   border-radius: var(--radius);
-  font-size: .9rem; font-weight: 600; color: var(--color-primary-dark);
+  font-size: .9rem; font-weight: 600; color: var(--color-primary-hover);
 }
-.mockup__total strong { font-size: 1.15rem; color: var(--color-primary-dark); }
+.mockup__total strong { font-size: 1.15rem; color: var(--color-primary-hover); }
 
 .mockup__chips { display: flex; gap: 8px; margin-top: 14px; }
 .chip {
@@ -443,6 +555,47 @@ code {
 
 
 /* ============================================================================
+   7.b GALERÍA DE IMÁGENES
+   ----------------------------------------------------------------------------
+   Las fotos se recortan solas con object-fit: cover, así que podés reemplazar
+   los archivos de img/ por fotos tuyas de cualquier tamaño y siguen quedando
+   parejas y bien proporcionadas.
+   ========================================================================== */
+.galeria {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.galeria__item {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-alt);
+  box-shadow: var(--shadow-sm);
+}
+
+.galeria__item img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;     /* todas las fotos ocupan el mismo rectángulo */
+  object-fit: cover;       /* se recortan centradas, nunca se deforman */
+  transition: transform .5s ease;
+}
+.galeria__item:hover img { transform: scale(1.05); }
+
+.galeria__pie {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  padding: 30px 18px 15px;
+  background: linear-gradient(to top, rgba(10, 14, 20, .82), transparent);
+  color: #fff;
+  font-size: .95rem; font-weight: 600;
+  letter-spacing: -.01em;
+}
+
+
+/* ============================================================================
    8. DESCARGAS
    ========================================================================== */
 
@@ -460,7 +613,7 @@ code {
 .alert__icon {
   display: grid; place-items: center; flex: none;
   width: 46px; height: 46px; border-radius: 12px;
-  background: var(--color-warning); color: #fff;
+  background: var(--color-warning); color: var(--color-sobre-alerta);
   animation: pulso 2.4s ease-in-out infinite;
 }
 .alert__icon svg { width: 24px; height: 24px; }
@@ -471,9 +624,9 @@ code {
   50%      { box-shadow: 0 0 0 12px color-mix(in srgb, var(--color-warning) 0%, transparent); }
 }
 
-.alert__title { font-size: 1.15rem; margin-bottom: .3em; color: #78350f; }
-.alert__body p { margin: 0 0 1rem; color: #7c4a08; font-size: 1rem; }
-.alert__body strong { color: #6b3d05; }
+.alert__title { font-size: 1.15rem; margin-bottom: .3em; color: var(--color-warning-text); }
+.alert__body p { margin: 0 0 1rem; color: var(--color-warning-text); font-size: 1rem; }
+.alert__body strong { color: var(--color-warning-text); }
 .alert__actions { display: flex; flex-wrap: wrap; gap: 12px; }
 
 /* ---- 8.2 Versión destacada (la última) ---------------------------------- */
@@ -494,9 +647,9 @@ code {
 .dl__tag {
   font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
   padding: .3em .75em; border-radius: var(--radius-pill);
-  background: var(--color-primary-soft); color: var(--color-primary-dark);
+  background: var(--color-primary-soft); color: var(--color-primary-hover);
 }
-.dl__tag--beta { background: #fef3c7; color: #92400e; }
+.dl__tag--beta { background: var(--color-warning-soft); color: var(--color-warning); }
 
 .dl__meta {
   display: flex; flex-wrap: wrap; gap: 8px 20px;
@@ -547,7 +700,7 @@ code {
   color: var(--color-primary);
   transition: color var(--transition);
 }
-.version-item__link:hover { color: var(--color-primary-dark); text-decoration: underline; }
+.version-item__link:hover { color: var(--color-primary-hover); text-decoration: underline; }
 
 
 /* ============================================================================
@@ -650,7 +803,7 @@ code {
 
 .modal__overlay {
   position: absolute; inset: 0;
-  background: rgba(15, 23, 42, .55);
+  background: var(--color-overlay);
   backdrop-filter: blur(3px);
   animation: aparecer .2s ease;
 }
@@ -693,7 +846,7 @@ code {
   border-radius: 50%;
 }
 .modal__icono svg { width: 30px; height: 30px; }
-.modal__icono--ok    { background: color-mix(in srgb, var(--color-success) 15%, #fff); color: var(--color-success); }
+.modal__icono--ok    { background: color-mix(in srgb, var(--color-success) 16%, var(--color-surface)); color: var(--color-success); }
 .modal__icono--error { background: var(--color-warning-soft); color: var(--color-warning); }
 
 .modal__acciones { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 22px; }
@@ -708,25 +861,25 @@ code {
   width: 100%;
   font-family: inherit; font-size: 1rem; color: var(--color-text);
   padding: .75em .9em;
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
+  background: var(--color-campo);
+  border: 1px solid var(--color-campo-borde);
   border-radius: var(--radius-sm);
   transition: border-color var(--transition), box-shadow var(--transition);
 }
-.campo input::placeholder { color: #94a3b8; }
+.campo input::placeholder { color: var(--color-text-muted); }
 .campo input:focus {
   outline: none;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px var(--color-primary-soft);
 }
-.campo input.es-invalido { border-color: #dc2626; }
-.campo input.es-invalido:focus { box-shadow: 0 0 0 3px #fee2e2; }
+.campo input.es-invalido { border-color: var(--color-error); }
+.campo input.es-invalido:focus { box-shadow: 0 0 0 3px var(--color-error-soft); }
 
 .campo__ayuda { display: block; margin-top: 5px; font-size: .8rem; color: var(--color-text-muted); }
 
 .campo__error {
   display: none;
-  margin-top: 5px; font-size: .82rem; font-weight: 500; color: #dc2626;
+  margin-top: 5px; font-size: .82rem; font-weight: 500; color: var(--color-error);
 }
 .campo__error.visible { display: block; }
 /* Cuando hay error se oculta la ayuda para que no se amontonen los dos textos */
