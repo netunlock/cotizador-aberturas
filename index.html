@@ -309,6 +309,16 @@
           </details>
 
           <details class="faq__item">
+            <summary>¿Por qué me piden mis datos para descargar?</summary>
+            <div class="faq__answer">
+              <p>Porque el programa funciona con una licencia por equipo y necesitamos poder
+                 contactarte para generártela y para avisarte de las actualizaciones. La descarga
+                 es <strong>gratuita</strong>: el link te llega por mail apenas completás el
+                 formulario. No compartimos tus datos con nadie ni te mandamos publicidad.</p>
+            </div>
+          </details>
+
+          <details class="faq__item">
             <summary>¿Qué necesito para que funcione?</summary>
             <div class="faq__answer">
               <p>Una PC con <strong>Windows 10 u 11</strong>. La versión portable no requiere
@@ -453,6 +463,115 @@
       <p class="footer__copy">© <span data-anio>2026</span> Cotizador de Aberturas · Todos los derechos reservados.</p>
     </div>
   </footer>
+
+  <!-- ============================================================
+       MODAL DE DESCARGA
+       El link de descarga NO está en esta página: se envía por mail
+       al correo que cargue el interesado. Ver BLOQUE 1 de script.js.
+       ============================================================ -->
+  <div class="modal" id="modalDescarga" hidden>
+    <div class="modal__overlay" data-cerrar-modal></div>
+
+    <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="modalTitulo">
+      <button class="modal__close" type="button" data-cerrar-modal aria-label="Cerrar">&times;</button>
+
+      <!-- Paso 1: formulario -->
+      <div class="modal__paso" data-paso="form">
+        <p class="eyebrow">Descarga gratuita</p>
+        <h2 class="modal__titulo" id="modalTitulo">Te enviamos el link por mail</h2>
+        <p class="modal__lead">
+          Completá tus datos y te mandamos el enlace de descarga de la
+          <strong data-version-pedida>última versión</strong> al correo que dejes.
+          Es gratis: sólo necesitamos saber quién lo está usando para poder darte la licencia
+          de prueba y avisarte de las actualizaciones.
+        </p>
+
+        <form id="formDescarga" novalidate>
+          <div class="campo">
+            <label for="f_nombre">Nombre y apellido <span aria-hidden="true">*</span></label>
+            <input id="f_nombre" name="nombre" type="text" autocomplete="name" placeholder="Juan Pérez" required />
+            <small class="campo__error" data-error-de="nombre"></small>
+          </div>
+
+          <div class="campo">
+            <label for="f_localidad">Localidad <span aria-hidden="true">*</span></label>
+            <input id="f_localidad" name="localidad" type="text" autocomplete="address-level2" placeholder="La Plata, Buenos Aires" required />
+            <small class="campo__error" data-error-de="localidad"></small>
+          </div>
+
+          <div class="campo">
+            <label for="f_email">Email <span aria-hidden="true">*</span></label>
+            <input id="f_email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="tucorreo@gmail.com" required />
+            <small class="campo__ayuda">Acá te llega el link, así que tiene que ser un correo real.</small>
+            <small class="campo__error" data-error-de="email"></small>
+          </div>
+
+          <div class="campo">
+            <label for="f_whatsapp">WhatsApp <span aria-hidden="true">*</span></label>
+            <input id="f_whatsapp" name="whatsapp" type="tel" autocomplete="tel" inputmode="tel" placeholder="221 592-9482" required />
+            <small class="campo__ayuda">Con característica, sin el 0 y sin el 15.</small>
+            <small class="campo__error" data-error-de="whatsapp"></small>
+          </div>
+
+          <!-- Trampa anti-robots: es invisible; si viene completa, se descarta el envío -->
+          <div class="honeypot" aria-hidden="true">
+            <label for="f_web">No completar</label>
+            <input id="f_web" name="web" type="text" tabindex="-1" autocomplete="off" />
+          </div>
+
+          <button class="btn btn--primary btn--lg modal__submit" type="submit" id="btnEnviarDescarga">
+            Enviarme el link de descarga
+          </button>
+
+          <p class="modal__nota">
+            Usamos tus datos únicamente para enviarte el link y ayudarte con la licencia.
+            No se los pasamos a nadie.
+          </p>
+        </form>
+      </div>
+
+      <!-- Paso 2: enviado -->
+      <div class="modal__paso modal__paso--centro" data-paso="ok" hidden>
+        <div class="modal__icono modal__icono--ok" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m5 13 4 4 10-10"/></svg>
+        </div>
+        <h2 class="modal__titulo">¡Listo! Revisá tu correo</h2>
+        <p class="modal__lead">
+          Le mandamos el link de descarga a <strong data-mail-enviado>tu correo</strong>.
+          Suele llegar en menos de un minuto: si no lo ves, fijate en
+          <strong>Spam</strong> o en <strong>Promociones</strong>.
+        </p>
+        <p class="modal__lead">
+          Cuando lo instales, escribinos y te generamos la licencia de prueba de 7 días.
+        </p>
+        <div class="modal__acciones">
+          <a class="btn btn--wa" data-wa-licencia href="#contacto" target="_blank" rel="noopener">
+            Pedir la licencia por WhatsApp
+          </a>
+          <button class="btn btn--ghost" type="button" data-cerrar-modal>Cerrar</button>
+        </div>
+      </div>
+
+      <!-- Paso 3: falló el envío -->
+      <div class="modal__paso modal__paso--centro" data-paso="error" hidden>
+        <div class="modal__icono modal__icono--error" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 8v5"/><path d="M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg>
+        </div>
+        <h2 class="modal__titulo">No pudimos enviar el mail</h2>
+        <p class="modal__lead">
+          Puede ser un problema momentáneo de conexión. Probá de nuevo en un minuto o
+          pedinos el link directamente por WhatsApp: te lo pasamos al toque.
+        </p>
+        <div class="modal__acciones">
+          <a class="btn btn--wa" data-wa-descarga href="#contacto" target="_blank" rel="noopener">
+            Pedir el link por WhatsApp
+          </a>
+          <button class="btn btn--ghost" type="button" data-reintentar>Reintentar</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
 
   <script src="script.js" defer></script>
 </body>

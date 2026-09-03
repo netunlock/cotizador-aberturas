@@ -13,7 +13,8 @@
      9.  FAQs
      10. Contacto
      11. Pie
-     12. Responsive (celular y tablet)
+     12. Modal de descarga (formulario previo)
+     13. Responsive (celular y tablet)
    ========================================================================== */
 
 
@@ -539,7 +540,14 @@ code {
 
 .version-item__num { font-weight: 700; color: var(--color-text); font-size: 1rem; }
 .version-item__info { font-size: .88rem; color: var(--color-text-muted); }
-.version-item__link { font-size: .9rem; font-weight: 600; white-space: nowrap; }
+/* Es un <button> porque abre el formulario, pero se ve como un link */
+.version-item__link {
+  font-family: inherit; font-size: .9rem; font-weight: 600; white-space: nowrap;
+  background: none; border: none; padding: 0; cursor: pointer;
+  color: var(--color-primary);
+  transition: color var(--transition);
+}
+.version-item__link:hover { color: var(--color-primary-dark); text-decoration: underline; }
 
 
 /* ============================================================================
@@ -631,7 +639,113 @@ code {
 
 
 /* ============================================================================
-   12. RESPONSIVE
+   12. MODAL DE DESCARGA (formulario de contacto previo a la descarga)
+   ========================================================================== */
+.modal {
+  position: fixed; inset: 0; z-index: 200;
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.modal[hidden] { display: none; }
+
+.modal__overlay {
+  position: absolute; inset: 0;
+  background: rgba(15, 23, 42, .55);
+  backdrop-filter: blur(3px);
+  animation: aparecer .2s ease;
+}
+
+.modal__dialog {
+  position: relative;
+  width: 100%; max-width: 520px;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 36px;
+  animation: subir .25s cubic-bezier(.2, .8, .3, 1);
+}
+
+@keyframes aparecer { from { opacity: 0; } to { opacity: 1; } }
+@keyframes subir { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+
+.modal__close {
+  position: absolute; top: 14px; right: 16px;
+  width: 36px; height: 36px;
+  display: grid; place-items: center;
+  font-size: 1.6rem; line-height: 1;
+  background: transparent; border: none; border-radius: 50%;
+  color: var(--color-text-muted); cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+.modal__close:hover { background: var(--color-bg-alt); color: var(--color-text); }
+
+.modal__titulo { font-size: 1.5rem; margin-bottom: .4em; }
+.modal__lead { font-size: .97rem; color: var(--color-text-muted); margin-bottom: 1.1em; }
+.modal__lead strong { color: var(--color-text); }
+
+.modal__paso--centro { text-align: center; }
+
+.modal__icono {
+  display: grid; place-items: center;
+  width: 60px; height: 60px; margin: 4px auto 20px;
+  border-radius: 50%;
+}
+.modal__icono svg { width: 30px; height: 30px; }
+.modal__icono--ok    { background: color-mix(in srgb, var(--color-success) 15%, #fff); color: var(--color-success); }
+.modal__icono--error { background: var(--color-warning-soft); color: var(--color-warning); }
+
+.modal__acciones { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 22px; }
+
+/* ---- Campos del formulario ---------------------------------------------- */
+.campo { margin-bottom: 16px; }
+.campo label {
+  display: block; margin-bottom: 6px;
+  font-size: .88rem; font-weight: 600; color: var(--color-text);
+}
+.campo input {
+  width: 100%;
+  font-family: inherit; font-size: 1rem; color: var(--color-text);
+  padding: .75em .9em;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.campo input::placeholder { color: #94a3b8; }
+.campo input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-soft);
+}
+.campo input.es-invalido { border-color: #dc2626; }
+.campo input.es-invalido:focus { box-shadow: 0 0 0 3px #fee2e2; }
+
+.campo__ayuda { display: block; margin-top: 5px; font-size: .8rem; color: var(--color-text-muted); }
+
+.campo__error {
+  display: none;
+  margin-top: 5px; font-size: .82rem; font-weight: 500; color: #dc2626;
+}
+.campo__error.visible { display: block; }
+/* Cuando hay error se oculta la ayuda para que no se amontonen los dos textos */
+.campo:has(.campo__error.visible) .campo__ayuda { display: none; }
+
+.modal__submit { width: 100%; margin-top: 8px; }
+.modal__submit[disabled] { opacity: .65; cursor: progress; transform: none; }
+
+.modal__nota { margin: 14px 0 0; font-size: .8rem; color: var(--color-text-muted); text-align: center; }
+
+/* La trampa anti-robots no se ve ni la lee un lector de pantalla */
+.honeypot {
+  position: absolute; left: -9999px;
+  width: 1px; height: 1px; overflow: hidden;
+}
+
+
+/* ============================================================================
+   13. RESPONSIVE
    ========================================================================== */
 
 /* --- Tablet --------------------------------------------------------------- */
@@ -688,6 +802,11 @@ code {
   .mockup__row span:nth-child(2) { display: none; }
   .mockup__total { font-size: .85rem; }
   .mockup__total strong { font-size: 1.05rem; }
+
+  /* Modal a pantalla casi completa en celular */
+  .modal { padding: 12px; align-items: flex-end; }
+  .modal__dialog { padding: 28px 22px; max-height: calc(100vh - 24px); }
+  .modal__acciones .btn { width: 100%; }
 }
 
 /* --- Respeta a quien pide menos animaciones en su sistema ------------------ */
