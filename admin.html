@@ -186,9 +186,8 @@
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
 
-      // Para este demo: email "admin@example.com" con cualquier contraseña
-      // En producción: validar contra DB
-      if (email === "admin@example.com" && password.length > 0) {
+      // Credenciales: admin@cotaber / lucardo
+      if (email === "admin@cotaber" && password === "lucardo") {
         usuarioAdmin = { email, nombre: "Administrador" };
         localStorage.setItem("adminLogin", JSON.stringify(usuarioAdmin));
         mostrarDashboard();

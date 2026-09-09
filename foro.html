@@ -7,21 +7,16 @@
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="styles.css" />
   <style>
+    .foro-container { max-width: 1000px; margin: 0 auto; padding: 0 24px; }
     .foro-header {
-      background: var(--color-bg-alt);
-      border-bottom: 1px solid var(--color-border);
-      padding: 20px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       margin-bottom: 40px;
+      padding: 20px 0;
     }
     .foro-header h1 { margin: 0; }
-    .foro-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-    .foro-auth { display: flex; gap: 10px; }
-    .foro-user-info { font-size: 0.9rem; color: var(--color-text-muted); }
 
-    .foro-container { max-width: 1000px; margin: 0 auto; padding: 0 24px; }
-    .foro-grid { display: grid; grid-template-columns: 1fr 300px; gap: 30px; }
-
-    .foro-main { }
     .foro-categorias {
       display: flex;
       flex-wrap: wrap;
@@ -42,7 +37,6 @@
       color: white;
       border-color: var(--color-primary);
     }
-    .categoria-pill:hover { border-color: var(--color-primary); }
 
     .foro-pregunta {
       background: var(--color-surface);
@@ -51,18 +45,12 @@
       padding: 20px;
       margin-bottom: 20px;
     }
-    .pregunta-header {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 12px;
-    }
-    .pregunta-autor { font-weight: 600; }
-    .pregunta-meta { font-size: 0.85rem; color: var(--color-text-muted); }
+    .pregunta-autor { font-weight: 600; font-size: 1rem; }
+    .pregunta-fecha { font-size: 0.85rem; color: var(--color-text-muted); }
     .pregunta-titulo {
       font-size: 1.1rem;
       font-weight: 600;
-      color: var(--color-text);
-      margin-bottom: 8px;
+      margin: 12px 0 8px 0;
     }
     .pregunta-contenido {
       color: var(--color-text-body);
@@ -80,9 +68,7 @@
       height: 150px;
       object-fit: cover;
       border-radius: 6px;
-      cursor: pointer;
     }
-
     .votos { display: flex; gap: 12px; align-items: center; margin-top: 12px; }
     .voto-btn {
       background: none;
@@ -93,15 +79,48 @@
       padding: 4px;
     }
     .voto-btn:hover { color: var(--color-primary); }
-    .voto-btn.votado { color: var(--color-primary); }
+    .voto-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    .formulario-seccion {
-      background: var(--color-bg-alt);
-      border-radius: 8px;
-      padding: 20px;
-      margin-bottom: 30px;
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
     }
-    .formulario-seccion h3 { margin-top: 0; }
+    .modal.visible { display: flex; }
+    .modal-content {
+      background: var(--color-surface);
+      border-radius: 12px;
+      padding: 30px;
+      max-width: 500px;
+      width: 90%;
+      position: relative;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--color-text-muted);
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-close:hover { color: var(--color-text); }
+
     .form-grupo {
       margin-bottom: 16px;
     }
@@ -119,8 +138,12 @@
       border-radius: 6px;
       font-family: inherit;
       font-size: 1rem;
+      box-sizing: border-box;
     }
     .form-grupo textarea { min-height: 100px; resize: vertical; }
+    .form-grupo.checkbox { display: flex; align-items: center; }
+    .form-grupo.checkbox input { width: auto; margin-right: 8px; }
+    .form-grupo.checkbox label { margin-bottom: 0; }
 
     .imagenes-preview {
       display: grid;
@@ -151,59 +174,14 @@
       font-size: 0.8rem;
     }
 
-    .sidebar {
-      display: none;
-    }
-    @media (min-width: 900px) {
-      .foro-grid { grid-template-columns: 1fr 280px; }
-      .sidebar { display: block; }
-    }
-
-    .sidebar-card {
-      background: var(--color-bg-alt);
-      border-radius: 8px;
-      padding: 16px;
-      margin-bottom: 20px;
-      position: sticky;
-      top: 20px;
-    }
-    .sidebar-card h4 { margin-top: 0; }
-    .sidebar-card a { display: block; margin: 8px 0; color: var(--color-primary); text-decoration: none; }
-    .sidebar-card a:hover { text-decoration: underline; }
-
     .loading { text-align: center; color: var(--color-text-muted); padding: 20px; }
-    .error { background: #fee; color: #c33; padding: 12px; border-radius: 6px; margin: 10px 0; }
-    .success { background: #efe; color: #3c3; padding: 12px; border-radius: 6px; margin: 10px 0; }
+    .error { color: #c33; padding: 12px; background: #fee; border-radius: 6px; margin: 10px 0; }
+    .success { color: #3c3; padding: 12px; background: #efe; border-radius: 6px; margin: 10px 0; }
 
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0,0,0,0.5);
-      z-index: 1000;
-      align-items: center;
-      justify-content: center;
-    }
-    .modal.visible { display: flex; }
-    .modal-content {
-      background: var(--color-surface);
-      border-radius: 12px;
-      padding: 30px;
-      max-width: 500px;
-      width: 90%;
-    }
-    .modal-close {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      background: none;
-      border: none;
-      font-size: 1.5rem;
-      cursor: pointer;
-    }
+    .user-info { font-size: 0.9rem; color: var(--color-text-muted); }
+    .tema { display: flex; gap: 10px; }
+    .tema__btn { padding: 6px 12px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 4px; cursor: pointer; font-size: 0.85rem; }
+    .tema__btn[aria-pressed="true"] { background: var(--color-primary); color: white; border-color: var(--color-primary); }
   </style>
 </head>
 <body>
@@ -227,107 +205,86 @@
     </div>
   </header>
 
-  <div class="foro-header">
-    <div class="foro-container">
-      <div class="foro-top">
-        <div>
-          <h1>Foro de Carpinteros</h1>
-          <p style="margin: 8px 0 0 0; color: var(--color-text-muted);">Comunidad para compartir dudas y soluciones</p>
-        </div>
-        <button class="btn btn--primary" id="btnNuevaPregunta">+ Nueva pregunta</button>
+  <main class="foro-container">
+    <div class="foro-header">
+      <div>
+        <h1>Foro de Carpinteros</h1>
+        <p style="margin: 8px 0 0 0; color: var(--color-text-muted);">Comparte dudas, soluciones y experiencias</p>
       </div>
+      <button class="btn btn--primary" id="btnNuevaPregunta">+ Nueva pregunta</button>
+    </div>
+
+    <!-- Categorías -->
+    <div class="foro-categorias" id="categorias"></div>
+
+    <!-- Preguntas -->
+    <div id="preguntas" class="loading">Cargando preguntas...</div>
+  </main>
+
+  <!-- Modal: Nuevo pregunta -->
+  <div class="modal" id="modalPregunta">
+    <div class="modal-content">
+      <button class="modal-close" type="button" onclick="cerrarModal('modalPregunta')">&times;</button>
+      <h2>Nueva pregunta</h2>
+      <form id="formPregunta">
+        <div class="form-grupo">
+          <label for="nuevaCategoria">Categoría *</label>
+          <select id="nuevaCategoria" required></select>
+        </div>
+        <div class="form-grupo">
+          <label for="nuevaTitulo">Título *</label>
+          <input type="text" id="nuevaTitulo" placeholder="¿Cuál es tu pregunta?" required />
+        </div>
+        <div class="form-grupo">
+          <label for="nuevoContenido">Descripción *</label>
+          <textarea id="nuevoContenido" placeholder="Proporciona detalles..." required></textarea>
+        </div>
+        <div class="form-grupo">
+          <label for="nuevasImagenes">Imágenes (máx 3)</label>
+          <input type="file" id="nuevasImagenes" multiple accept="image/*" />
+          <div class="imagenes-preview" id="previewNuevas"></div>
+        </div>
+        <button class="btn btn--primary" type="submit" style="width: 100%;">Publicar pregunta</button>
+        <div id="formPreguntaError"></div>
+      </form>
     </div>
   </div>
 
-  <main class="foro-container">
-    <div class="foro-grid">
-      <div class="foro-main">
-        <!-- Filtro de categorías -->
-        <div class="foro-categorias" id="categorias"></div>
-
-        <!-- Formulario de nueva pregunta (modal) -->
-        <div class="modal" id="modalPregunta">
-          <div class="modal-content">
-            <button class="modal-close" onclick="document.getElementById('modalPregunta').classList.remove('visible')">&times;</button>
-            <h2>Nueva pregunta</h2>
-            <form id="formPregunta">
-              <div class="form-grupo">
-                <label for="nuevaCategoria">Categoría *</label>
-                <select id="nuevaCategoria" required></select>
-              </div>
-              <div class="form-grupo">
-                <label for="nuevaTitulo">Título *</label>
-                <input type="text" id="nuevaTitulo" placeholder="¿Cuál es tu pregunta?" required />
-              </div>
-              <div class="form-grupo">
-                <label for="nuevoContenido">Descripción *</label>
-                <textarea id="nuevoContenido" placeholder="Proporciona detalles..." required></textarea>
-              </div>
-              <div class="form-grupo">
-                <label for="nuevasImagenes">Imágenes (máx 3)</label>
-                <input type="file" id="nuevasImagenes" multiple accept="image/*" />
-                <div class="imagenes-preview" id="previewNuevas"></div>
-              </div>
-              <button class="btn btn--primary" type="submit">Publicar pregunta</button>
-              <div id="formPreguntaError"></div>
-            </form>
-          </div>
+  <!-- Modal: Login / Invitado -->
+  <div class="modal" id="authModal">
+    <div class="modal-content">
+      <button class="modal-close" type="button" onclick="cerrarModal('authModal')">&times;</button>
+      <h2 id="authTitle">Participar en el foro</h2>
+      <form id="formAuth">
+        <div class="form-grupo checkbox">
+          <input type="checkbox" id="modoInvitado" onchange="toggleModoInvitado()" />
+          <label for="modoInvitado">Participar como invitado (sin contraseña)</label>
         </div>
 
-        <!-- Formulario de login/registro -->
-        <div id="authModal" class="modal">
-          <div class="modal-content">
-            <button class="modal-close" onclick="cerrarAuthModal()">&times;</button>
-            <h2 id="authTitle">Iniciar sesión</h2>
-            <form id="formAuth">
-              <div class="form-grupo">
-                <label for="authEmail">Email *</label>
-                <input type="email" id="authEmail" required />
-              </div>
-              <div class="form-grupo">
-                <label for="authNombre">Nombre *</label>
-                <input type="text" id="authNombre" required />
-              </div>
-              <div class="form-grupo" id="passwordGroup" style="display: none;">
-                <label for="authPassword">Contraseña *</label>
-                <input type="password" id="authPassword" />
-              </div>
-              <div style="display: flex; gap: 10px;">
-                <button class="btn btn--primary" type="submit" id="btnAuthSubmit">Iniciar sesión</button>
-                <button class="btn" type="button" onclick="toggleAuthMode()">¿No tienes cuenta?</button>
-              </div>
-              <div id="authError"></div>
-            </form>
-          </div>
+        <div class="form-grupo">
+          <label for="authEmail">Email *</label>
+          <input type="email" id="authEmail" placeholder="tu@email.com" required />
+        </div>
+        <div class="form-grupo">
+          <label for="authNombre">Nombre *</label>
+          <input type="text" id="authNombre" placeholder="Tu nombre" required />
+        </div>
+        <div class="form-grupo" id="passwordGroup">
+          <label for="authPassword">Contraseña *</label>
+          <input type="password" id="authPassword" placeholder="Tu contraseña" required />
         </div>
 
-        <!-- Lista de preguntas -->
-        <div id="preguntas" class="loading">Cargando preguntas...</div>
-      </div>
-
-      <aside class="sidebar">
-        <div class="sidebar-card">
-          <h4>Categorías populares</h4>
-          <a href="#" onclick="filtrarCategoria('cotizador'); return false;">Cotizador</a>
-          <a href="#" onclick="filtrarCategoria('calculos'); return false;">Cálculos</a>
-          <a href="#" onclick="filtrarCategoria('sugerencias'); return false;">Sugerencias</a>
-        </div>
-        <div class="sidebar-card">
-          <h4>Ayuda</h4>
-          <p style="font-size: 0.9rem; color: var(--color-text-muted); margin: 0;">
-            Sé específico, proporciona contexto y adjunta imágenes si es necesario.
-          </p>
-        </div>
-      </aside>
+        <button class="btn btn--primary" type="submit" style="width: 100%;" id="btnAuthSubmit">Entrar como invitado</button>
+        <div id="authError"></div>
+      </form>
     </div>
-  </main>
+  </div>
 
   <script>
     const ENDPOINT = "https://cotizador-forum.fgpereyra-92.workers.dev";
     let usuarioActual = null;
     let categoriaSeleccionada = null;
     let imagenesPendientes = [];
-    let isRegistroMode = false;
 
     // Tema
     function inicializarTema() {
@@ -350,38 +307,41 @@
       });
     });
 
+    // Modales
+    function abrirModal(id) {
+      document.getElementById(id).classList.add("visible");
+    }
+    function cerrarModal(id) {
+      document.getElementById(id).classList.remove("visible");
+    }
+
     // Auth
     function mostrarAuthModal() {
-      document.getElementById("authModal").classList.add("visible");
+      document.getElementById("modoInvitado").checked = true;
+      toggleModoInvitado();
+      abrirModal("authModal");
     }
 
-    function cerrarAuthModal() {
-      document.getElementById("authModal").classList.remove("visible");
-      isRegistroMode = false;
-      document.getElementById("passwordGroup").style.display = "none";
-    }
-
-    function toggleAuthMode() {
-      isRegistroMode = !isRegistroMode;
-      document.getElementById("authTitle").textContent = isRegistroMode ? "Crear cuenta" : "Iniciar sesión";
-      document.getElementById("btnAuthSubmit").textContent = isRegistroMode ? "Crear cuenta" : "Iniciar sesión";
-      document.getElementById("passwordGroup").style.display = isRegistroMode ? "block" : "none";
+    function toggleModoInvitado() {
+      const esInvitado = document.getElementById("modoInvitado").checked;
+      document.getElementById("passwordGroup").style.display = esInvitado ? "none" : "block";
+      document.getElementById("btnAuthSubmit").textContent = esInvitado ? "Entrar como invitado" : "Crear cuenta";
+      document.getElementById("authPassword").required = !esInvitado;
     }
 
     document.getElementById("formAuth").addEventListener("submit", async (e) => {
       e.preventDefault();
       const email = document.getElementById("authEmail").value;
       const nombre = document.getElementById("authNombre").value;
+      const esInvitado = document.getElementById("modoInvitado").checked;
       const password = document.getElementById("authPassword").value;
 
-      let endpoint = isRegistroMode ? "/api/auth/registro" : "/api/auth/login";
+      let endpoint = "/api/auth/invitado";
       let body = { email, nombre };
-      if (isRegistroMode && password) body.password = password;
-      if (!isRegistroMode && password) body.password = password;
 
-      // Si no tiene contraseña, usar como invitado
-      if (!password) {
-        endpoint = "/api/auth/invitado";
+      if (!esInvitado) {
+        endpoint = "/api/auth/login";
+        if (password) body.password = password;
       }
 
       try {
@@ -395,7 +355,7 @@
           usuarioActual = data.usuario;
           localStorage.setItem("usuario", JSON.stringify(usuarioActual));
           actualizarUserStatus();
-          cerrarAuthModal();
+          cerrarModal("authModal");
           document.getElementById("formAuth").reset();
         } else {
           document.getElementById("authError").innerHTML = `<div class="error">${data.error}</div>`;
@@ -409,13 +369,13 @@
       const status = document.getElementById("userStatus");
       if (usuarioActual) {
         status.innerHTML = `
-          <div class="foro-user-info">
-            ${usuarioActual.nombre} ${usuarioActual.es_invitado ? "(invitado)" : ""}
+          <div class="user-info">
+            ${usuarioActual.nombre}${usuarioActual.es_invitado ? " (invitado)" : ""}
             <button onclick="logout()" class="btn btn--sm" style="margin-left: 10px;">Salir</button>
           </div>
         `;
       } else {
-        status.innerHTML = `<button class="btn btn--primary btn--sm" onclick="mostrarAuthModal()">Iniciar sesión</button>`;
+        status.innerHTML = `<button class="btn btn--primary btn--sm" onclick="mostrarAuthModal()">Participar</button>`;
       }
     }
 
@@ -425,7 +385,7 @@
       actualizarUserStatus();
     }
 
-    // Preguntas
+    // Categorías
     async function cargarCategorias() {
       try {
         const res = await fetch(ENDPOINT + "/api/categorias");
@@ -484,18 +444,17 @@
         const container = document.getElementById("preguntas");
 
         if (!data.preguntas || data.preguntas.length === 0) {
-          container.innerHTML = "<div class='loading'>No hay preguntas. ¡Sé el primero!</div>";
+          container.innerHTML = '<div class="loading">No hay preguntas aún. ¡Sé el primero!</div>';
           return;
         }
 
         container.innerHTML = data.preguntas.map(p => `
           <div class="foro-pregunta">
-            <div class="pregunta-header">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
               <div>
                 <div class="pregunta-autor">${escape(p.autor)}</div>
-                <div class="pregunta-meta">${formatearFecha(p.fecha)}</div>
+                <div class="pregunta-fecha">${formatearFecha(p.fecha)} • <span style="font-size: 0.8rem; color: var(--color-primary);">${p.categoria_nombre}</span></div>
               </div>
-              <span style="font-size: 0.8rem; color: var(--color-primary);">${p.categoria_nombre}</span>
             </div>
             <div class="pregunta-titulo">${escape(p.titulo)}</div>
             <div class="pregunta-contenido">${escape(p.contenido)}</div>
@@ -505,9 +464,9 @@
               </div>
             ` : ""}
             <div class="votos">
-              <button class="voto-btn ${usuarioActual ? "" : "disabled"}" onclick="votar(${p.id}, 'preguntas', 'up')" ${!usuarioActual ? "disabled" : ""}>👍</button>
+              <button class="voto-btn" onclick="votar(${p.id}, 'preguntas', 'up')" ${!usuarioActual ? "disabled" : ""}>👍</button>
               <span>${p.votos || 0}</span>
-              <button class="voto-btn ${usuarioActual ? "" : "disabled"}" onclick="votar(${p.id}, 'preguntas', 'down')" ${!usuarioActual ? "disabled" : ""}>👎</button>
+              <button class="voto-btn" onclick="votar(${p.id}, 'preguntas', 'down')" ${!usuarioActual ? "disabled" : ""}>👎</button>
             </div>
           </div>
         `).join("");
@@ -583,7 +542,7 @@
       if (!usuarioActual) {
         mostrarAuthModal();
       } else {
-        document.getElementById("modalPregunta").classList.add("visible");
+        abrirModal("modalPregunta");
       }
     });
 
@@ -615,7 +574,7 @@
           document.getElementById("formPregunta").reset();
           imagenesPendientes = [];
           setTimeout(() => {
-            document.getElementById("modalPregunta").classList.remove("visible");
+            cerrarModal("modalPregunta");
             cargarPreguntas();
           }, 1000);
         } else {
