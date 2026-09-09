@@ -244,6 +244,36 @@ export default {
         return json({ ok: true, stats }, 200, headers);
       }
 
+      // ADMIN: Listar usuarios
+      if (path === "/api/admin/usuarios" && request.method === "GET") {
+        const adminToken = url.searchParams.get("token");
+        if (adminToken !== "admin123") {
+          return json({ ok: false, error: "No autorizado" }, 401, headers);
+        }
+
+        const users = await env.DB.prepare(
+          "SELECT id, nombre, email, es_invitado, fecha_creacion FROM usuarios ORDER BY fecha_creacion DESC"
+        ).all();
+
+        return json({ ok: true, usuarios: users.results || [] }, 200, headers);
+      }
+
+      // ADMIN: Eliminar pregunta
+      if (path.match(/^\/api\/admin\/preguntas\/\d+$/) && request.method === "DELETE") {
+        const adminToken = url.searchParams.get("token");
+        if (adminToken !== "admin123") {
+          return json({ ok: false, error: "No autorizado" }, 401, headers);
+        }
+
+        const id = path.split("/")[4];
+        try {
+          await env.DB.prepare("DELETE FROM preguntas WHERE id = ?").bind(id).run();
+          return json({ ok: true }, 200, headers);
+        } catch (e) {
+          return json({ ok: false, error: "Error al eliminar" }, 500, headers);
+        }
+      }
+
       // 404
       return json({ ok: false, error: "Endpoint no encontrado" }, 404, headers);
     } catch (error) {
