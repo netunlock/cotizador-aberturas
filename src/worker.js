@@ -1,47 +1,109 @@
 /**
- * Cotizador de Aberturas — Foro con D1 + Categorías
- * Endpoints para preguntas, respuestas y votación, filtradas por categoría
+ * Cotizador de Aberturas — Foro con Auth + Imágenes + Admin
+ * Endpoints REST con D1
  */
+
+import crypto from "node:crypto";
+
+const hashPassword = (pwd) => crypto.createHash("sha256").update(pwd).digest("hex");
 
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     const path = url.pathname;
-
-    // CORS headers
     const headers = {
       "Content-Type": "application/json",
       "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type"
+      "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
     };
 
-    // Preflight
     if (request.method === "OPTIONS") {
       return new Response(null, { status: 204, headers });
     }
 
     try {
-      // GET /api/categorias
-      if (path === "/api/categorias" && request.method === "GET") {
-        const result = await env.DB.prepare(
-          "SELECT id, nombre, slug, descripcion FROM categorias ORDER BY nombre"
-        ).all();
-        return new Response(
-          JSON.stringify({ categorias: result.results || [] }),
-          { status: 200, headers }
-        );
+      // AUTH: Registro
+      if (path === "/api/auth/registro" && request.method === "POST") {
+        const { email, nombre, password } = await request.json();
+        if (!email || !nombre || !password) {
+          return json({ ok: false, error: "Faltan campos" }, 400, headers);
+        }
+        const passHash = hashPassword(password);
+        try {
+          await env.DB.prepare(
+            "INSERT INTO usuarios (email, nombre, password_hash, es_invitado) VALUES (?, ?, ?, 0)"
+          ).bind(email, nombre, passHash).run();
+          return json({ ok: true, message: "Registrado correctamente" }, 201, headers);
+        } catch (e) {
+          return json({ ok: false, error: "Email ya existe" }, 400, headers);
+        }
       }
 
-      // GET /api/preguntas?categoria=<id>
+      // AUTH: Login
+      if (path === "/api/auth/login" && request.method === "POST") {
+        const { email, password } = await request.json();
+        if (!email || !password) {
+          return json({ ok: false, error: "Faltan campos" }, 400, headers);
+        }
+        const passHash = hashPassword(password);
+        const user = await env.DB.prepare(
+          "SELECT id, nombre FROM usuarios WHERE email = ? AND password_hash = ?"
+        ).bind(email, passHash).first();
+
+        if (!user) {
+          return json({ ok: false, error: "Credenciales inválidas" }, 401, headers);
+        }
+        return json({ ok: true, usuario: { id: user.id, nombre: user.nombre, email } }, 200, headers);
+      }
+
+      // AUTH: Login como invitado
+      if (path === "/api/auth/invitado" && request.method === "POST") {
+        const { nombre, email } = await request.json();
+        if (!nombre || !email) {
+          return json({ ok: false, error: "Faltan campos" }, 400, headers);
+        }
+        // Crear usuario temporal
+        try {
+          const result = await env.DB.prepare(
+            "INSERT INTO usuarios (email, nombre, es_invitado) VALUES (?, ?, 1)"
+          ).bind(email, nombre).run();
+          return json(
+            { ok: true, usuario: { id: result.meta.last_row_id, nombre, email, es_invitado: true } },
+            201,
+            headers
+          );
+        } catch (e) {
+          // Si el email ya existe como invitado, devolverlo
+          const existing = await env.DB.prepare(
+            "SELECT id FROM usuarios WHERE email = ? AND es_invitado = 1"
+          ).bind(email).first();
+          if (existing) {
+            return json({ ok: true, usuario: { id: existing.id, nombre, email, es_invitado: true } }, 200, headers);
+          }
+          return json({ ok: false, error: "Error creando sesión" }, 500, headers);
+        }
+      }
+
+      // CATEGORÍAS
+      if (path === "/api/categorias" && request.method === "GET") {
+        const cats = await env.DB.prepare(
+          "SELECT id, nombre, slug, descripcion FROM categorias ORDER BY nombre"
+        ).all();
+        return json({ categorias: cats.results || [] }, 200, headers);
+      }
+
+      // PREGUNTAS: Listar
       if (path === "/api/preguntas" && request.method === "GET") {
         const categoria = url.searchParams.get("categoria");
         let query = `
           SELECT
-            p.id, p.categoria_id, p.nombre, p.email, p.pregunta,
-            p.fecha, p.votos,
+            p.id, p.usuario_id, p.categoria_id, p.titulo, p.contenido,
+            p.imagenes, p.fecha, p.votos,
+            u.nombre as autor,
             c.nombre as categoria_nombre
           FROM preguntas p
+          JOIN usuarios u ON p.usuario_id = u.id
           LEFT JOIN categorias c ON p.categoria_id = c.id
         `;
         let params = [];
@@ -51,185 +113,149 @@ export default {
           params.push(categoria);
         }
 
-        query += " ORDER BY p.fecha DESC";
+        query += " ORDER BY p.fecha DESC LIMIT 50";
 
         const result = await env.DB.prepare(query).bind(...params).all();
-        return new Response(
-          JSON.stringify({ preguntas: result.results || [] }),
-          { status: 200, headers }
-        );
+        return json({ preguntas: result.results || [] }, 200, headers);
       }
 
-      // GET /api/preguntas/:id/respuestas
+      // PREGUNTAS: Crear
+      if (path === "/api/preguntas" && request.method === "POST") {
+        const { usuario_id, categoria_id, titulo, contenido, imagenes } = await request.json();
+
+        if (!usuario_id || !titulo || !contenido) {
+          return json({ ok: false, error: "Faltan campos" }, 400, headers);
+        }
+
+        try {
+          const result = await env.DB.prepare(
+            `INSERT INTO preguntas (usuario_id, categoria_id, titulo, contenido, imagenes, fecha, votos)
+             VALUES (?, ?, ?, ?, ?, datetime('now'), 0)`
+          ).bind(usuario_id, categoria_id || null, titulo, contenido, imagenes ? JSON.stringify(imagenes) : null).run();
+
+          return json({ ok: true, id: result.meta.last_row_id }, 201, headers);
+        } catch (e) {
+          console.error("Error creando pregunta:", e);
+          return json({ ok: false, error: "Error al guardar" }, 500, headers);
+        }
+      }
+
+      // RESPUESTAS: Listar
       if (path.match(/^\/api\/preguntas\/\d+\/respuestas$/) && request.method === "GET") {
         const id = path.split("/")[3];
         const result = await env.DB.prepare(
-          "SELECT id, id_pregunta, nombre, email, respuesta, fecha, votos FROM respuestas WHERE id_pregunta = ? ORDER BY votos DESC, fecha ASC"
+          `SELECT r.id, r.usuario_id, r.contenido, r.imagenes, r.fecha, r.votos,
+                  u.nombre as autor
+           FROM respuestas r
+           JOIN usuarios u ON r.usuario_id = u.id
+           WHERE r.id_pregunta = ?
+           ORDER BY r.votos DESC, r.fecha ASC`
         ).bind(id).all();
-        return new Response(
-          JSON.stringify({ respuestas: result.results || [] }),
-          { status: 200, headers }
-        );
+        return json({ respuestas: result.results || [] }, 200, headers);
       }
 
-      // POST /api/preguntas
-      if (path === "/api/preguntas" && request.method === "POST") {
-        const body = await request.json();
-        const { categoria_id, nombre, email, pregunta, token } = body;
-
-        // Validar Turnstile (si está configurado)
-        if (env.TURNSTILE_SECRET_KEY && token) {
-          const turnstileResult = await fetch("https://challenges.cloudflare.com/turnstile/validate", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              secret: env.TURNSTILE_SECRET_KEY,
-              response: token
-            })
-          }).then(r => r.json());
-
-          if (!turnstileResult.success) {
-            return new Response(
-              JSON.stringify({ ok: false, error: "Verificación de spam fallida" }),
-              { status: 400, headers }
-            );
-          }
-        }
-
-        // Validar datos
-        if (!nombre || nombre.length < 3) {
-          return new Response(
-            JSON.stringify({ ok: false, error: "Nombre inválido" }),
-            { status: 400, headers }
-          );
-        }
-
-        if (!pregunta || pregunta.length < 10) {
-          return new Response(
-            JSON.stringify({ ok: false, error: "Pregunta muy corta" }),
-            { status: 400, headers }
-          );
-        }
-
-        // Insertar pregunta
-        try {
-          const result = await env.DB.prepare(
-            "INSERT INTO preguntas (categoria_id, nombre, email, pregunta, fecha, votos) VALUES (?, ?, ?, ?, datetime('now'), 0)"
-          ).bind(categoria_id || null, nombre, email || null, pregunta).run();
-
-          return new Response(
-            JSON.stringify({ ok: true, id: result.meta.last_row_id }),
-            { status: 201, headers }
-          );
-        } catch (e) {
-          return new Response(
-            JSON.stringify({ ok: false, error: "Error al guardar pregunta" }),
-            { status: 500, headers }
-          );
-        }
-      }
-
-      // POST /api/respuestas
+      // RESPUESTAS: Crear
       if (path === "/api/respuestas" && request.method === "POST") {
-        const body = await request.json();
-        const { id_pregunta, nombre, email, respuesta, token } = body;
+        const { usuario_id, id_pregunta, contenido, imagenes } = await request.json();
 
-        // Validar Turnstile
-        if (env.TURNSTILE_SECRET_KEY && token) {
-          const turnstileResult = await fetch("https://challenges.cloudflare.com/turnstile/validate", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              secret: env.TURNSTILE_SECRET_KEY,
-              response: token
-            })
-          }).then(r => r.json());
-
-          if (!turnstileResult.success) {
-            return new Response(
-              JSON.stringify({ ok: false, error: "Verificación de spam fallida" }),
-              { status: 400, headers }
-            );
-          }
+        if (!usuario_id || !id_pregunta || !contenido) {
+          return json({ ok: false, error: "Faltan campos" }, 400, headers);
         }
 
-        // Validar datos
-        if (!nombre || nombre.length < 3) {
-          return new Response(
-            JSON.stringify({ ok: false, error: "Nombre inválido" }),
-            { status: 400, headers }
-          );
-        }
-
-        if (!respuesta || respuesta.length < 5) {
-          return new Response(
-            JSON.stringify({ ok: false, error: "Respuesta muy corta" }),
-            { status: 400, headers }
-          );
-        }
-
-        // Insertar respuesta
         try {
           const result = await env.DB.prepare(
-            "INSERT INTO respuestas (id_pregunta, nombre, email, respuesta, fecha, votos) VALUES (?, ?, ?, ?, datetime('now'), 0)"
-          ).bind(id_pregunta, nombre, email || null, respuesta).run();
+            `INSERT INTO respuestas (usuario_id, id_pregunta, contenido, imagenes, fecha, votos)
+             VALUES (?, ?, ?, ?, datetime('now'), 0)`
+          ).bind(usuario_id, id_pregunta, contenido, imagenes ? JSON.stringify(imagenes) : null).run();
 
-          return new Response(
-            JSON.stringify({ ok: true, id: result.meta.last_row_id }),
-            { status: 201, headers }
-          );
+          return json({ ok: true, id: result.meta.last_row_id }, 201, headers);
         } catch (e) {
-          return new Response(
-            JSON.stringify({ ok: false, error: "Error al guardar respuesta" }),
-            { status: 500, headers }
-          );
+          console.error("Error creando respuesta:", e);
+          return json({ ok: false, error: "Error al guardar" }, 500, headers);
         }
       }
 
-      // POST /api/votos/:tabla/:id
+      // VOTOS: Registrar
       if (path.match(/^\/api\/votos\/(preguntas|respuestas)\/\d+$/) && request.method === "POST") {
         const parts = path.split("/");
-        const tabla = parts[3];
+        const tabla = parts[3] === "preguntas" ? "preguntas" : "respuestas";
         const id = parts[4];
-        const body = await request.json();
-        const { tipo } = body; // "up" o "down"
+        const { usuario_id, tipo_voto } = await request.json();
 
-        const delta = tipo === "up" ? 1 : tipo === "down" ? -1 : 0;
-
-        if (delta === 0) {
-          return new Response(
-            JSON.stringify({ ok: false, error: "Tipo de voto inválido" }),
-            { status: 400, headers }
-          );
+        if (!usuario_id || !tipo_voto) {
+          return json({ ok: false, error: "Faltan campos" }, 400, headers);
         }
 
         try {
-          await env.DB.prepare(
-            `UPDATE ${tabla} SET votos = votos + ? WHERE id = ?`
-          ).bind(delta, id).run();
+          // Verificar si ya votó
+          const existing = await env.DB.prepare(
+            "SELECT id, tipo_voto FROM votos WHERE usuario_id = ? AND tipo = ? AND contenido_id = ?"
+          ).bind(usuario_id, tabla, id).first();
 
-          return new Response(
-            JSON.stringify({ ok: true }),
-            { status: 200, headers }
-          );
+          if (existing) {
+            if (existing.tipo_voto === tipo_voto) {
+              // Deshacer voto
+              await env.DB.prepare("DELETE FROM votos WHERE id = ?").bind(existing.id).run();
+              const delta = tipo_voto === "up" ? -1 : 1;
+              await env.DB.prepare(`UPDATE ${tabla} SET votos = votos + ? WHERE id = ?`).bind(delta, id).run();
+              return json({ ok: true, action: "removed" }, 200, headers);
+            } else {
+              // Cambiar voto
+              const oldDelta = existing.tipo_voto === "up" ? -1 : 1;
+              const newDelta = tipo_voto === "up" ? 1 : -1;
+              const totalDelta = oldDelta + newDelta;
+
+              await env.DB.prepare("UPDATE votos SET tipo_voto = ? WHERE id = ?").bind(tipo_voto, existing.id).run();
+              await env.DB.prepare(`UPDATE ${tabla} SET votos = votos + ? WHERE id = ?`).bind(totalDelta, id).run();
+              return json({ ok: true, action: "changed" }, 200, headers);
+            }
+          } else {
+            // Nuevo voto
+            await env.DB.prepare(
+              "INSERT INTO votos (usuario_id, tipo, contenido_id, tipo_voto) VALUES (?, ?, ?, ?)"
+            ).bind(usuario_id, tabla, id, tipo_voto).run();
+
+            const delta = tipo_voto === "up" ? 1 : -1;
+            await env.DB.prepare(`UPDATE ${tabla} SET votos = votos + ? WHERE id = ?`).bind(delta, id).run();
+            return json({ ok: true, action: "added" }, 201, headers);
+          }
         } catch (e) {
-          return new Response(
-            JSON.stringify({ ok: false, error: "Error al votar" }),
-            { status: 500, headers }
-          );
+          console.error("Error votando:", e);
+          return json({ ok: false, error: "Error al votar" }, 500, headers);
         }
+      }
+
+      // ADMIN: Estadísticas
+      if (path === "/api/admin/stats" && request.method === "GET") {
+        const adminToken = url.searchParams.get("token");
+        // Token simple (en producción usar JWT o similar)
+        if (adminToken !== "admin123") {
+          return json({ ok: false, error: "No autorizado" }, 401, headers);
+        }
+
+        const stats = await env.DB.prepare(
+          `SELECT
+            (SELECT COUNT(*) FROM preguntas) as total_preguntas,
+            (SELECT COUNT(*) FROM respuestas) as total_respuestas,
+            (SELECT COUNT(*) FROM usuarios WHERE es_invitado = 0) as usuarios_registrados,
+            (SELECT COUNT(*) FROM usuarios WHERE es_invitado = 1) as usuarios_invitados`
+        ).first();
+
+        return json({ ok: true, stats }, 200, headers);
       }
 
       // 404
-      return new Response(
-        JSON.stringify({ ok: false, error: "Endpoint no encontrado" }),
-        { status: 404, headers }
-      );
+      return json({ ok: false, error: "Endpoint no encontrado" }, 404, headers);
     } catch (error) {
-      return new Response(
-        JSON.stringify({ ok: false, error: error.message }),
-        { status: 500, headers }
-      );
+      console.error("Error general:", error);
+      return json({ ok: false, error: error.message }, 500, headers);
     }
-  }
+  },
 };
+
+function json(data, status = 200, headers = {}) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: { "Content-Type": "application/json", ...headers },
+  });
+}

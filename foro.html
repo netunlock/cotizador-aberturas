@@ -4,110 +4,115 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Foro — Cotizador de Aberturas</title>
-  <meta name="description" content="Foro de carpinteros: comparte dudas, soluciones y experiencias." />
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="styles.css" />
   <style>
-    .foro { max-width: 900px; margin: 0 auto; padding: 40px 24px; }
-    .foro__categorias {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
+    .foro-header {
+      background: var(--color-bg-alt);
+      border-bottom: 1px solid var(--color-border);
+      padding: 20px 0;
       margin-bottom: 40px;
     }
-    .categoria-tag {
+    .foro-header h1 { margin: 0; }
+    .foro-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .foro-auth { display: flex; gap: 10px; }
+    .foro-user-info { font-size: 0.9rem; color: var(--color-text-muted); }
+
+    .foro-container { max-width: 1000px; margin: 0 auto; padding: 0 24px; }
+    .foro-grid { display: grid; grid-template-columns: 1fr 300px; gap: 30px; }
+
+    .foro-main { }
+    .foro-categorias {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 30px;
+    }
+    .categoria-pill {
       padding: 8px 16px;
       border-radius: 999px;
-      border: 1px solid var(--color-border);
       background: var(--color-surface);
+      border: 1px solid var(--color-border);
       cursor: pointer;
-      transition: all 0.22s;
       font-size: 0.9rem;
+      transition: all 0.2s;
     }
-    .categoria-tag.activa {
+    .categoria-pill.activa {
       background: var(--color-primary);
       color: white;
       border-color: var(--color-primary);
     }
-    .foro__pregunta {
+    .categoria-pill:hover { border-color: var(--color-primary); }
+
+    .foro-pregunta {
       background: var(--color-surface);
       border: 1px solid var(--color-border);
-      border-radius: 12px;
+      border-radius: 8px;
       padding: 20px;
       margin-bottom: 20px;
     }
-    .foro__pregunta-encabezado {
+    .pregunta-header {
       display: flex;
       justify-content: space-between;
-      align-items: start;
       margin-bottom: 12px;
     }
-    .foro__pregunta-autor {
+    .pregunta-autor { font-weight: 600; }
+    .pregunta-meta { font-size: 0.85rem; color: var(--color-text-muted); }
+    .pregunta-titulo {
+      font-size: 1.1rem;
       font-weight: 600;
       color: var(--color-text);
+      margin-bottom: 8px;
     }
-    .foro__pregunta-fecha {
-      font-size: 0.85rem;
-      color: var(--color-text-muted);
-    }
-    .foro__pregunta-texto {
+    .pregunta-contenido {
       color: var(--color-text-body);
-      margin-bottom: 16px;
+      margin-bottom: 12px;
       line-height: 1.6;
     }
-    .foro__respuestas {
-      margin-top: 16px;
-      padding-top: 16px;
-      border-top: 1px solid var(--color-border);
+    .imagenes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+      margin: 12px 0;
     }
-    .foro__respuesta {
-      background: var(--color-bg-alt);
-      border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 12px;
-      font-size: 0.9rem;
+    .imagen-thumb {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 6px;
+      cursor: pointer;
     }
-    .foro__votos {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
+
+    .votos { display: flex; gap: 12px; align-items: center; margin-top: 12px; }
     .voto-btn {
       background: none;
       border: none;
       cursor: pointer;
-      color: var(--color-text-muted);
       font-size: 1.2rem;
-      padding: 0;
+      color: var(--color-text-muted);
+      padding: 4px;
     }
     .voto-btn:hover { color: var(--color-primary); }
-    .voto-count {
-      font-weight: 600;
-      min-width: 30px;
-      text-align: center;
-    }
-    .formulario {
+    .voto-btn.votado { color: var(--color-primary); }
+
+    .formulario-seccion {
       background: var(--color-bg-alt);
-      border-radius: 12px;
-      padding: 24px;
-      margin-bottom: 40px;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 30px;
     }
-    .formulario h3 {
-      margin-top: 0;
-      color: var(--color-text);
-    }
-    .campo {
+    .formulario-seccion h3 { margin-top: 0; }
+    .form-grupo {
       margin-bottom: 16px;
     }
-    .campo label {
+    .form-grupo label {
       display: block;
       margin-bottom: 6px;
       font-weight: 500;
-      color: var(--color-text);
     }
-    .campo input,
-    .campo select,
-    .campo textarea {
+    .form-grupo input,
+    .form-grupo select,
+    .form-grupo textarea {
       width: 100%;
       padding: 10px;
       border: 1px solid var(--color-campo-borde);
@@ -115,13 +120,90 @@
       font-family: inherit;
       font-size: 1rem;
     }
-    .campo textarea {
-      min-height: 100px;
-      resize: vertical;
+    .form-grupo textarea { min-height: 100px; resize: vertical; }
+
+    .imagenes-preview {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
     }
-    .loading { text-align: center; color: var(--color-text-muted); }
-    .error { color: var(--color-error); padding: 12px; background: var(--color-error-soft); border-radius: 6px; }
-    .success { color: var(--color-success); padding: 12px; background: var(--color-success); border-radius: 6px; }
+    .preview-item {
+      position: relative;
+      width: 100%;
+      height: 100px;
+      background: var(--color-bg-alt);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .preview-item img { width: 100%; height: 100%; object-fit: cover; }
+    .preview-remove {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      background: rgba(0,0,0,0.6);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+
+    .sidebar {
+      display: none;
+    }
+    @media (min-width: 900px) {
+      .foro-grid { grid-template-columns: 1fr 280px; }
+      .sidebar { display: block; }
+    }
+
+    .sidebar-card {
+      background: var(--color-bg-alt);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 20px;
+      position: sticky;
+      top: 20px;
+    }
+    .sidebar-card h4 { margin-top: 0; }
+    .sidebar-card a { display: block; margin: 8px 0; color: var(--color-primary); text-decoration: none; }
+    .sidebar-card a:hover { text-decoration: underline; }
+
+    .loading { text-align: center; color: var(--color-text-muted); padding: 20px; }
+    .error { background: #fee; color: #c33; padding: 12px; border-radius: 6px; margin: 10px 0; }
+    .success { background: #efe; color: #3c3; padding: 12px; border-radius: 6px; margin: 10px 0; }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal.visible { display: flex; }
+    .modal-content {
+      background: var(--color-surface);
+      border-radius: 12px;
+      padding: 30px;
+      max-width: 500px;
+      width: 90%;
+    }
+    .modal-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -135,144 +217,297 @@
         </span>
         <span class="brand__text"><strong>Foro</strong></span>
       </a>
-      <a class="btn btn--primary btn--sm" href="index.html">Volver a inicio</a>
+      <div style="display: flex; gap: 20px; align-items: center;">
+        <div class="tema" role="group" aria-label="Tema de color">
+          <button class="tema__btn" type="button" data-tema-btn="blanco" aria-pressed="true">Blanco</button>
+          <button class="tema__btn" type="button" data-tema-btn="silver" aria-pressed="false">Silver</button>
+        </div>
+        <div id="userStatus"></div>
+      </div>
     </div>
   </header>
 
-  <main class="foro">
-    <section>
-      <h1>Foro de Carpinteros</h1>
-      <p>Comunidad de carpinteros: comparte tus dudas, soluciones y experiencias con el Cotizador.</p>
+  <div class="foro-header">
+    <div class="foro-container">
+      <div class="foro-top">
+        <div>
+          <h1>Foro de Carpinteros</h1>
+          <p style="margin: 8px 0 0 0; color: var(--color-text-muted);">Comunidad para compartir dudas y soluciones</p>
+        </div>
+        <button class="btn btn--primary" id="btnNuevaPregunta">+ Nueva pregunta</button>
+      </div>
+    </div>
+  </div>
 
-      <!-- Filtro por categorías -->
-      <div class="foro__categorias" id="categorias"></div>
+  <main class="foro-container">
+    <div class="foro-grid">
+      <div class="foro-main">
+        <!-- Filtro de categorías -->
+        <div class="foro-categorias" id="categorias"></div>
 
-      <!-- Formulario de nueva pregunta -->
-      <div class="formulario">
-        <h3>Hacer una pregunta</h3>
-        <form id="formPregunta">
-          <div class="campo">
-            <label for="categoria">Categoría *</label>
-            <select id="categoria" required></select>
+        <!-- Formulario de nueva pregunta (modal) -->
+        <div class="modal" id="modalPregunta">
+          <div class="modal-content">
+            <button class="modal-close" onclick="document.getElementById('modalPregunta').classList.remove('visible')">&times;</button>
+            <h2>Nueva pregunta</h2>
+            <form id="formPregunta">
+              <div class="form-grupo">
+                <label for="nuevaCategoria">Categoría *</label>
+                <select id="nuevaCategoria" required></select>
+              </div>
+              <div class="form-grupo">
+                <label for="nuevaTitulo">Título *</label>
+                <input type="text" id="nuevaTitulo" placeholder="¿Cuál es tu pregunta?" required />
+              </div>
+              <div class="form-grupo">
+                <label for="nuevoContenido">Descripción *</label>
+                <textarea id="nuevoContenido" placeholder="Proporciona detalles..." required></textarea>
+              </div>
+              <div class="form-grupo">
+                <label for="nuevasImagenes">Imágenes (máx 3)</label>
+                <input type="file" id="nuevasImagenes" multiple accept="image/*" />
+                <div class="imagenes-preview" id="previewNuevas"></div>
+              </div>
+              <button class="btn btn--primary" type="submit">Publicar pregunta</button>
+              <div id="formPreguntaError"></div>
+            </form>
           </div>
-          <div class="campo">
-            <label for="nombre">Tu nombre *</label>
-            <input type="text" id="nombre" placeholder="Juan Pérez" required />
+        </div>
+
+        <!-- Formulario de login/registro -->
+        <div id="authModal" class="modal">
+          <div class="modal-content">
+            <button class="modal-close" onclick="cerrarAuthModal()">&times;</button>
+            <h2 id="authTitle">Iniciar sesión</h2>
+            <form id="formAuth">
+              <div class="form-grupo">
+                <label for="authEmail">Email *</label>
+                <input type="email" id="authEmail" required />
+              </div>
+              <div class="form-grupo">
+                <label for="authNombre">Nombre *</label>
+                <input type="text" id="authNombre" required />
+              </div>
+              <div class="form-grupo" id="passwordGroup" style="display: none;">
+                <label for="authPassword">Contraseña *</label>
+                <input type="password" id="authPassword" />
+              </div>
+              <div style="display: flex; gap: 10px;">
+                <button class="btn btn--primary" type="submit" id="btnAuthSubmit">Iniciar sesión</button>
+                <button class="btn" type="button" onclick="toggleAuthMode()">¿No tienes cuenta?</button>
+              </div>
+              <div id="authError"></div>
+            </form>
           </div>
-          <div class="campo">
-            <label for="email">Email (opcional)</label>
-            <input type="email" id="email" placeholder="tu@email.com" />
-          </div>
-          <div class="campo">
-            <label for="pregunta">Tu pregunta *</label>
-            <textarea id="pregunta" placeholder="Describe tu duda o pregunta..." required></textarea>
-          </div>
-          <button class="btn btn--primary" type="submit">Publicar pregunta</button>
-          <div id="formError"></div>
-        </form>
+        </div>
+
+        <!-- Lista de preguntas -->
+        <div id="preguntas" class="loading">Cargando preguntas...</div>
       </div>
 
-      <!-- Lista de preguntas -->
-      <div id="preguntas" class="loading">Cargando preguntas...</div>
-    </section>
+      <aside class="sidebar">
+        <div class="sidebar-card">
+          <h4>Categorías populares</h4>
+          <a href="#" onclick="filtrarCategoria('cotizador'); return false;">Cotizador</a>
+          <a href="#" onclick="filtrarCategoria('calculos'); return false;">Cálculos</a>
+          <a href="#" onclick="filtrarCategoria('sugerencias'); return false;">Sugerencias</a>
+        </div>
+        <div class="sidebar-card">
+          <h4>Ayuda</h4>
+          <p style="font-size: 0.9rem; color: var(--color-text-muted); margin: 0;">
+            Sé específico, proporciona contexto y adjunta imágenes si es necesario.
+          </p>
+        </div>
+      </aside>
+    </div>
   </main>
 
   <script>
     const ENDPOINT = "https://cotizador-forum.fgpereyra-92.workers.dev";
-
+    let usuarioActual = null;
     let categoriaSeleccionada = null;
+    let imagenesPendientes = [];
+    let isRegistroMode = false;
 
-    // Cargar categorías
+    // Tema
+    function inicializarTema() {
+      const guardado = localStorage.getItem("tema");
+      const tema = guardado === "silver" ? "silver" : "blanco";
+      document.documentElement.setAttribute("data-tema", tema);
+      document.querySelectorAll(".tema__btn").forEach(btn => {
+        btn.setAttribute("aria-pressed", btn.dataset.temaBtn === tema);
+      });
+    }
+
+    document.querySelectorAll(".tema__btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const tema = btn.dataset.temaBtn;
+        localStorage.setItem("tema", tema);
+        document.documentElement.setAttribute("data-tema", tema);
+        document.querySelectorAll(".tema__btn").forEach(b => {
+          b.setAttribute("aria-pressed", b.dataset.temaBtn === tema);
+        });
+      });
+    });
+
+    // Auth
+    function mostrarAuthModal() {
+      document.getElementById("authModal").classList.add("visible");
+    }
+
+    function cerrarAuthModal() {
+      document.getElementById("authModal").classList.remove("visible");
+      isRegistroMode = false;
+      document.getElementById("passwordGroup").style.display = "none";
+    }
+
+    function toggleAuthMode() {
+      isRegistroMode = !isRegistroMode;
+      document.getElementById("authTitle").textContent = isRegistroMode ? "Crear cuenta" : "Iniciar sesión";
+      document.getElementById("btnAuthSubmit").textContent = isRegistroMode ? "Crear cuenta" : "Iniciar sesión";
+      document.getElementById("passwordGroup").style.display = isRegistroMode ? "block" : "none";
+    }
+
+    document.getElementById("formAuth").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("authEmail").value;
+      const nombre = document.getElementById("authNombre").value;
+      const password = document.getElementById("authPassword").value;
+
+      let endpoint = isRegistroMode ? "/api/auth/registro" : "/api/auth/login";
+      let body = { email, nombre };
+      if (isRegistroMode && password) body.password = password;
+      if (!isRegistroMode && password) body.password = password;
+
+      // Si no tiene contraseña, usar como invitado
+      if (!password) {
+        endpoint = "/api/auth/invitado";
+      }
+
+      try {
+        const res = await fetch(ENDPOINT + endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body)
+        });
+        const data = await res.json();
+        if (data.ok && data.usuario) {
+          usuarioActual = data.usuario;
+          localStorage.setItem("usuario", JSON.stringify(usuarioActual));
+          actualizarUserStatus();
+          cerrarAuthModal();
+          document.getElementById("formAuth").reset();
+        } else {
+          document.getElementById("authError").innerHTML = `<div class="error">${data.error}</div>`;
+        }
+      } catch (e) {
+        document.getElementById("authError").innerHTML = `<div class="error">${e.message}</div>`;
+      }
+    });
+
+    function actualizarUserStatus() {
+      const status = document.getElementById("userStatus");
+      if (usuarioActual) {
+        status.innerHTML = `
+          <div class="foro-user-info">
+            ${usuarioActual.nombre} ${usuarioActual.es_invitado ? "(invitado)" : ""}
+            <button onclick="logout()" class="btn btn--sm" style="margin-left: 10px;">Salir</button>
+          </div>
+        `;
+      } else {
+        status.innerHTML = `<button class="btn btn--primary btn--sm" onclick="mostrarAuthModal()">Iniciar sesión</button>`;
+      }
+    }
+
+    function logout() {
+      usuarioActual = null;
+      localStorage.removeItem("usuario");
+      actualizarUserStatus();
+    }
+
+    // Preguntas
     async function cargarCategorias() {
       try {
-        const res = await fetch(`${ENDPOINT}/api/categorias`);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const res = await fetch(ENDPOINT + "/api/categorias");
         const data = await res.json();
 
-        if (!data.categorias || !Array.isArray(data.categorias)) {
-          throw new Error("Formato de respuesta inválido");
-        }
-
         const container = document.getElementById("categorias");
-        const select = document.getElementById("categoria");
+        const select = document.getElementById("nuevaCategoria");
 
-        // Botones de filtro
-        const todos = document.createElement("button");
-        todos.className = "categoria-tag activa";
-        todos.textContent = "Todas";
-        todos.onclick = () => filtrarPorCategoria(null);
-        container.appendChild(todos);
+        const todas = document.createElement("button");
+        todas.className = "categoria-pill activa";
+        todas.textContent = "Todas";
+        todas.type = "button";
+        todas.onclick = () => filtrarCategoria(null);
+        container.appendChild(todas);
 
         data.categorias.forEach(cat => {
-          const tag = document.createElement("button");
-          tag.className = "categoria-tag";
-          tag.textContent = cat.nombre;
-          tag.dataset.id = cat.id;
-          tag.onclick = () => filtrarPorCategoria(cat.id);
-          container.appendChild(tag);
+          const pill = document.createElement("button");
+          pill.className = "categoria-pill";
+          pill.textContent = cat.nombre;
+          pill.type = "button";
+          pill.dataset.id = cat.id;
+          pill.onclick = () => filtrarCategoria(cat.id);
+          container.appendChild(pill);
 
-          // Option en el select
           const opt = document.createElement("option");
           opt.value = cat.id;
           opt.textContent = cat.nombre;
           select.appendChild(opt);
         });
 
-        // Cargar preguntas inicialmente
         cargarPreguntas();
       } catch (e) {
         console.error("Error cargando categorías:", e);
       }
     }
 
-    // Filtrar por categoría
-    function filtrarPorCategoria(id) {
+    function filtrarCategoria(id) {
       categoriaSeleccionada = id;
-
-      // Actualizar UI de categorías
-      document.querySelectorAll(".categoria-tag").forEach(tag => {
-        tag.classList.remove("activa");
-      });
-
+      document.querySelectorAll(".categoria-pill").forEach(p => p.classList.remove("activa"));
       if (id === null) {
-        document.querySelector(".categoria-tag").classList.add("activa");
+        document.querySelector(".categoria-pill").classList.add("activa");
       } else {
         document.querySelector(`[data-id="${id}"]`).classList.add("activa");
       }
-
       cargarPreguntas();
     }
 
-    // Cargar preguntas
     async function cargarPreguntas() {
       const url = categoriaSeleccionada
-        ? `${ENDPOINT}/api/preguntas?categoria=${categoriaSeleccionada}`
-        : `${ENDPOINT}/api/preguntas`;
+        ? ENDPOINT + `/api/preguntas?categoria=${categoriaSeleccionada}`
+        : ENDPOINT + "/api/preguntas";
 
       try {
         const res = await fetch(url);
         const data = await res.json();
-
         const container = document.getElementById("preguntas");
+
         if (!data.preguntas || data.preguntas.length === 0) {
-          container.innerHTML = "<p>No hay preguntas aún. ¡Sé el primero!</p>";
+          container.innerHTML = "<div class='loading'>No hay preguntas. ¡Sé el primero!</div>";
           return;
         }
 
         container.innerHTML = data.preguntas.map(p => `
-          <div class="foro__pregunta">
-            <div class="foro__pregunta-encabezado">
+          <div class="foro-pregunta">
+            <div class="pregunta-header">
               <div>
-                <div class="foro__pregunta-autor">${escaper(p.nombre)}</div>
-                <div class="foro__pregunta-fecha">${new Date(p.fecha).toLocaleDateString()}</div>
+                <div class="pregunta-autor">${escape(p.autor)}</div>
+                <div class="pregunta-meta">${formatearFecha(p.fecha)}</div>
               </div>
-              <div style="font-size: 0.8rem; color: var(--color-primary);">${p.categoria_nombre || 'General'}</div>
+              <span style="font-size: 0.8rem; color: var(--color-primary);">${p.categoria_nombre}</span>
             </div>
-            <div class="foro__pregunta-texto">${escaper(p.pregunta)}</div>
-            <div class="foro__votos">
-              <button class="voto-btn" onclick="votarPregunta(${p.id}, 'up')">👍</button>
-              <span class="voto-count">${p.votos || 0}</span>
-              <button class="voto-btn" onclick="votarPregunta(${p.id}, 'down')">👎</button>
+            <div class="pregunta-titulo">${escape(p.titulo)}</div>
+            <div class="pregunta-contenido">${escape(p.contenido)}</div>
+            ${p.imagenes ? `
+              <div class="imagenes-grid">
+                ${JSON.parse(p.imagenes).map(img => `<img src="${img}" alt="Imagen" class="imagen-thumb" />`).join("")}
+              </div>
+            ` : ""}
+            <div class="votos">
+              <button class="voto-btn ${usuarioActual ? "" : "disabled"}" onclick="votar(${p.id}, 'preguntas', 'up')" ${!usuarioActual ? "disabled" : ""}>👍</button>
+              <span>${p.votos || 0}</span>
+              <button class="voto-btn ${usuarioActual ? "" : "disabled"}" onclick="votar(${p.id}, 'preguntas', 'down')" ${!usuarioActual ? "disabled" : ""}>👎</button>
             </div>
           </div>
         `).join("");
@@ -281,52 +516,25 @@
       }
     }
 
-    // Enviar pregunta
-    document.getElementById("formPregunta").addEventListener("submit", async (e) => {
-      e.preventDefault();
+    function escape(str) {
+      return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+    }
 
-      const categoria = document.getElementById("categoria").value;
-      const nombre = document.getElementById("nombre").value;
-      const email = document.getElementById("email").value;
-      const pregunta = document.getElementById("pregunta").value;
+    function formatearFecha(fecha) {
+      return new Date(fecha).toLocaleDateString("es-AR");
+    }
 
-      if (!nombre || nombre.length < 3) {
-        document.getElementById("formError").innerHTML = '<div class="error">Nombre inválido</div>';
-        return;
-      }
-
-      if (!pregunta || pregunta.length < 10) {
-        document.getElementById("formError").innerHTML = '<div class="error">La pregunta es muy corta</div>';
+    async function votar(id, tabla, tipo) {
+      if (!usuarioActual) {
+        mostrarAuthModal();
         return;
       }
 
       try {
-        const res = await fetch(`${ENDPOINT}/api/preguntas`, {
+        const res = await fetch(ENDPOINT + `/api/votos/${tabla}/${id}`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ categoria_id: categoria, nombre, email, pregunta })
-        });
-
-        const data = await res.json();
-        if (data.ok) {
-          document.getElementById("formError").innerHTML = '<div class="success">Pregunta publicada!</div>';
-          document.getElementById("formPregunta").reset();
-          setTimeout(() => cargarPreguntas(), 1000);
-        } else {
-          document.getElementById("formError").innerHTML = `<div class="error">${data.error}</div>`;
-        }
-      } catch (e) {
-        document.getElementById("formError").innerHTML = `<div class="error">${e.message}</div>`;
-      }
-    });
-
-    // Votar
-    async function votarPregunta(id, tipo) {
-      try {
-        const res = await fetch(`${ENDPOINT}/api/votos/preguntas/${id}`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ tipo })
+          body: JSON.stringify({ usuario_id: usuarioActual.id, tipo_voto: tipo })
         });
         const data = await res.json();
         if (data.ok) cargarPreguntas();
@@ -335,18 +543,99 @@
       }
     }
 
-    // Escapador de HTML
-    function escaper(str) {
-      return String(str)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#39;");
+    // Imágenes
+    document.getElementById("nuevasImagenes").addEventListener("change", (e) => {
+      imagenesPendientes = Array.from(e.target.files).slice(0, 3);
+      mostrarPreviews();
+    });
+
+    function mostrarPreviews() {
+      const container = document.getElementById("previewNuevas");
+      container.innerHTML = imagenesPendientes.map((file, idx) => `
+        <div class="preview-item">
+          <img src="${URL.createObjectURL(file)}" alt="preview" />
+          <button type="button" class="preview-remove" onclick="removerImagen(${idx})">✕</button>
+        </div>
+      `).join("");
     }
 
-    // Iniciar
-    cargarCategorias();
+    function removerImagen(idx) {
+      imagenesPendientes.splice(idx, 1);
+      mostrarPreviews();
+    }
+
+    async function convertirImagenesABase64() {
+      const imagenes = [];
+      for (const file of imagenesPendientes) {
+        const reader = new FileReader();
+        const data = await new Promise((resolve, reject) => {
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+        imagenes.push(data);
+      }
+      return imagenes;
+    }
+
+    // Nueva pregunta
+    document.getElementById("btnNuevaPregunta").addEventListener("click", () => {
+      if (!usuarioActual) {
+        mostrarAuthModal();
+      } else {
+        document.getElementById("modalPregunta").classList.add("visible");
+      }
+    });
+
+    document.getElementById("formPregunta").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const categoria = document.getElementById("nuevaCategoria").value;
+      const titulo = document.getElementById("nuevaTitulo").value;
+      const contenido = document.getElementById("nuevoContenido").value;
+
+      const imagenes = await convertirImagenesABase64();
+
+      try {
+        const res = await fetch(ENDPOINT + "/api/preguntas", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            usuario_id: usuarioActual.id,
+            categoria_id: categoria,
+            titulo,
+            contenido,
+            imagenes: imagenes.length > 0 ? imagenes : null
+          })
+        });
+
+        const data = await res.json();
+        if (data.ok) {
+          document.getElementById("formPreguntaError").innerHTML = '<div class="success">¡Pregunta publicada!</div>';
+          document.getElementById("formPregunta").reset();
+          imagenesPendientes = [];
+          setTimeout(() => {
+            document.getElementById("modalPregunta").classList.remove("visible");
+            cargarPreguntas();
+          }, 1000);
+        } else {
+          document.getElementById("formPreguntaError").innerHTML = `<div class="error">${data.error}</div>`;
+        }
+      } catch (e) {
+        document.getElementById("formPreguntaError").innerHTML = `<div class="error">${e.message}</div>`;
+      }
+    });
+
+    // Init
+    window.addEventListener("load", () => {
+      inicializarTema();
+      const guardado = localStorage.getItem("usuario");
+      if (guardado) {
+        usuarioActual = JSON.parse(guardado);
+      }
+      actualizarUserStatus();
+      cargarCategorias();
+    });
   </script>
 </body>
 </html>
