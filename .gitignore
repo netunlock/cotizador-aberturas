@@ -1,0 +1,5 @@
+# Cloudflare Wrangler
+.wrangler/
+.env.*.local
+.env.*.example
+dist/
