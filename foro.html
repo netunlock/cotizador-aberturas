@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Foro — Cotizador de Aberturas</title>
+  <meta name="description" content="Foro de carpinteros: comparte dudas, soluciones y experiencias." />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .foro { max-width: 900px; margin: 0 auto; padding: 40px 24px; }
+    .foro__categorias {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 40px;
+    }
+    .categoria-tag {
+      padding: 8px 16px;
+      border-radius: 999px;
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      cursor: pointer;
+      transition: all 0.22s;
+      font-size: 0.9rem;
+    }
+    .categoria-tag.activa {
+      background: var(--color-primary);
+      color: white;
+      border-color: var(--color-primary);
+    }
+    .foro__pregunta {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .foro__pregunta-encabezado {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 12px;
+    }
+    .foro__pregunta-autor {
+      font-weight: 600;
+      color: var(--color-text);
+    }
+    .foro__pregunta-fecha {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+    }
+    .foro__pregunta-texto {
+      color: var(--color-text-body);
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+    .foro__respuestas {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--color-border);
+    }
+    .foro__respuesta {
+      background: var(--color-bg-alt);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+      font-size: 0.9rem;
+    }
+    .foro__votos {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .voto-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--color-text-muted);
+      font-size: 1.2rem;
+      padding: 0;
+    }
+    .voto-btn:hover { color: var(--color-primary); }
+    .voto-count {
+      font-weight: 600;
+      min-width: 30px;
+      text-align: center;
+    }
+    .formulario {
+      background: var(--color-bg-alt);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 40px;
+    }
+    .formulario h3 {
+      margin-top: 0;
+      color: var(--color-text);
+    }
+    .campo {
+      margin-bottom: 16px;
+    }
+    .campo label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+      color: var(--color-text);
+    }
+    .campo input,
+    .campo select,
+    .campo textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--color-campo-borde);
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 1rem;
+    }
+    .campo textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+    .loading { text-align: center; color: var(--color-text-muted); }
+    .error { color: var(--color-error); padding: 12px; background: var(--color-error-soft); border-radius: 6px; }
+    .success { color: var(--color-success); padding: 12px; background: var(--color-success); border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="container header__inner">
+      <a class="brand" href="index.html">
+        <span class="brand__mark">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" /><line x1="12" y1="3" x2="12" y2="21" /><line x1="3" y1="12" x2="12" y2="12" />
+          </svg>
+        </span>
+        <span class="brand__text"><strong>Foro</strong></span>
+      </a>
+      <a class="btn btn--primary btn--sm" href="index.html">Volver a inicio</a>
+    </div>
+  </header>
+
+  <main class="foro">
+    <section>
+      <h1>Foro de Carpinteros</h1>
+      <p>Comunidad de carpinteros: comparte tus dudas, soluciones y experiencias con el Cotizador.</p>
+
+      <!-- Filtro por categorías -->
+      <div class="foro__categorias" id="categorias"></div>
+
+      <!-- Formulario de nueva pregunta -->
+      <div class="formulario">
+        <h3>Hacer una pregunta</h3>
+        <form id="formPregunta">
+          <div class="campo">
+            <label for="categoria">Categoría *</label>
+            <select id="categoria" required></select>
+          </div>
+          <div class="campo">
+            <label for="nombre">Tu nombre *</label>
+            <input type="text" id="nombre" placeholder="Juan Pérez" required />
+          </div>
+          <div class="campo">
+            <label for="email">Email (opcional)</label>
+            <input type="email" id="email" placeholder="tu@email.com" />
+          </div>
+          <div class="campo">
+            <label for="pregunta">Tu pregunta *</label>
+            <textarea id="pregunta" placeholder="Describe tu duda o pregunta..." required></textarea>
+          </div>
+          <button class="btn btn--primary" type="submit">Publicar pregunta</button>
+          <div id="formError"></div>
+        </form>
+      </div>
+
+      <!-- Lista de preguntas -->
+      <div id="preguntas" class="loading">Cargando preguntas...</div>
+    </section>
+  </main>
+
+  <script>
+    const ENDPOINT = "https://cotizador-forum.fgpereyra-92.workers.dev";
+
+    let categoriaSeleccionada = null;
+
+    // Cargar categorías
+    async function cargarCategorias() {
+      try {
+        const res = await fetch(`${ENDPOINT}/api/categorias`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+
+        if (!data.categorias || !Array.isArray(data.categorias)) {
+          throw new Error("Formato de respuesta inválido");
+        }
+
+        const container = document.getElementById("categorias");
+        const select = document.getElementById("categoria");
+
+        // Botones de filtro
+        const todos = document.createElement("button");
+        todos.className = "categoria-tag activa";
+        todos.textContent = "Todas";
+        todos.onclick = () => filtrarPorCategoria(null);
+        container.appendChild(todos);
+
+        data.categorias.forEach(cat => {
+          const tag = document.createElement("button");
+          tag.className = "categoria-tag";
+          tag.textContent = cat.nombre;
+          tag.dataset.id = cat.id;
+          tag.onclick = () => filtrarPorCategoria(cat.id);
+          container.appendChild(tag);
+
+          // Option en el select
+          const opt = document.createElement("option");
+          opt.value = cat.id;
+          opt.textContent = cat.nombre;
+          select.appendChild(opt);
+        });
+
+        // Cargar preguntas inicialmente
+        cargarPreguntas();
+      } catch (e) {
+        console.error("Error cargando categorías:", e);
+      }
+    }
+
+    // Filtrar por categoría
+    function filtrarPorCategoria(id) {
+      categoriaSeleccionada = id;
+
+      // Actualizar UI de categorías
+      document.querySelectorAll(".categoria-tag").forEach(tag => {
+        tag.classList.remove("activa");
+      });
+
+      if (id === null) {
+        document.querySelector(".categoria-tag").classList.add("activa");
+      } else {
+        document.querySelector(`[data-id="${id}"]`).classList.add("activa");
+      }
+
+      cargarPreguntas();
+    }
+
+    // Cargar preguntas
+    async function cargarPreguntas() {
+      const url = categoriaSeleccionada
+        ? `${ENDPOINT}/api/preguntas?categoria=${categoriaSeleccionada}`
+        : `${ENDPOINT}/api/preguntas`;
+
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+
+        const container = document.getElementById("preguntas");
+        if (!data.preguntas || data.preguntas.length === 0) {
+          container.innerHTML = "<p>No hay preguntas aún. ¡Sé el primero!</p>";
+          return;
+        }
+
+        container.innerHTML = data.preguntas.map(p => `
+          <div class="foro__pregunta">
+            <div class="foro__pregunta-encabezado">
+              <div>
+                <div class="foro__pregunta-autor">${escaper(p.nombre)}</div>
+                <div class="foro__pregunta-fecha">${new Date(p.fecha).toLocaleDateString()}</div>
+              </div>
+              <div style="font-size: 0.8rem; color: var(--color-primary);">${p.categoria_nombre || 'General'}</div>
+            </div>
+            <div class="foro__pregunta-texto">${escaper(p.pregunta)}</div>
+            <div class="foro__votos">
+              <button class="voto-btn" onclick="votarPregunta(${p.id}, 'up')">👍</button>
+              <span class="voto-count">${p.votos || 0}</span>
+              <button class="voto-btn" onclick="votarPregunta(${p.id}, 'down')">👎</button>
+            </div>
+          </div>
+        `).join("");
+      } catch (e) {
+        document.getElementById("preguntas").innerHTML = `<div class="error">Error: ${e.message}</div>`;
+      }
+    }
+
+    // Enviar pregunta
+    document.getElementById("formPregunta").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const categoria = document.getElementById("categoria").value;
+      const nombre = document.getElementById("nombre").value;
+      const email = document.getElementById("email").value;
+      const pregunta = document.getElementById("pregunta").value;
+
+      if (!nombre || nombre.length < 3) {
+        document.getElementById("formError").innerHTML = '<div class="error">Nombre inválido</div>';
+        return;
+      }
+
+      if (!pregunta || pregunta.length < 10) {
+        document.getElementById("formError").innerHTML = '<div class="error">La pregunta es muy corta</div>';
+        return;
+      }
+
+      try {
+        const res = await fetch(`${ENDPOINT}/api/preguntas`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ categoria_id: categoria, nombre, email, pregunta })
+        });
+
+        const data = await res.json();
+        if (data.ok) {
+          document.getElementById("formError").innerHTML = '<div class="success">Pregunta publicada!</div>';
+          document.getElementById("formPregunta").reset();
+          setTimeout(() => cargarPreguntas(), 1000);
+        } else {
+          document.getElementById("formError").innerHTML = `<div class="error">${data.error}</div>`;
+        }
+      } catch (e) {
+        document.getElementById("formError").innerHTML = `<div class="error">${e.message}</div>`;
+      }
+    });
+
+    // Votar
+    async function votarPregunta(id, tipo) {
+      try {
+        const res = await fetch(`${ENDPOINT}/api/votos/preguntas/${id}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ tipo })
+        });
+        const data = await res.json();
+        if (data.ok) cargarPreguntas();
+      } catch (e) {
+        console.error("Error votando:", e);
+      }
+    }
+
+    // Escapador de HTML
+    function escaper(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    // Iniciar
+    cargarCategorias();
+  </script>
+</body>
+</html>

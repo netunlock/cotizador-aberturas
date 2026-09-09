@@ -1,0 +1,13 @@
+name = "cotizador-forum"
+main = "src/worker.js"
+compatibility_date = "2024-09-09"
+
+# Cloudflare D1 Database
+[[d1_databases]]
+binding = "DB"
+database_name = "cotizador-forum"
+database_id = "53320c1e-4b7d-4d5e-975c-8df30c94ef36"
+
+# Cloudflare Turnstile para anti-spam
+[env.production]
+vars = { TURNSTILE_SECRET_KEY = "YOUR_TURNSTILE_SECRET_KEY" }
