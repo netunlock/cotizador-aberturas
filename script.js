@@ -188,6 +188,18 @@ function versionDestacada() {
   return VERSIONES.find((v) => v.destacada) || VERSIONES[0];
 }
 
+/**
+ * Devuelve el link de MediaFire para una versión.
+ * El link real está en apps-script/Codigo.gs, pero mientras ENDPOINT esté vacío,
+ * devolvemos un link placeholder. En producción, el script de Google lo maneja.
+ */
+function linkMediaFire(version) {
+  // Placeholder: en el mundo real, este link vendría del backend.
+  // Por ahora, devolvemos una URL de demo. Federico debe actualizar esto
+  // con los links reales de MediaFire cuando suba los archivos.
+  return "https://www.mediafire.com/";
+}
+
 /** Dibuja la tarjeta grande de la última versión */
 function pintarDestacada() {
   const cont = $("#descargaDestacada");
@@ -217,13 +229,21 @@ function pintarDestacada() {
     </div>
 
     <div class="dl__action">
-      <button class="btn btn--primary btn--lg" type="button" data-abrir-modal data-version="${esc(v.version)}">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/>
-        </svg>
-        Descargar ${esc(v.version)}
-      </button>
-      <small>Gratis · te llega por mail</small>
+      <div class="dl__buttons">
+        <button class="btn btn--primary btn--lg" type="button" data-abrir-modal data-version="${esc(v.version)}">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/>
+          </svg>
+          Pedir descarga
+        </button>
+        <a class="btn btn--secondary btn--lg" href="${esc(linkMediaFire(v.version))}" target="_blank" rel="noopener noreferrer">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/>
+          </svg>
+          Descargar directo
+        </a>
+      </div>
+      <small>Gratis · sin registro</small>
     </div>
   `;
 }

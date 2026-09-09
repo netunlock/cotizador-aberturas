@@ -319,6 +319,14 @@ code {
 }
 .btn--ghost:hover { color: var(--color-primary); border-color: var(--color-primary); }
 
+.btn--secondary {
+  background: var(--color-bg-alt);
+  color: var(--color-text-body);
+  border-color: var(--color-border);
+  box-shadow: var(--shadow-sm);
+}
+.btn--secondary:hover { background: var(--color-surface); color: var(--color-text); border-color: var(--color-primary-light); }
+
 .btn--warning {
   background: var(--color-warning);
   color: var(--color-sobre-alerta);
@@ -665,6 +673,9 @@ code {
 .dl__action { display: flex; flex-direction: column; align-items: stretch; gap: 8px; text-align: center; }
 .dl__action small { font-size: .78rem; color: var(--color-text-muted); }
 
+.dl__buttons { display: flex; gap: 12px; }
+.dl__buttons .btn { flex: 1; }
+
 /* ---- 8.3 Historial de versiones ----------------------------------------- */
 .versions { margin-top: 32px; }
 .versions__head {
@@ -944,6 +955,7 @@ code {
   .alert__actions .btn { width: 100%; }
 
   .download-featured { padding: 24px; }
+  .dl__buttons { flex-direction: column; }
   .version-item { grid-template-columns: 1fr; }
   .version-item__link { justify-self: start; }
 
