@@ -7,274 +7,219 @@
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="styles.css" />
   <style>
-    .foro-container { max-width: 1000px; margin: 0 auto; padding: 0 24px; }
-    .foro-header {
+    body { margin: 0; }
+    .topbar {
+      background: var(--color-bg-alt);
+      border-bottom: 1px solid var(--color-border);
+      padding: 12px 24px;
+      font-size: 0.9rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 40px;
-      padding: 20px 0;
     }
-    .foro-header h1 { margin: 0; }
+    .topbar a { color: var(--color-primary); text-decoration: none; }
+    .topbar a:hover { text-decoration: underline; }
 
-    .foro-categorias {
+    .header {
       display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 30px;
-    }
-    .categoria-pill {
-      padding: 8px 16px;
-      border-radius: 999px;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 24px;
       background: var(--color-surface);
-      border: 1px solid var(--color-border);
-      cursor: pointer;
-      font-size: 0.9rem;
-      transition: all 0.2s;
+      border-bottom: 1px solid var(--color-border);
     }
-    .categoria-pill.activa {
+    .header h1 { margin: 0; font-size: 1.3rem; }
+    .header-right { display: flex; gap: 20px; align-items: center; }
+
+    .buscar-container {
+      display: flex;
+      gap: 10px;
+      flex: 1;
+      max-width: 500px;
+    }
+    .buscar-container input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid var(--color-campo-borde);
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+    .buscar-container button {
+      padding: 10px 16px;
       background: var(--color-primary);
       color: white;
-      border-color: var(--color-primary);
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .buscar-container button:hover { opacity: 0.9; }
+
+    .main-layout {
+      display: grid;
+      grid-template-columns: 350px 1fr;
+      gap: 0;
+      height: calc(100vh - 200px);
+    }
+    .listado-panel {
+      border-right: 1px solid var(--color-border);
+      overflow-y: auto;
+      background: var(--color-surface);
+    }
+    .detalle-panel {
+      overflow-y: auto;
+      padding: 24px;
+      background: var(--color-bg-alt);
     }
 
-    .foro-pregunta {
-      background: var(--color-surface);
-      border: 1px solid var(--color-border);
-      border-radius: 8px;
-      padding: 20px;
-      margin-bottom: 20px;
+    .pregunta-item {
+      padding: 16px;
+      border-bottom: 1px solid var(--color-border);
+      cursor: pointer;
+      transition: background 0.2s;
     }
-    .pregunta-autor { font-weight: 600; font-size: 1rem; }
-    .pregunta-fecha { font-size: 0.85rem; color: var(--color-text-muted); }
-    .pregunta-titulo {
-      font-size: 1.1rem;
-      font-weight: 600;
-      margin: 12px 0 8px 0;
-    }
-    .pregunta-contenido {
-      color: var(--color-text-body);
-      margin-bottom: 12px;
-      line-height: 1.6;
-    }
+    .pregunta-item:hover { background: var(--color-bg-alt); }
+    .pregunta-item.activa { background: var(--color-primary); color: white; }
+    .pregunta-item.activa .titulo,
+    .pregunta-item.activa .autor,
+    .pregunta-item.activa .preview { color: white; }
+    .pregunta-item.activa .fecha { color: rgba(255,255,255,0.7); }
+
+    .titulo { font-weight: 600; font-size: 0.95rem; margin-bottom: 4px; }
+    .autor { font-size: 0.85rem; color: var(--color-text-muted); }
+    .fecha { font-size: 0.75rem; color: var(--color-text-muted); margin-top: 4px; }
+    .preview { font-size: 0.85rem; color: var(--color-text-muted); margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .detalle-contenido { background: var(--color-surface); padding: 24px; border-radius: 8px; margin-bottom: 24px; }
+    .detalle-titulo { font-size: 1.4rem; font-weight: 700; margin-bottom: 12px; }
+    .detalle-meta { font-size: 0.9rem; color: var(--color-text-muted); margin-bottom: 12px; }
+    .detalle-categoria { display: inline-block; padding: 4px 12px; background: var(--color-primary); color: white; border-radius: 999px; font-size: 0.8rem; margin-left: 12px; }
+    .detalle-contenido-texto { line-height: 1.6; color: var(--color-text-body); margin: 16px 0; }
+
     .imagenes-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
       gap: 10px;
-      margin: 12px 0;
+      margin: 16px 0;
     }
-    .imagen-thumb {
-      width: 100%;
-      height: 150px;
-      object-fit: cover;
-      border-radius: 6px;
-    }
-    .votos { display: flex; gap: 12px; align-items: center; margin-top: 12px; }
-    .voto-btn {
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 1.2rem;
-      color: var(--color-text-muted);
-      padding: 4px;
-    }
+    .imagen-thumb { width: 100%; height: 150px; object-fit: cover; border-radius: 6px; }
+
+    .votos-section { display: flex; gap: 16px; align-items: center; margin: 16px 0; padding-top: 16px; border-top: 1px solid var(--color-border); }
+    .voto-btn { background: none; border: none; cursor: pointer; font-size: 1.2rem; color: var(--color-text-muted); padding: 0; }
     .voto-btn:hover { color: var(--color-primary); }
     .voto-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0,0,0,0.5);
-      z-index: 1000;
-      align-items: center;
-      justify-content: center;
-    }
-    .modal.visible { display: flex; }
-    .modal-content {
-      background: var(--color-surface);
-      border-radius: 12px;
-      padding: 30px;
-      max-width: 500px;
-      width: 90%;
-      position: relative;
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-    .modal-close {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      background: none;
-      border: none;
-      font-size: 1.5rem;
-      cursor: pointer;
-      color: var(--color-text-muted);
-      width: 32px;
-      height: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .modal-close:hover { color: var(--color-text); }
+    .respuestas-section { margin-top: 40px; }
+    .respuesta { background: var(--color-bg-alt); padding: 16px; border-radius: 8px; margin-bottom: 12px; border-left: 4px solid var(--color-primary); }
+    .respuesta-autor { font-weight: 600; font-size: 0.95rem; }
+    .respuesta-fecha { font-size: 0.85rem; color: var(--color-text-muted); }
+    .respuesta-contenido { margin-top: 8px; line-height: 1.6; }
 
-    .form-grupo {
-      margin-bottom: 16px;
-    }
-    .form-grupo label {
-      display: block;
-      margin-bottom: 6px;
-      font-weight: 500;
-    }
+    .formulario-respuesta { background: var(--color-surface); padding: 20px; border-radius: 8px; margin-top: 20px; }
+    .form-grupo { margin-bottom: 16px; }
+    .form-grupo label { display: block; margin-bottom: 6px; font-weight: 500; }
     .form-grupo input,
-    .form-grupo select,
     .form-grupo textarea {
       width: 100%;
       padding: 10px;
       border: 1px solid var(--color-campo-borde);
       border-radius: 6px;
       font-family: inherit;
-      font-size: 1rem;
+      font-size: 0.9rem;
       box-sizing: border-box;
     }
     .form-grupo textarea { min-height: 100px; resize: vertical; }
-    .form-grupo.checkbox { display: flex; align-items: center; }
-    .form-grupo.checkbox input { width: auto; margin-right: 8px; }
-    .form-grupo.checkbox label { margin-bottom: 0; }
 
-    .imagenes-preview {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-      gap: 10px;
-      margin-top: 12px;
-    }
-    .preview-item {
-      position: relative;
-      width: 100%;
-      height: 100px;
-      background: var(--color-bg-alt);
-      border-radius: 6px;
-      overflow: hidden;
-    }
-    .preview-item img { width: 100%; height: 100%; object-fit: cover; }
-    .preview-remove {
-      position: absolute;
-      top: 4px;
-      right: 4px;
-      background: rgba(0,0,0,0.6);
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 24px;
-      height: 24px;
-      cursor: pointer;
-      font-size: 0.8rem;
-    }
+    .btn-responder { width: 100%; padding: 10px; background: var(--color-primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 500; }
+    .btn-responder:hover { opacity: 0.9; }
+
+    .empty-state { text-align: center; color: var(--color-text-muted); padding: 40px 24px; }
 
     .loading { text-align: center; color: var(--color-text-muted); padding: 20px; }
     .error { color: #c33; padding: 12px; background: #fee; border-radius: 6px; margin: 10px 0; }
     .success { color: #3c3; padding: 12px; background: #efe; border-radius: 6px; margin: 10px 0; }
 
-    .user-info { font-size: 0.9rem; color: var(--color-text-muted); }
-    .tema { display: flex; gap: 10px; }
+    .user-section { font-size: 0.9rem; color: var(--color-text-muted); display: flex; align-items: center; gap: 12px; }
+    .tema { display: flex; gap: 8px; }
     .tema__btn { padding: 6px 12px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 4px; cursor: pointer; font-size: 0.85rem; }
     .tema__btn[aria-pressed="true"] { background: var(--color-primary); color: white; border-color: var(--color-primary); }
+
+    @media (max-width: 768px) {
+      .main-layout { grid-template-columns: 1fr; }
+      .listado-panel { display: none; }
+      .listado-panel.mobile-visible { display: block; }
+      .detalle-panel { padding: 16px; }
+    }
   </style>
 </head>
 <body>
-  <header class="header">
-    <div class="container header__inner">
-      <a class="brand" href="index.html">
-        <span class="brand__mark">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="3" width="18" height="18" rx="2" /><line x1="12" y1="3" x2="12" y2="21" /><line x1="3" y1="12" x2="12" y2="12" />
-          </svg>
-        </span>
-        <span class="brand__text"><strong>Foro</strong></span>
-      </a>
-      <div style="display: flex; gap: 20px; align-items: center;">
-        <div class="tema" role="group" aria-label="Tema de color">
-          <button class="tema__btn" type="button" data-tema-btn="blanco" aria-pressed="true">Blanco</button>
-          <button class="tema__btn" type="button" data-tema-btn="silver" aria-pressed="false">Silver</button>
-        </div>
-        <div id="userStatus"></div>
+  <!-- Topbar -->
+  <div class="topbar">
+    <a href="index.html">← Volver a <strong>Cotizador de Aberturas</strong></a>
+    <span></span>
+  </div>
+
+  <!-- Header -->
+  <div class="header">
+    <h1>Foro de Carpinteros</h1>
+    <div class="header-right">
+      <div class="tema" role="group" aria-label="Tema de color">
+        <button class="tema__btn" type="button" data-tema-btn="blanco" aria-pressed="true">Blanco</button>
+        <button class="tema__btn" type="button" data-tema-btn="silver" aria-pressed="false">Silver</button>
       </div>
-    </div>
-  </header>
-
-  <main class="foro-container">
-    <div class="foro-header">
-      <div>
-        <h1>Foro de Carpinteros</h1>
-        <p style="margin: 8px 0 0 0; color: var(--color-text-muted);">Comparte dudas, soluciones y experiencias</p>
-      </div>
-      <button class="btn btn--primary" id="btnNuevaPregunta">+ Nueva pregunta</button>
-    </div>
-
-    <!-- Categorías -->
-    <div class="foro-categorias" id="categorias"></div>
-
-    <!-- Preguntas -->
-    <div id="preguntas" class="loading">Cargando preguntas...</div>
-  </main>
-
-  <!-- Modal: Nuevo pregunta -->
-  <div class="modal" id="modalPregunta">
-    <div class="modal-content">
-      <button class="modal-close" type="button" onclick="cerrarModal('modalPregunta')">&times;</button>
-      <h2>Nueva pregunta</h2>
-      <form id="formPregunta">
-        <div class="form-grupo">
-          <label for="nuevaCategoria">Categoría *</label>
-          <select id="nuevaCategoria" required></select>
-        </div>
-        <div class="form-grupo">
-          <label for="nuevaTitulo">Título *</label>
-          <input type="text" id="nuevaTitulo" placeholder="¿Cuál es tu pregunta?" required />
-        </div>
-        <div class="form-grupo">
-          <label for="nuevoContenido">Descripción *</label>
-          <textarea id="nuevoContenido" placeholder="Proporciona detalles..." required></textarea>
-        </div>
-        <div class="form-grupo">
-          <label for="nuevasImagenes">Imágenes (máx 3)</label>
-          <input type="file" id="nuevasImagenes" multiple accept="image/*" />
-          <div class="imagenes-preview" id="previewNuevas"></div>
-        </div>
-        <button class="btn btn--primary" type="submit" style="width: 100%;">Publicar pregunta</button>
-        <div id="formPreguntaError"></div>
-      </form>
+      <div id="userStatus" class="user-section"></div>
     </div>
   </div>
 
-  <!-- Modal: Login / Invitado -->
-  <div class="modal" id="authModal">
-    <div class="modal-content">
-      <button class="modal-close" type="button" onclick="cerrarModal('authModal')">&times;</button>
-      <h2 id="authTitle">Participar en el foro</h2>
+  <!-- Buscador -->
+  <div style="padding: 16px 24px; background: var(--color-surface); border-bottom: 1px solid var(--color-border);">
+    <div class="buscar-container">
+      <input type="text" id="buscar" placeholder="Buscar en el foro..." />
+      <button onclick="buscar()">Buscar</button>
+      <button onclick="limpiarBusqueda()" style="background: var(--color-text-muted);">Limpiar</button>
+    </div>
+  </div>
+
+  <!-- Layout principal -->
+  <div class="main-layout">
+    <!-- Listado de preguntas -->
+    <div class="listado-panel" id="listadoPanel">
+      <div id="preguntasLista" class="loading">Cargando preguntas...</div>
+    </div>
+
+    <!-- Detalle de pregunta -->
+    <div class="detalle-panel" id="detallePanel">
+      <div class="empty-state">
+        <p>Selecciona una pregunta para verla</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Participar -->
+  <div class="modal" id="authModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+    <div style="background: var(--color-surface); border-radius: 12px; padding: 30px; max-width: 500px; width: 90%; position: relative;">
+      <button style="position: absolute; top: 12px; right: 12px; background: none; border: none; font-size: 1.5rem; cursor: pointer;" onclick="cerrarAuthModal()">&times;</button>
+      <h2 style="margin-top: 0;">Participar en el foro</h2>
       <form id="formAuth">
-        <div class="form-grupo checkbox">
-          <input type="checkbox" id="modoInvitado" onchange="toggleModoInvitado()" />
-          <label for="modoInvitado">Participar como invitado (sin contraseña)</label>
+        <div class="form-grupo checkbox" style="display: flex; align-items: center;">
+          <input type="checkbox" id="modoInvitado" onchange="toggleModoInvitado()" style="width: auto; margin-right: 8px;" />
+          <label for="modoInvitado" style="margin-bottom: 0;">Participar como invitado</label>
         </div>
 
         <div class="form-grupo">
-          <label for="authEmail">Email *</label>
-          <input type="email" id="authEmail" placeholder="tu@email.com" required />
+          <label>Email *</label>
+          <input type="email" id="authEmail" required />
         </div>
         <div class="form-grupo">
-          <label for="authNombre">Nombre *</label>
-          <input type="text" id="authNombre" placeholder="Tu nombre" required />
+          <label>Nombre *</label>
+          <input type="text" id="authNombre" required />
         </div>
         <div class="form-grupo" id="passwordGroup">
-          <label for="authPassword">Contraseña *</label>
-          <input type="password" id="authPassword" placeholder="Tu contraseña" required />
+          <label>Contraseña *</label>
+          <input type="password" id="authPassword" required />
         </div>
 
-        <button class="btn btn--primary" type="submit" style="width: 100%;" id="btnAuthSubmit">Entrar como invitado</button>
+        <button class="btn-responder" type="submit" id="btnAuthSubmit">Entrar como invitado</button>
         <div id="authError"></div>
       </form>
     </div>
@@ -283,8 +228,9 @@
   <script>
     const ENDPOINT = "https://cotizador-forum.fgpereyra-92.workers.dev";
     let usuarioActual = null;
-    let categoriaSeleccionada = null;
-    let imagenesPendientes = [];
+    let preguntaSeleccionada = null;
+    let todasLasPreguntas = [];
+    let terminoBusqueda = "";
 
     // Tema
     function inicializarTema() {
@@ -307,19 +253,15 @@
       });
     });
 
-    // Modales
-    function abrirModal(id) {
-      document.getElementById(id).classList.add("visible");
-    }
-    function cerrarModal(id) {
-      document.getElementById(id).classList.remove("visible");
-    }
-
     // Auth
     function mostrarAuthModal() {
       document.getElementById("modoInvitado").checked = true;
       toggleModoInvitado();
-      abrirModal("authModal");
+      document.getElementById("authModal").style.display = "flex";
+    }
+
+    function cerrarAuthModal() {
+      document.getElementById("authModal").style.display = "none";
     }
 
     function toggleModoInvitado() {
@@ -339,9 +281,9 @@
       let endpoint = "/api/auth/invitado";
       let body = { email, nombre };
 
-      if (!esInvitado) {
+      if (!esInvitado && password) {
         endpoint = "/api/auth/login";
-        if (password) body.password = password;
+        body.password = password;
       }
 
       try {
@@ -355,7 +297,7 @@
           usuarioActual = data.usuario;
           localStorage.setItem("usuario", JSON.stringify(usuarioActual));
           actualizarUserStatus();
-          cerrarModal("authModal");
+          cerrarAuthModal();
           document.getElementById("formAuth").reset();
         } else {
           document.getElementById("authError").innerHTML = `<div class="error">${data.error}</div>`;
@@ -369,9 +311,9 @@
       const status = document.getElementById("userStatus");
       if (usuarioActual) {
         status.innerHTML = `
-          <div class="user-info">
-            ${usuarioActual.nombre}${usuarioActual.es_invitado ? " (invitado)" : ""}
-            <button onclick="logout()" class="btn btn--sm" style="margin-left: 10px;">Salir</button>
+          <div style="display: flex; gap: 12px; align-items: center;">
+            <span>${usuarioActual.nombre}${usuarioActual.es_invitado ? " (invitado)" : ""}</span>
+            <button onclick="logout()" class="btn btn--sm" style="padding: 6px 12px;">Salir</button>
           </div>
         `;
       } else {
@@ -383,98 +325,178 @@
       usuarioActual = null;
       localStorage.removeItem("usuario");
       actualizarUserStatus();
+      preguntaSeleccionada = null;
+      document.getElementById("detallePanel").innerHTML = '<div class="empty-state"><p>Selecciona una pregunta para verla</p></div>';
     }
 
-    // Categorías
-    async function cargarCategorias() {
-      try {
-        const res = await fetch(ENDPOINT + "/api/categorias");
-        const data = await res.json();
-
-        const container = document.getElementById("categorias");
-        const select = document.getElementById("nuevaCategoria");
-
-        const todas = document.createElement("button");
-        todas.className = "categoria-pill activa";
-        todas.textContent = "Todas";
-        todas.type = "button";
-        todas.onclick = () => filtrarCategoria(null);
-        container.appendChild(todas);
-
-        data.categorias.forEach(cat => {
-          const pill = document.createElement("button");
-          pill.className = "categoria-pill";
-          pill.textContent = cat.nombre;
-          pill.type = "button";
-          pill.dataset.id = cat.id;
-          pill.onclick = () => filtrarCategoria(cat.id);
-          container.appendChild(pill);
-
-          const opt = document.createElement("option");
-          opt.value = cat.id;
-          opt.textContent = cat.nombre;
-          select.appendChild(opt);
-        });
-
-        cargarPreguntas();
-      } catch (e) {
-        console.error("Error cargando categorías:", e);
-      }
-    }
-
-    function filtrarCategoria(id) {
-      categoriaSeleccionada = id;
-      document.querySelectorAll(".categoria-pill").forEach(p => p.classList.remove("activa"));
-      if (id === null) {
-        document.querySelector(".categoria-pill").classList.add("activa");
-      } else {
-        document.querySelector(`[data-id="${id}"]`).classList.add("activa");
-      }
-      cargarPreguntas();
-    }
-
+    // Cargar preguntas
     async function cargarPreguntas() {
-      const url = categoriaSeleccionada
-        ? ENDPOINT + `/api/preguntas?categoria=${categoriaSeleccionada}`
-        : ENDPOINT + "/api/preguntas";
-
       try {
-        const res = await fetch(url);
+        const res = await fetch(ENDPOINT + "/api/preguntas");
         const data = await res.json();
-        const container = document.getElementById("preguntas");
+        todasLasPreguntas = data.preguntas || [];
+        renderizarListado(todasLasPreguntas);
+      } catch (e) {
+        document.getElementById("preguntasLista").innerHTML = `<div class="error">Error: ${e.message}</div>`;
+      }
+    }
 
-        if (!data.preguntas || data.preguntas.length === 0) {
-          container.innerHTML = '<div class="loading">No hay preguntas aún. ¡Sé el primero!</div>';
+    function renderizarListado(preguntas) {
+      const container = document.getElementById("preguntasLista");
+      if (!preguntas || preguntas.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>No hay preguntas</p></div>';
+        return;
+      }
+
+      container.innerHTML = preguntas.map(p => `
+        <div class="pregunta-item ${preguntaSeleccionada?.id === p.id ? 'activa' : ''}" onclick="seleccionarPregunta(${p.id})">
+          <div class="titulo">${escape(p.titulo)}</div>
+          <div class="autor">${escape(p.autor)}</div>
+          <div class="preview">${escape(p.contenido.substring(0, 60))}</div>
+          <div class="fecha">${formatearFecha(p.fecha)}</div>
+        </div>
+      `).join("");
+    }
+
+    function seleccionarPregunta(id) {
+      const pregunta = todasLasPreguntas.find(p => p.id === id);
+      if (!pregunta) return;
+
+      preguntaSeleccionada = pregunta;
+      document.querySelectorAll(".pregunta-item").forEach(p => p.classList.remove("activa"));
+      event.target.closest(".pregunta-item").classList.add("activa");
+
+      mostrarDetalle(pregunta);
+      cargarRespuestas(id);
+    }
+
+    function mostrarDetalle(p) {
+      const panel = document.getElementById("detallePanel");
+      panel.innerHTML = `
+        <div class="detalle-contenido">
+          <h2 class="detalle-titulo">${escape(p.titulo)}</h2>
+          <div class="detalle-meta">
+            <strong>${escape(p.autor)}</strong> • ${formatearFecha(p.fecha)}
+            <span class="detalle-categoria">${p.categoria_nombre}</span>
+          </div>
+          <div class="detalle-contenido-texto">${escape(p.contenido)}</div>
+          ${p.imagenes ? `
+            <div class="imagenes-grid">
+              ${JSON.parse(p.imagenes).map(img => `<img src="${img}" alt="Imagen" class="imagen-thumb" />`).join("")}
+            </div>
+          ` : ""}
+          <div class="votos-section">
+            <button class="voto-btn" onclick="votar(${p.id}, 'preguntas', 'up')" ${!usuarioActual ? "disabled" : ""}>👍</button>
+            <span>${p.votos || 0}</span>
+            <button class="voto-btn" onclick="votar(${p.id}, 'preguntas', 'down')" ${!usuarioActual ? "disabled" : ""}>👎</button>
+          </div>
+        </div>
+
+        <div class="respuestas-section">
+          <h3>Respuestas</h3>
+          <div id="respuestasLista" class="loading">Cargando respuestas...</div>
+        </div>
+
+        <div class="formulario-respuesta">
+          <h4 style="margin-top: 0;">Responder</h4>
+          ${!usuarioActual ? `
+            <p style="color: var(--color-text-muted);">
+              <a href="#" onclick="mostrarAuthModal(); return false;">Inicia sesión o participa como invitado</a> para responder
+            </p>
+          ` : `
+            <form id="formRespuesta" onsubmit="enviarRespuesta(event, ${p.id})">
+              <div class="form-grupo">
+                <label>Tu respuesta *</label>
+                <textarea id="respuestaTexto" placeholder="Escribe tu respuesta aquí..." required></textarea>
+              </div>
+              <button type="submit" class="btn-responder">Enviar respuesta</button>
+              <div id="respuestaError"></div>
+            </form>
+          `}
+        </div>
+      `;
+    }
+
+    async function cargarRespuestas(idPregunta) {
+      try {
+        const res = await fetch(`${ENDPOINT}/api/preguntas/${idPregunta}/respuestas`);
+        const data = await res.json();
+        const container = document.getElementById("respuestasLista");
+
+        if (!data.respuestas || data.respuestas.length === 0) {
+          container.innerHTML = '<p style="color: var(--color-text-muted);">No hay respuestas aún</p>';
           return;
         }
 
-        container.innerHTML = data.preguntas.map(p => `
-          <div class="foro-pregunta">
-            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
-              <div>
-                <div class="pregunta-autor">${escape(p.autor)}</div>
-                <div class="pregunta-fecha">${formatearFecha(p.fecha)} • <span style="font-size: 0.8rem; color: var(--color-primary);">${p.categoria_nombre}</span></div>
-              </div>
-            </div>
-            <div class="pregunta-titulo">${escape(p.titulo)}</div>
-            <div class="pregunta-contenido">${escape(p.contenido)}</div>
-            ${p.imagenes ? `
-              <div class="imagenes-grid">
-                ${JSON.parse(p.imagenes).map(img => `<img src="${img}" alt="Imagen" class="imagen-thumb" />`).join("")}
-              </div>
-            ` : ""}
-            <div class="votos">
-              <button class="voto-btn" onclick="votar(${p.id}, 'preguntas', 'up')" ${!usuarioActual ? "disabled" : ""}>👍</button>
-              <span>${p.votos || 0}</span>
-              <button class="voto-btn" onclick="votar(${p.id}, 'preguntas', 'down')" ${!usuarioActual ? "disabled" : ""}>👎</button>
-            </div>
+        container.innerHTML = data.respuestas.map(r => `
+          <div class="respuesta">
+            <div class="respuesta-autor">${escape(r.autor)}</div>
+            <div class="respuesta-fecha">${formatearFecha(r.fecha)} • 👍 ${r.votos || 0}</div>
+            <div class="respuesta-contenido">${escape(r.contenido)}</div>
           </div>
         `).join("");
       } catch (e) {
-        document.getElementById("preguntas").innerHTML = `<div class="error">Error: ${e.message}</div>`;
+        document.getElementById("respuestasLista").innerHTML = `<div class="error">Error: ${e.message}</div>`;
       }
     }
 
+    async function enviarRespuesta(e, idPregunta) {
+      e.preventDefault();
+      const contenido = document.getElementById("respuestaTexto").value;
+
+      if (!contenido || contenido.length < 5) {
+        document.getElementById("respuestaError").innerHTML = '<div class="error">La respuesta debe tener al menos 5 caracteres</div>';
+        return;
+      }
+
+      try {
+        const res = await fetch(ENDPOINT + "/api/respuestas", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            usuario_id: usuarioActual.id,
+            id_pregunta: idPregunta,
+            contenido
+          })
+        });
+
+        const data = await res.json();
+        if (data.ok) {
+          document.getElementById("respuestaError").innerHTML = '<div class="success">¡Respuesta enviada!</div>';
+          document.getElementById("respuestaTexto").value = "";
+          setTimeout(() => cargarRespuestas(idPregunta), 1000);
+        } else {
+          document.getElementById("respuestaError").innerHTML = `<div class="error">${data.error}</div>`;
+        }
+      } catch (e) {
+        document.getElementById("respuestaError").innerHTML = `<div class="error">${e.message}</div>`;
+      }
+    }
+
+    // Búsqueda
+    function buscar() {
+      const q = document.getElementById("buscar").value.trim();
+      if (q.length < 2) {
+        document.getElementById("preguntasLista").innerHTML = '<div class="empty-state"><p>Escribe al menos 2 caracteres</p></div>';
+        return;
+      }
+
+      const filtradas = todasLasPreguntas.filter(p =>
+        p.titulo.toLowerCase().includes(q.toLowerCase()) ||
+        p.contenido.toLowerCase().includes(q.toLowerCase())
+      );
+
+      terminoBusqueda = q;
+      renderizarListado(filtradas);
+    }
+
+    function limpiarBusqueda() {
+      document.getElementById("buscar").value = "";
+      terminoBusqueda = "";
+      renderizarListado(todasLasPreguntas);
+    }
+
+    // Utilidades
     function escape(str) {
       return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
     }
@@ -496,94 +518,13 @@
           body: JSON.stringify({ usuario_id: usuarioActual.id, tipo_voto: tipo })
         });
         const data = await res.json();
-        if (data.ok) cargarPreguntas();
+        if (data.ok && preguntaSeleccionada) {
+          cargarPreguntas();
+        }
       } catch (e) {
         console.error("Error votando:", e);
       }
     }
-
-    // Imágenes
-    document.getElementById("nuevasImagenes").addEventListener("change", (e) => {
-      imagenesPendientes = Array.from(e.target.files).slice(0, 3);
-      mostrarPreviews();
-    });
-
-    function mostrarPreviews() {
-      const container = document.getElementById("previewNuevas");
-      container.innerHTML = imagenesPendientes.map((file, idx) => `
-        <div class="preview-item">
-          <img src="${URL.createObjectURL(file)}" alt="preview" />
-          <button type="button" class="preview-remove" onclick="removerImagen(${idx})">✕</button>
-        </div>
-      `).join("");
-    }
-
-    function removerImagen(idx) {
-      imagenesPendientes.splice(idx, 1);
-      mostrarPreviews();
-    }
-
-    async function convertirImagenesABase64() {
-      const imagenes = [];
-      for (const file of imagenesPendientes) {
-        const reader = new FileReader();
-        const data = await new Promise((resolve, reject) => {
-          reader.onload = () => resolve(reader.result);
-          reader.onerror = reject;
-          reader.readAsDataURL(file);
-        });
-        imagenes.push(data);
-      }
-      return imagenes;
-    }
-
-    // Nueva pregunta
-    document.getElementById("btnNuevaPregunta").addEventListener("click", () => {
-      if (!usuarioActual) {
-        mostrarAuthModal();
-      } else {
-        abrirModal("modalPregunta");
-      }
-    });
-
-    document.getElementById("formPregunta").addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const categoria = document.getElementById("nuevaCategoria").value;
-      const titulo = document.getElementById("nuevaTitulo").value;
-      const contenido = document.getElementById("nuevoContenido").value;
-
-      const imagenes = await convertirImagenesABase64();
-
-      try {
-        const res = await fetch(ENDPOINT + "/api/preguntas", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            usuario_id: usuarioActual.id,
-            categoria_id: categoria,
-            titulo,
-            contenido,
-            imagenes: imagenes.length > 0 ? imagenes : null
-          })
-        });
-
-        const data = await res.json();
-        if (data.ok) {
-          document.getElementById("formPreguntaError").innerHTML = '<div class="success">¡Pregunta publicada!</div>';
-          document.getElementById("formPregunta").reset();
-          imagenesPendientes = [];
-          setTimeout(() => {
-            cerrarModal("modalPregunta");
-            cargarPreguntas();
-          }, 1000);
-        } else {
-          document.getElementById("formPreguntaError").innerHTML = `<div class="error">${data.error}</div>`;
-        }
-      } catch (e) {
-        document.getElementById("formPreguntaError").innerHTML = `<div class="error">${e.message}</div>`;
-      }
-    });
 
     // Init
     window.addEventListener("load", () => {
@@ -593,7 +534,12 @@
         usuarioActual = JSON.parse(guardado);
       }
       actualizarUserStatus();
-      cargarCategorias();
+      cargarPreguntas();
+    });
+
+    // Enter en buscador
+    document.getElementById("buscar").addEventListener("keypress", (e) => {
+      if (e.key === "Enter") buscar();
     });
   </script>
 </body>

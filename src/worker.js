@@ -225,6 +225,39 @@ export default {
         }
       }
 
+      // BÚSQUEDA: Preguntas por palabra clave
+      if (path === "/api/buscar" && request.method === "GET") {
+        const q = url.searchParams.get("q") || "";
+        const categoria = url.searchParams.get("categoria");
+
+        if (q.length < 2) {
+          return json({ preguntas: [] }, 200, headers);
+        }
+
+        let query = `
+          SELECT
+            p.id, p.usuario_id, p.categoria_id, p.titulo, p.contenido,
+            p.imagenes, p.fecha, p.votos,
+            u.nombre as autor,
+            c.nombre as categoria_nombre
+          FROM preguntas p
+          JOIN usuarios u ON p.usuario_id = u.id
+          LEFT JOIN categorias c ON p.categoria_id = c.id
+          WHERE (p.titulo LIKE ? OR p.contenido LIKE ?)
+        `;
+        let params = [`%${q}%`, `%${q}%`];
+
+        if (categoria) {
+          query += " AND p.categoria_id = ?";
+          params.push(categoria);
+        }
+
+        query += " ORDER BY p.fecha DESC LIMIT 50";
+
+        const result = await env.DB.prepare(query).bind(...params).all();
+        return json({ preguntas: result.results || [] }, 200, headers);
+      }
+
       // ADMIN: Estadísticas
       if (path === "/api/admin/stats" && request.method === "GET") {
         const adminToken = url.searchParams.get("token");
