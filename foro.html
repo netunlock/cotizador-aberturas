@@ -179,6 +179,7 @@
         <button onclick="buscar()">Buscar</button>
         <button onclick="limpiarBusqueda()" style="background: var(--color-text-muted);">Limpiar</button>
       </div>
+      <button id="btnNuevaPregunta" class="btn-responder" onclick="mostrarModalPregunta()" style="white-space: nowrap;">+ Nueva pregunta</button>
       <a href="index.html#descargas" style="display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 16px; background: var(--color-primary); color: white; border-radius: 6px; text-decoration: none; font-weight: 600; text-align: center; line-height: 1.2;">
         <span style="font-size: 0.9rem;">📥 Descarga el Cotizador</span>
         <span style="font-size: 0.75rem; opacity: 0.9;">de Aberturas - 3 días gratis</span>
@@ -227,6 +228,35 @@
 
         <button class="btn-responder" type="submit" id="btnAuthSubmit">Entrar como invitado</button>
         <div id="authError"></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Nueva Pregunta -->
+  <div class="modal" id="modalPregunta" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; overflow-y: auto; padding: 20px;">
+    <div style="background: var(--color-surface); border-radius: 12px; padding: 30px; max-width: 600px; width: 90%; position: relative; margin: auto;">
+      <button style="position: absolute; top: 12px; right: 12px; background: none; border: none; font-size: 1.5rem; cursor: pointer;" onclick="cerrarModalPregunta()">&times;</button>
+      <h2 style="margin-top: 0;">Hacer una pregunta</h2>
+      <form id="formPregunta" onsubmit="enviarPregunta(event)">
+        <div class="form-grupo">
+          <label>Categoría *</label>
+          <select id="preguntaCategoria" required style="padding: 10px; border: 1px solid var(--color-campo-borde); border-radius: 6px; font-size: 0.9rem; width: 100%; font-family: inherit;">
+            <option value="">Selecciona una categoría...</option>
+          </select>
+        </div>
+
+        <div class="form-grupo">
+          <label>Título de la pregunta *</label>
+          <input type="text" id="preguntaTitulo" placeholder="Ej: Cómo calcular perfiles con descuento..." required />
+        </div>
+
+        <div class="form-grupo">
+          <label>Descripción *</label>
+          <textarea id="preguntaContenido" placeholder="Describe tu pregunta con detalles..." required style="min-height: 120px;"></textarea>
+        </div>
+
+        <button class="btn-responder" type="submit" id="btnEnviarPregunta">Publicar pregunta</button>
+        <div id="preguntaError" style="color: var(--color-error); margin-top: 10px; display: none;"></div>
       </form>
     </div>
   </div>
@@ -529,6 +559,94 @@
         }
       } catch (e) {
         console.error("Error votando:", e);
+      }
+    }
+
+    // Modal Nueva Pregunta
+    async function mostrarModalPregunta() {
+      if (!usuarioActual) {
+        mostrarAuthModal();
+        return;
+      }
+
+      // Cargar categorías en el select
+      try {
+        const res = await fetch(ENDPOINT + "/api/categorias");
+        const data = await res.json();
+        const select = document.getElementById("preguntaCategoria");
+        select.innerHTML = '<option value="">Selecciona una categoría...</option>';
+        data.categorias.forEach(cat => {
+          const option = document.createElement("option");
+          option.value = cat.id;
+          option.textContent = cat.nombre;
+          select.appendChild(option);
+        });
+      } catch (e) {
+        console.error("Error cargando categorías:", e);
+      }
+
+      document.getElementById("formPregunta").reset();
+      document.getElementById("preguntaError").style.display = "none";
+      document.getElementById("modalPregunta").style.display = "flex";
+    }
+
+    function cerrarModalPregunta() {
+      document.getElementById("modalPregunta").style.display = "none";
+    }
+
+    async function enviarPregunta(event) {
+      event.preventDefault();
+
+      if (!usuarioActual) {
+        mostrarAuthModal();
+        return;
+      }
+
+      const titulo = document.getElementById("preguntaTitulo").value.trim();
+      const contenido = document.getElementById("preguntaContenido").value.trim();
+      const categoriaid = document.getElementById("preguntaCategoria").value;
+
+      if (!titulo || !contenido || !categoriaid) {
+        document.getElementById("preguntaError").textContent = "Por favor completa todos los campos";
+        document.getElementById("preguntaError").style.display = "block";
+        return;
+      }
+
+      const btnEnviar = document.getElementById("btnEnviarPregunta");
+      btnEnviar.disabled = true;
+      btnEnviar.textContent = "Enviando...";
+
+      try {
+        const res = await fetch(ENDPOINT + "/api/preguntas", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            usuario_id: usuarioActual.id,
+            categoria_id: categoriaid,
+            titulo: titulo,
+            contenido: contenido
+          })
+        });
+
+        const data = await res.json();
+
+        if (data.ok) {
+          document.getElementById("preguntaError").innerHTML = '<div class="success">✓ Pregunta publicada</div>';
+          document.getElementById("preguntaError").style.display = "block";
+          setTimeout(() => {
+            cerrarModalPregunta();
+            cargarPreguntas();
+          }, 1500);
+        } else {
+          document.getElementById("preguntaError").textContent = `Error: ${data.error}`;
+          document.getElementById("preguntaError").style.display = "block";
+        }
+      } catch (e) {
+        document.getElementById("preguntaError").textContent = `Error: ${e.message}`;
+        document.getElementById("preguntaError").style.display = "block";
+      } finally {
+        btnEnviar.disabled = false;
+        btnEnviar.textContent = "Publicar pregunta";
       }
     }
 
