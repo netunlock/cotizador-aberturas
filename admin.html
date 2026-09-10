@@ -324,21 +324,25 @@
             headers: { "Content-Type": "application/json" }
           });
 
-          if (!res.ok) {
-            alert(`Error: ${res.status} ${res.statusText}`);
+          let data;
+          try {
+            data = await res.json();
+          } catch (e) {
+            alert(`Error del servidor: ${res.status} ${res.statusText}`);
+            console.error("Response no es JSON:", res);
             return;
           }
 
-          const data = await res.json();
           if (data.ok) {
             alert("✓ Pregunta eliminada correctamente");
             cargarDatos();
           } else {
-            alert(`Error: ${data.error || "Error desconocido"}`);
+            alert(`❌ Error: ${data.error || "Error desconocido"}`);
+            console.error("Error server:", data);
           }
         } catch (e) {
           console.error("Error eliminando:", e);
-          alert("Error: " + e.message);
+          alert("❌ Error de red: " + e.message);
         }
       }
     }

@@ -299,11 +299,16 @@ export default {
         }
 
         const id = path.split("/")[4];
+        if (!id || isNaN(id)) {
+          return json({ ok: false, error: "ID inválido" }, 400, headers);
+        }
+
         try {
-          await env.DB.prepare("DELETE FROM preguntas WHERE id = ?").bind(id).run();
-          return json({ ok: true }, 200, headers);
+          const result = await env.DB.prepare("DELETE FROM preguntas WHERE id = ?").bind(id).run();
+          return json({ ok: true, message: "Pregunta eliminada", result: result.meta }, 200, headers);
         } catch (e) {
-          return json({ ok: false, error: "Error al eliminar" }, 500, headers);
+          console.error("Error DELETE pregunta:", e);
+          return json({ ok: false, error: e.message || "Error al eliminar" }, 500, headers);
         }
       }
 
