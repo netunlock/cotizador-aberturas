@@ -171,12 +171,18 @@
     </div>
   </div>
 
-  <!-- Buscador -->
+  <!-- Buscador + Descarga -->
   <div style="padding: 16px 24px; background: var(--color-surface); border-bottom: 1px solid var(--color-border);">
-    <div class="buscar-container">
-      <input type="text" id="buscar" placeholder="Buscar en el foro..." />
-      <button onclick="buscar()">Buscar</button>
-      <button onclick="limpiarBusqueda()" style="background: var(--color-text-muted);">Limpiar</button>
+    <div style="display: flex; gap: 16px; align-items: center; margin-bottom: 12px;">
+      <div class="buscar-container" style="flex: 1;">
+        <input type="text" id="buscar" placeholder="Buscar en el foro..." />
+        <button onclick="buscar()">Buscar</button>
+        <button onclick="limpiarBusqueda()" style="background: var(--color-text-muted);">Limpiar</button>
+      </div>
+      <a href="https://www.mediafire.com/file/f3ubap9yqrviuti/CotizadorAberturas_v3.3.0.zip/file" target="_blank" style="display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 16px; background: var(--color-primary); color: white; border-radius: 6px; text-decoration: none; font-weight: 500; white-space: nowrap;">
+        <span>📥 Descargar</span>
+        <span style="font-size: 0.75rem; opacity: 0.8;">3 días gratis</span>
+      </a>
     </div>
   </div>
 
