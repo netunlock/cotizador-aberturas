@@ -37,14 +37,14 @@
 :root {
   --color-whatsapp: #25d366;         /* Verde oficial de WhatsApp */
 
-  --font-display: "Playfair Display", -apple-system, BlinkMacSystemFont, serif;
-  --font-base: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+  --font-display: "Space Grotesk", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-base: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
                "Helvetica Neue", Arial, sans-serif;
-  --font-mono: "SFMono-Regular", ui-monospace, Consolas, "Liberation Mono", monospace;
+  --font-mono: "JetBrains Mono", "SFMono-Regular", ui-monospace, Consolas, "Liberation Mono", monospace;
 
-  --radius-sm: 4px;
-  --radius:    6px;
-  --radius-lg: 12px;
+  --radius-sm: 0px;
+  --radius:    0px;
+  --radius-lg: 0px;
   --radius-pill: 999px;
 
   --container: 1140px;               /* Ancho máximo del contenido */
@@ -55,105 +55,105 @@
 
 
 /* ---------------------------------------------------------------------------
-   TEMA BLANCO  ·  paleta "claro" del programa
+   DARK MODE TÉCNICO  ·  estilo Linear - moderno y técnico
    --------------------------------------------------------------------------- */
 :root,
 :root[data-tema="blanco"] {
 
-  /* Marca */
-  --color-primary:         #1B3A57;   /* primario */
-  --color-primary-hover:   #2A5580;   /* primario_hover */
-  --color-primary-light:   #4A7BA7;   /* detalles y bordes al pasar el mouse */
-  --color-primary-soft:    #E8EDF3;   /* superficie_3: fondo de íconos y etiquetas */
-  --color-sobre-primario:  #FFFFFF;   /* texto arriba del color de marca */
-  --color-accent:          #0F766E;   /* acento */
+  /* Marca: Acento vibrante (violeta/azul eléctrico) */
+  --color-primary:         #7C3AED;   /* violeta vibrante */
+  --color-primary-hover:   #9F5AFF;   /* violeta más claro */
+  --color-primary-light:   #A78BFA;   /* violeta suave */
+  --color-primary-soft:    #2D1B4E;   /* fondo violeta oscuro */
+  --color-sobre-primario:  #EDEDED;   /* texto sobre color primario */
+  --color-accent:          #06B6D4;   /* cyan como acento secundario */
 
   /* Estados */
-  --color-warning:         #B45309;   /* alerta */
-  --color-warning-soft:    #FEF6E7;   /* alerta_fondo */
-  --color-warning-border:  #F0D5AC;
-  --color-warning-text:    #7C3E06;
-  --color-sobre-alerta:    #FFFFFF;   /* texto arriba del color de alerta */
-  --color-success:         #15803D;   /* ok */
-  --color-error:           #B91C1C;   /* error */
-  --color-error-soft:      #FDE7E7;
+  --color-warning:         #F59E0B;   /* alerta ámbar */
+  --color-warning-soft:    #3F2A0A;   /* alerta_fondo oscuro */
+  --color-warning-border:  #6B4500;
+  --color-warning-text:    #FCD34D;
+  --color-sobre-alerta:    #EDEDED;   /* texto arriba del color de alerta */
+  --color-success:         #10B981;   /* ok verde */
+  --color-error:           #EF4444;   /* error rojo */
+  --color-error-soft:      #3F1C1C;
 
   /* Textos */
-  --color-text:            #16202B;   /* texto */
-  --color-text-body:       #3E5163;   /* párrafos (entre texto y texto_suave) */
-  --color-text-muted:      #8A98A6;   /* texto_tenue */
+  --color-text:            #EDEDED;   /* texto principal - blanco hueso */
+  --color-text-body:       #A1A1A1;   /* párrafos - gris */
+  --color-text-muted:      #6B7280;   /* texto_tenue - gris más oscuro */
 
   /* Fondos y superficies */
-  --color-bg:              #FAFAF7;   /* off-white suave */
-  --color-bg-alt:          #F0F0EB;   /* ventana más clara */
-  --color-surface:         #FAFAF7;
-  --color-border:          #E5E5DE;   /* borde fino */
-  --color-header-bg:       rgba(250, 250, 247, .92);
-  --color-overlay:         rgba(22, 32, 43, .55);
+  --color-bg:              #0A0A0A;   /* fondo oscuro profundo */
+  --color-bg-alt:          #141414;   /* paneles secundarios */
+  --color-surface:         #1A1A1A;
+  --color-border:          #333333;   /* bordes sutiles */
+  --color-header-bg:       rgba(10, 10, 10, .95);
+  --color-overlay:         rgba(0, 0, 0, .7);
 
   /* Campos de formulario */
-  --color-campo:           #FAFAF7;   /* campo */
-  --color-campo-borde:     #D3DAE3;   /* campo_borde */
+  --color-campo:           #1A1A1A;   /* campo */
+  --color-campo-borde:     #333333;   /* campo_borde */
 
   /* Pie */
-  --color-footer-bg:       #1A1A17;   /* off-black */
-  --color-footer-text:     #B4BECD;
+  --color-footer-bg:       #0A0A0A;
+  --color-footer-text:     #A1A1A1;
 
-  /* Sombras: brutalismo suave - cortas y duras */
-  --shadow-sm: 0 2px 0px rgba(22, 32, 43, .08);
-  --shadow:    0 4px 0px rgba(22, 32, 43, .12);
-  --shadow-lg: 0 8px 0px rgba(22, 32, 43, .16);
+  /* Efectos: glow sutil en interacciones */
+  --shadow-sm: 0 0 12px rgba(124, 58, 237, .15);
+  --shadow:    0 0 20px rgba(124, 58, 237, .25);
+  --shadow-lg: 0 0 32px rgba(124, 58, 237, .35);
 }
 
 
 /* ---------------------------------------------------------------------------
-   TEMA SILVER  ·  paleta "silver" del programa
+   TEMA SILVER  ·  variante oscura con acento cyan
    --------------------------------------------------------------------------- */
 :root[data-tema="silver"] {
 
-  /* Marca */
-  --color-primary:         #8D99AE;   /* primario */
-  --color-primary-hover:   #A6B1C4;   /* primario_hover */
-  --color-primary-light:   #B4BECD;
-  --color-primary-soft:    #464A68;   /* superficie_3 */
-  --color-sobre-primario:  #23253A;   /* sobre_primario */
-  --color-accent:          #6EC1A7;   /* acento */
+  /* Marca: Acento cyan para variante silver */
+  --color-primary:         #06B6D4;   /* cyan */
+  --color-primary-hover:   #22D3EE;   /* cyan claro */
+  --color-primary-light:   #67E8F9;   /* cyan muy claro */
+  --color-primary-soft:    #164E63;   /* fondo cyan oscuro */
+  --color-sobre-primario:  #EDEDED;   /* texto sobre color primario */
+  --color-accent:          #7C3AED;   /* violeta como acento secundario */
 
   /* Estados */
-  --color-warning:         #E0A458;   /* alerta */
-  --color-warning-soft:    #463F32;   /* alerta_fondo */
-  --color-warning-border:  #6B5C42;
-  --color-warning-text:    #F2D8B4;
-  --color-sobre-alerta:    #23253A;   /* texto arriba del color de alerta */
-  --color-success:         #7FD1A8;   /* ok */
-  --color-error:           #E87A7A;   /* error */
-  --color-error-soft:      #4A2F35;
+  --color-warning:         #F59E0B;   /* alerta ámbar */
+  --color-warning-soft:    #3F2A0A;   /* alerta_fondo */
+  --color-warning-border:  #6B4500;
+  --color-warning-text:    #FCD34D;
+  --color-sobre-alerta:    #EDEDED;
+  --color-success:         #10B981;   /* ok */
+  --color-error:           #EF4444;   /* error */
+  --color-error-soft:      #3F1C1C;
 
   /* Textos */
-  --color-text:            #EDF0F6;   /* texto */
-  --color-text-body:       #B4BECD;   /* texto_suave */
-  --color-text-muted:      #8D99AE;   /* texto_tenue */
+  --color-text:            #EDEDED;   /* texto */
+  --color-text-body:       #A1A1A1;   /* texto_suave */
+  --color-text-muted:      #6B7280;   /* texto_tenue */
 
   /* Fondos y superficies */
-  --color-bg:              #2B2D42;   /* ventana */
-  --color-bg-alt:          #363950;   /* superficie_2 */
-  --color-surface:         #3D405B;   /* superficie */
-  --color-border:          #525777;   /* borde */
-  --color-header-bg:       rgba(43, 45, 66, .88);
-  --color-overlay:         rgba(16, 17, 28, .68);
+  --color-bg:              #0A0A0A;
+  --color-bg-alt:          #141414;
+  --color-surface:         #1A1A1A;
+  --color-border:          #333333;
+  --color-header-bg:       rgba(10, 10, 10, .95);
+  --color-overlay:         rgba(0, 0, 0, .7);
 
   /* Campos de formulario */
-  --color-campo:           #343751;   /* campo */
-  --color-campo-borde:     #565B7C;   /* campo_borde */
+  --color-campo:           #1A1A1A;
+  --color-campo-borde:     #333333;
 
   /* Pie */
-  --color-footer-bg:       #23253A;
-  --color-footer-text:     #B4BECD;
+  --color-footer-bg:       #0A0A0A;
+  --color-footer-text:     #A1A1A1;
 
-  /* Sombras: en oscuro tienen que ser más marcadas para que se noten */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, .25);
-  --shadow:    0 6px 20px rgba(0, 0, 0, .32);
-  --shadow-lg: 0 24px 60px rgba(0, 0, 0, .45);
+  /* Efectos: glow sutil con cyan */
+  --shadow-sm: 0 0 12px rgba(6, 182, 212, .15);
+  --shadow:    0 0 20px rgba(6, 182, 212, .25);
+  --shadow-lg: 0 0 32px rgba(6, 182, 212, .35);
 }
 
 /* Suaviza el cambio de tema en vez de que salte de golpe */
@@ -185,15 +185,15 @@ h1, h2, h3, h4 {
   margin: 0 0 .5em;
   color: var(--color-text);
   line-height: 1.2;
-  letter-spacing: -.02em;
+  letter-spacing: -.015em;
   font-weight: 700;
   font-family: var(--font-display);
 }
 
-h1 { font-size: clamp(2.5rem, 5vw, 3.8rem); letter-spacing: -.03em; }
-h2 { font-size: clamp(2rem, 4vw, 3rem); letter-spacing: -.025em; }
-h3 { font-size: clamp(1.4rem, 3vw, 1.8rem); }
-h4 { font-size: 1.25rem; }
+h1 { font-size: clamp(2.5rem, 5vw, 3.6rem); letter-spacing: -.02em; }
+h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); letter-spacing: -.015em; }
+h3 { font-size: clamp(1.3rem, 3vw, 1.75rem); }
+h4 { font-size: 1.25rem; font-weight: 600; }
 
 p { margin: 0 0 1em; }
 ul { margin: 0; padding: 0; list-style: none; }
@@ -581,24 +581,30 @@ code {
    ========================================================================== */
 .card {
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  border: 1px solid #1A1A1A;
+  border-radius: 0;
   padding: 30px 28px;
-  box-shadow: var(--shadow-sm);
-  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+  transition: border-color var(--transition), box-shadow var(--transition);
 }
-.card:hover { transform: translateY(-4px); box-shadow: var(--shadow); border-color: var(--color-primary-light); }
-.card h3 { font-size: 1.16rem; margin-bottom: .45em; }
+.card:hover {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow);
+}
+.card h3 { font-size: 1.16rem; margin-bottom: .45em; font-family: var(--font-display); }
 .card p { margin: 0; font-size: .96rem; color: var(--color-text-muted); }
 
 .card__icon {
   display: grid; place-items: center;
   width: 48px; height: 48px; margin-bottom: 20px;
-  border-radius: 13px;
-  background: var(--color-primary-soft);
-  color: var(--color-primary);
+  border-radius: 0;
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text);
 }
-.card__icon svg { width: 24px; height: 24px; }
+.card__icon svg {
+  width: 24px; height: 24px;
+  stroke-width: 1.5;
+}
 
 
 /* ============================================================================
@@ -616,7 +622,8 @@ code {
 
 .galeria__item {
   position: relative;
-  border-radius: var(--radius-lg);
+  border-radius: 0;
+  border: 1px solid var(--color-border);
   overflow: hidden;
   border: 1px solid var(--color-border);
   background: var(--color-bg-alt);
