@@ -304,6 +304,13 @@ export default {
         }
 
         try {
+          // Primero eliminar respuestas asociadas
+          await env.DB.prepare("DELETE FROM respuestas WHERE id_pregunta = ?").bind(id).run();
+          // Luego eliminar votos asociados a la pregunta
+          await env.DB.prepare(
+            "DELETE FROM votos WHERE tipo = 'preguntas' AND contenido_id = ?"
+          ).bind(id).run();
+          // Finalmente eliminar la pregunta
           const result = await env.DB.prepare("DELETE FROM preguntas WHERE id = ?").bind(id).run();
           return json({ ok: true, message: "Pregunta eliminada", result: result.meta }, 200, headers);
         } catch (e) {

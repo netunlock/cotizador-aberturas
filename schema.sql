@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS preguntas (
   imagenes TEXT,
   fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
   votos INTEGER DEFAULT 0,
-  FOREIGN KEY(usuario_id) REFERENCES usuarios(id),
+  FOREIGN KEY(usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
   FOREIGN KEY(categoria_id) REFERENCES categorias(id)
 );
 
@@ -39,8 +39,8 @@ CREATE TABLE IF NOT EXISTS respuestas (
   imagenes TEXT,
   fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
   votos INTEGER DEFAULT 0,
-  FOREIGN KEY(usuario_id) REFERENCES usuarios(id),
-  FOREIGN KEY(id_pregunta) REFERENCES preguntas(id)
+  FOREIGN KEY(usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+  FOREIGN KEY(id_pregunta) REFERENCES preguntas(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS votos (
