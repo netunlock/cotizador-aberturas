@@ -194,10 +194,7 @@ function versionDestacada() {
  * devolvemos un link placeholder. En producción, el script de Google lo maneja.
  */
 function linkMediaFire(version) {
-  // Placeholder: en el mundo real, este link vendría del backend.
-  // Por ahora, devolvemos una URL de demo. Federico debe actualizar esto
-  // con los links reales de MediaFire cuando suba los archivos.
-  return "https://www.mediafire.com/";
+  return "https://www.mediafire.com/file/f3ubap9yqrviuti/CotizadorAberturas_v3.3.0.zip/file";
 }
 
 /** Dibuja la tarjeta grande de la última versión */

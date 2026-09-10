@@ -37,13 +37,14 @@
 :root {
   --color-whatsapp: #25d366;         /* Verde oficial de WhatsApp */
 
+  --font-display: "Playfair Display", -apple-system, BlinkMacSystemFont, serif;
   --font-base: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
                "Helvetica Neue", Arial, sans-serif;
   --font-mono: "SFMono-Regular", ui-monospace, Consolas, "Liberation Mono", monospace;
 
-  --radius-sm: 8px;
-  --radius:    14px;
-  --radius-lg: 22px;
+  --radius-sm: 4px;
+  --radius:    6px;
+  --radius-lg: 12px;
   --radius-pill: 999px;
 
   --container: 1140px;               /* Ancho máximo del contenido */
@@ -83,25 +84,25 @@
   --color-text-muted:      #8A98A6;   /* texto_tenue */
 
   /* Fondos y superficies */
-  --color-bg:              #FFFFFF;   /* superficie */
-  --color-bg-alt:          #EEF1F5;   /* ventana */
-  --color-surface:         #FFFFFF;
-  --color-border:          #D3DAE3;   /* borde */
-  --color-header-bg:       rgba(255, 255, 255, .85);
+  --color-bg:              #FAFAF7;   /* off-white suave */
+  --color-bg-alt:          #F0F0EB;   /* ventana más clara */
+  --color-surface:         #FAFAF7;
+  --color-border:          #E5E5DE;   /* borde fino */
+  --color-header-bg:       rgba(250, 250, 247, .92);
   --color-overlay:         rgba(22, 32, 43, .55);
 
   /* Campos de formulario */
-  --color-campo:           #FFFFFF;   /* campo */
-  --color-campo-borde:     #C3CCD8;   /* campo_borde */
+  --color-campo:           #FAFAF7;   /* campo */
+  --color-campo-borde:     #D3DAE3;   /* campo_borde */
 
   /* Pie */
-  --color-footer-bg:       #16202B;
+  --color-footer-bg:       #1A1A17;   /* off-black */
   --color-footer-text:     #B4BECD;
 
-  /* Sombras */
-  --shadow-sm: 0 1px 2px rgba(22, 32, 43, .06);
-  --shadow:    0 6px 20px rgba(22, 32, 43, .08);
-  --shadow-lg: 0 24px 60px rgba(22, 32, 43, .14);
+  /* Sombras: brutalismo suave - cortas y duras */
+  --shadow-sm: 0 2px 0px rgba(22, 32, 43, .08);
+  --shadow:    0 4px 0px rgba(22, 32, 43, .12);
+  --shadow-lg: 0 8px 0px rgba(22, 32, 43, .16);
 }
 
 
@@ -186,7 +187,13 @@ h1, h2, h3, h4 {
   line-height: 1.2;
   letter-spacing: -.02em;
   font-weight: 700;
+  font-family: var(--font-display);
 }
+
+h1 { font-size: clamp(2.5rem, 5vw, 3.8rem); letter-spacing: -.03em; }
+h2 { font-size: clamp(2rem, 4vw, 3rem); letter-spacing: -.025em; }
+h3 { font-size: clamp(1.4rem, 3vw, 1.8rem); }
+h4 { font-size: 1.25rem; }
 
 p { margin: 0 0 1em; }
 ul { margin: 0; padding: 0; list-style: none; }
@@ -284,15 +291,13 @@ code {
   font-family: inherit; font-size: 1rem; font-weight: 600; line-height: 1;
   padding: .85em 1.5em;
   border: 1px solid transparent;
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius);
   cursor: pointer;
   text-align: center;
-  transition: transform var(--transition), box-shadow var(--transition),
-              background-color var(--transition), color var(--transition),
-              border-color var(--transition);
+  transition: all var(--transition);
 }
-.btn:hover { transform: translateY(-2px); }
-.btn:active { transform: translateY(0); }
+.btn:hover { box-shadow: var(--shadow); }
+.btn:active { box-shadow: var(--shadow-sm); }
 
 .btn--sm { font-size: .9rem; padding: .65em 1.15em; }
 .btn--lg { font-size: 1.05rem; padding: 1em 1.9em; }
@@ -300,16 +305,25 @@ code {
 .btn--primary {
   background: var(--color-primary);
   color: var(--color-sobre-primario);
-  box-shadow: 0 8px 20px -8px var(--color-primary);
+  box-shadow: var(--shadow-sm);
+  border-color: var(--color-primary);
 }
-.btn--primary:hover { background: var(--color-primary-hover); color: var(--color-sobre-primario); }
+.btn--primary:hover {
+  background: var(--color-primary-hover);
+  color: var(--color-sobre-primario);
+  border-color: var(--color-primary-hover);
+}
 
 .btn--outline {
   background: transparent;
   color: var(--color-text);
   border-color: var(--color-border);
 }
-.btn--outline:hover { border-color: var(--color-primary); color: var(--color-primary); }
+.btn--outline:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
 
 .btn--ghost {
   background: var(--color-surface);
@@ -317,25 +331,45 @@ code {
   border-color: var(--color-border);
   box-shadow: var(--shadow-sm);
 }
-.btn--ghost:hover { color: var(--color-primary); border-color: var(--color-primary); }
+.btn--ghost:hover {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
 
 .btn--secondary {
-  background: var(--color-bg-alt);
+  background: transparent;
   color: var(--color-text-body);
-  border-color: var(--color-border);
-  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border);
 }
-.btn--secondary:hover { background: var(--color-surface); color: var(--color-text); border-color: var(--color-primary-light); }
+.btn--secondary:hover {
+  background: var(--color-bg-alt);
+  color: var(--color-text);
+  border-color: var(--color-primary);
+}
 
 .btn--warning {
   background: var(--color-warning);
   color: var(--color-sobre-alerta);
-  box-shadow: 0 8px 20px -8px var(--color-warning);
+  box-shadow: var(--shadow-sm);
+  border-color: var(--color-warning);
 }
-.btn--warning:hover { filter: brightness(.94); color: var(--color-sobre-alerta); }
+.btn--warning:hover {
+  background: var(--color-primary-light);
+  color: var(--color-sobre-alerta);
+  border-color: var(--color-primary-light);
+}
 
-.btn--wa { background: var(--color-whatsapp); color: #04331a; }
-.btn--wa:hover { filter: brightness(.95); color: #04331a; }
+.btn--wa {
+  background: var(--color-whatsapp);
+  color: #04331a;
+  border-color: var(--color-whatsapp);
+}
+.btn--wa:hover {
+  background: #1EA853;
+  color: #04331a;
+  border-color: #1EA853;
+}
 
 
 /* ============================================================================
@@ -386,27 +420,32 @@ code {
 
 /* ---- Selector de tema Blanco / Silver ----------------------------------- */
 .tema {
-  display: inline-flex; align-items: center; gap: 2px;
-  padding: 3px;
-  background: var(--color-bg-alt);
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 8px;
+  background: transparent;
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius);
 }
 
 .tema__btn {
   font-family: inherit; font-size: .78rem; font-weight: 600;
-  padding: .42em .85em;
-  border: none; border-radius: var(--radius-pill);
+  padding: .4em .7em;
+  border: 1px solid transparent; border-radius: var(--radius-sm);
   background: transparent; color: var(--color-text-muted);
   cursor: pointer; white-space: nowrap;
-  transition: background var(--transition), color var(--transition);
+  transition: all var(--transition);
 }
-.tema__btn:hover { color: var(--color-text); }
+.tema__btn:hover {
+  color: var(--color-text);
+  border-color: var(--color-border);
+  background: var(--color-bg-alt);
+}
 
-/* El tema activo queda marcado con el color de marca */
+/* El tema activo queda marcado con borde fino y color */
 .tema__btn[aria-pressed="true"] {
-  background: var(--color-primary);
-  color: var(--color-sobre-primario);
+  background: transparent;
+  color: var(--color-primary);
+  border-color: var(--color-primary);
 }
 
 /* Hamburguesa (oculta en escritorio) */
