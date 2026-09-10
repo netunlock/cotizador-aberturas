@@ -263,7 +263,7 @@
                     <td>${p.autor}</td>
                     <td>${p.categoria_nombre}</td>
                     <td>${p.votos}</td>
-                    <td><button class="btn-pequeño" onclick="eliminarPregunta(${p.id})">Eliminar</button></td>
+                    <td><button class="btn-pequeño" onclick="eliminarPregunta(${p.id}, this)">Eliminar</button></td>
                   </tr>
                 `).join("")}
               </tbody>
@@ -316,34 +316,44 @@
       event.target.classList.add("activo");
     }
 
-    async function eliminarPregunta(id) {
-      if (confirm("¿Eliminar esta pregunta?")) {
+    async function eliminarPregunta(id, btn) {
+      if (btn.textContent === "Eliminar") {
+        btn.textContent = "¿Confirmas?";
+        btn.style.background = "var(--color-warning)";
+        btn.style.opacity = "0.7";
+        setTimeout(() => {
+          btn.textContent = "Eliminar";
+          btn.style.background = "var(--color-error)";
+          btn.style.opacity = "1";
+        }, 3000);
+        return;
+      }
+
+      try {
+        const res = await fetch(`${ENDPOINT}/api/admin/preguntas/${id}?token=${ADMIN_TOKEN}`, {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" }
+        });
+
+        let data;
         try {
-          const res = await fetch(`${ENDPOINT}/api/admin/preguntas/${id}?token=${ADMIN_TOKEN}`, {
-            method: "DELETE",
-            headers: { "Content-Type": "application/json" }
-          });
-
-          let data;
-          try {
-            data = await res.json();
-          } catch (e) {
-            alert(`Error del servidor: ${res.status} ${res.statusText}`);
-            console.error("Response no es JSON:", res);
-            return;
-          }
-
-          if (data.ok) {
-            alert("✓ Pregunta eliminada correctamente");
-            cargarDatos();
-          } else {
-            alert(`❌ Error: ${data.error || "Error desconocido"}`);
-            console.error("Error server:", data);
-          }
+          data = await res.json();
         } catch (e) {
-          console.error("Error eliminando:", e);
-          alert("❌ Error de red: " + e.message);
+          alert(`Error del servidor: ${res.status} ${res.statusText}`);
+          console.error("Response no es JSON:", res);
+          return;
         }
+
+        if (data.ok) {
+          alert("✓ Pregunta eliminada correctamente");
+          cargarDatos();
+        } else {
+          alert(`❌ Error: ${data.error || "Error desconocido"}`);
+          console.error("Error server:", data);
+        }
+      } catch (e) {
+        console.error("Error eliminando:", e);
+        alert("❌ Error de red: " + e.message);
       }
     }
 
