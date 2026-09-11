@@ -194,7 +194,7 @@ function versionDestacada() {
  * devolvemos un link placeholder. En producción, el script de Google lo maneja.
  */
 function linkMediaFire(version) {
-  return "https://www.mediafire.com/file/f3ubap9yqrviuti/CotizadorAberturas_v3.3.0.zip/file";
+  return "https://www.mediafire.com/file/j6ku9o3sjkoomon/CotizadorAberturas_v3.3.0.zip/file";
 }
 
 /** Dibuja la tarjeta grande de la última versión */
