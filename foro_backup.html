@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Foro de Carpinteros — Cotizador de Aberturas</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* Paleta de colores — sincronizada con styles.css */
+    :root {
+      --color-primary: #7C3AED;
+      --color-primary-hover: #9F5AFF;
+      --color-accent: #06B6D4;
+      --color-text: #EDEDED;
+      --color-text-body: #A1A1A1;
+      --color-text-muted: #6B7280;
+      --color-bg: #0A0A0A;
+      --color-bg-alt: #141414;
+      --color-surface: #1A1A1A;
+      --color-border: #333333;
+      --color-error: #EF4444;
+      --color-success: #10B981;
+    }
+
+    /* Classic Forum Reset */
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-family: Verdana, Geneva, sans-serif;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    /* Header Bar */
+    .forum-header {
+      background: var(--color-surface);
+      color: var(--color-text);
+      padding: 12px 20px;
+      border-bottom: 2px solid var(--color-primary);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .forum-header h1 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: bold;
+      color: var(--color-primary);
+    }
+    .forum-header-right {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      font-size: 11px;
+    }
+    .forum-header-right a {
+      color: var(--color-accent);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .forum-header-right a:hover {
+      color: var(--color-primary);
+    }
+
+    /* Main Container */
+    .forum-container {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 0 10px;
+    }
+
+    /* Breadcrumb */
+    .breadcrumb {
+      background: var(--color-bg-alt);
+      border: 1px solid var(--color-border);
+      padding: 8px 12px;
+      margin-bottom: 15px;
+      font-size: 11px;
+      color: var(--color-text-muted);
+    }
+    .breadcrumb a { color: var(--color-accent); text-decoration: none; }
+    .breadcrumb a:hover { color: var(--color-primary); text-decoration: underline; }
+
+    /* Forum Stats Bar */
+    .forum-stats {
+      background: var(--color-bg-alt);
+      border: 1px solid var(--color-border);
+      padding: 10px;
+      margin-bottom: 15px;
+      font-size: 11px;
+      color: var(--color-text-muted);
+    }
+    .forum-stats strong { color: var(--color-primary); }
+
+    /* Table Styling (Classic) */
+    .forum-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      margin-bottom: 15px;
+    }
+
+    .forum-table thead {
+      background: var(--color-bg-alt);
+      border-bottom: 2px solid var(--color-primary);
+    }
+
+    .forum-table th {
+      padding: 8px 10px;
+      text-align: left;
+      font-weight: bold;
+      font-size: 12px;
+      color: var(--color-primary);
+      border-right: 1px solid var(--color-border);
+    }
+
+    .forum-table th:last-child { border-right: none; }
+
+    .forum-table tbody tr {
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .forum-table tbody tr:hover { background: var(--color-bg-alt); }
+
+    .forum-table td {
+      padding: 10px;
+      border-right: 1px solid var(--color-border);
+      vertical-align: top;
+      color: var(--color-text);
+    }
+
+    .forum-table td:last-child { border-right: none; }
+
+    /* Thread Row Styling */
+    .thread-title {
+      font-weight: 600;
+      color: var(--color-primary);
+      cursor: pointer;
+    }
+    .thread-title:hover { color: var(--color-primary-hover); }
+
+    .thread-meta {
+      font-size: 11px;
+      color: var(--color-text-muted);
+      margin-top: 3px;
+    }
+
+    .thread-icon {
+      font-size: 14px;
+      margin-right: 5px;
+    }
+
+    /* Post View */
+    .post-container {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      margin-bottom: 10px;
+    }
+
+    .post-header {
+      background: var(--color-bg-alt);
+      border-bottom: 1px solid var(--color-border);
+      padding: 8px 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: bold;
+      color: var(--color-primary);
+    }
+
+    .post-user-info {
+      display: flex;
+      gap: 12px;
+      padding: 10px;
+      border-right: 1px solid var(--color-border);
+      background: var(--color-bg-alt);
+    }
+
+    .post-avatar {
+      width: 48px;
+      height: 48px;
+      border: 1px solid var(--color-border);
+      border-radius: 3px;
+      background: var(--color-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--color-primary);
+    }
+
+    .post-user-details {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      font-size: 11px;
+      color: var(--color-text-muted);
+    }
+
+    .post-user-details .username {
+      font-weight: bold;
+      color: var(--color-primary);
+      font-size: 12px;
+    }
+
+    .post-user-details .badge {
+      display: inline-block;
+      background: var(--color-primary);
+      color: var(--color-text);
+      padding: 2px 6px;
+      border-radius: 2px;
+      font-size: 9px;
+      margin-top: 3px;
+      font-weight: bold;
+    }
+
+    .post-user-details .posts-count {
+      color: var(--color-text-muted);
+      margin-top: 2px;
+    }
+
+    .post-content {
+      padding: 15px;
+      line-height: 1.6;
+      color: var(--color-text);
+    }
+
+    .post-content p { margin: 0 0 8px 0; }
+
+    .post-images {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .post-images img {
+      max-width: 200px;
+      max-height: 200px;
+      border: 1px solid var(--color-border);
+    }
+
+    .post-footer {
+      border-top: 1px solid var(--color-border);
+      padding: 8px 10px;
+      background: var(--color-bg-alt);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: var(--color-text-muted);
+    }
+
+    .post-actions {
+      display: flex;
+      gap: 15px;
+    }
+
+    .vote-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .vote-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      color: var(--color-text-muted);
+      padding: 0;
+      transition: color 0.2s;
+    }
+
+    .vote-btn:hover { color: var(--color-primary); }
+
+    /* Pagination */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      margin: 15px 0;
+      font-size: 11px;
+    }
+
+    .pagination a, .pagination span {
+      padding: 4px 8px;
+      border: 1px solid var(--color-border);
+      background: var(--color-bg-alt);
+      color: var(--color-accent);
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .pagination a:hover { background: var(--color-surface); color: var(--color-primary); }
+
+    .pagination .active {
+      background: var(--color-primary);
+      color: var(--color-text);
+      border-color: var(--color-primary);
+    }
+
+    /* Forms */
+    .form-box {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+
+    .form-box h3 {
+      margin-top: 0;
+      color: var(--color-primary);
+      border-bottom: 1px solid var(--color-border);
+      padding-bottom: 8px;
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 4px;
+      font-weight: bold;
+      font-size: 11px;
+      color: var(--color-text);
+    }
+
+    .form-group input[type="text"],
+    .form-group input[type="email"],
+    .form-group input[type="password"],
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 6px;
+      border: 1px solid var(--color-border);
+      font-family: Verdana, sans-serif;
+      font-size: 11px;
+      background: var(--color-bg-alt);
+      color: var(--color-text);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .btn {
+      padding: 6px 16px;
+      background: var(--color-primary);
+      color: var(--color-text);
+      border: 1px solid var(--color-primary);
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: bold;
+      transition: all 0.2s;
+    }
+
+    .btn:hover { background: var(--color-primary-hover); border-color: var(--color-primary-hover); }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      max-width: 500px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .modal-header {
+      background: var(--color-bg-alt);
+      border-bottom: 1px solid var(--color-border);
+      padding: 12px 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: bold;
+      color: var(--color-primary);
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: var(--color-primary);
+      transition: color 0.2s;
+    }
+
+    .modal-close:hover { color: var(--color-primary-hover); }
+
+    .modal-body {
+      padding: 15px;
+      color: var(--color-text);
+    }
+
+    /* Alerts */
+    .alert {
+      padding: 10px 12px;
+      margin-bottom: 15px;
+      border: 1px solid;
+      border-radius: 3px;
+      font-size: 12px;
+    }
+
+    .alert-error {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: var(--color-error);
+      color: var(--color-error);
+    }
+
+    .alert-success {
+      background: rgba(16, 185, 129, 0.1);
+      border-color: var(--color-success);
+      color: var(--color-success);
+    }
+
+    /* Nav */
+    .forum-nav {
+      background: var(--color-bg-alt);
+      color: var(--color-text);
+      padding: 8px 12px;
+      margin-bottom: 15px;
+      border: 1px solid var(--color-border);
+      font-size: 11px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .forum-nav a {
+      color: var(--color-accent);
+      text-decoration: none;
+      margin-right: 15px;
+      transition: color 0.2s;
+    }
+
+    .forum-nav a:hover { color: var(--color-primary); text-decoration: underline; }
+
+    .forum-nav input {
+      padding: 4px;
+      font-size: 10px;
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      color: var(--color-text);
+    }
+
+    .forum-nav button {
+      padding: 4px 10px;
+      font-size: 10px;
+      background: var(--color-primary);
+      color: var(--color-text);
+      border: 1px solid var(--color-primary);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .forum-nav button:hover {
+      background: var(--color-primary-hover);
+      border-color: var(--color-primary-hover);
+    }
+
+    /* Loading */
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #666;
+    }
+
+    @media (max-width: 768px) {
+      .forum-table { font-size: 10px; }
+      .post-user-info { flex-direction: column; border-right: none; border-bottom: 1px solid #ddd; }
+      .forum-header { flex-direction: column; gap: 10px; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="forum-header">
+    <div>
+      <h1>🏗️ Foro de Carpinteros</h1>
+      <div style="font-size: 11px; margin-top: 4px; color: var(--color-text-muted);">Comunidad de Carpinteros — Cotizador de Aberturas</div>
+    </div>
+    <div class="forum-header-right">
+      <a href="index.html">← Volver a inicio</a>
+      <a href="index.html#descargas" style="background: var(--color-primary); padding: 6px 12px; border-radius: 3px; font-size: 10px; font-weight: bold;">📥 Descargar Software</a>
+      <div id="userStatus" style="font-size: 11px;"></div>
+      <button id="loginBtnHeader" class="btn" style="padding: 4px 12px; font-size: 10px;" onclick="mostrarAuthModal()">Conectar</button>
+    </div>
+  </div>
+
+  <div class="forum-container">
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+      <a href="index.html">Inicio</a> → <strong>Foro</strong>
+    </div>
+
+    <!-- Stats -->
+    <div class="forum-stats">
+      <strong id="totalStats">Cargando...</strong>
+    </div>
+
+    <!-- Navigation -->
+    <div class="forum-nav">
+      <div>
+        <a href="#" onclick="mostrarNuevaPregunta(); return false;">+ Nueva pregunta</a>
+        <a href="#" onclick="location.href='index.html#descargas'; return false;">📥 Descargar</a>
+      </div>
+      <div style="display: flex; gap: 10px; align-items: center;">
+        <input type="text" id="buscar" placeholder="Buscar en el foro..." style="padding: 4px; font-size: 10px; width: 200px;">
+        <button onclick="buscar()" style="padding: 4px 10px; font-size: 10px;">Buscar</button>
+        <button onclick="cargarHilos()" style="padding: 4px 10px; font-size: 10px; color: var(--color-text-muted);">Limpiar</button>
+      </div>
+    </div>
+
+    <!-- Forum Table -->
+    <table class="forum-table">
+      <thead>
+        <tr>
+          <th style="width: 50%;">Tema</th>
+          <th style="width: 12%;">Respuestas</th>
+          <th style="width: 12%;">Vistas</th>
+          <th style="width: 20%;">Último Post</th>
+        </tr>
+      </thead>
+      <tbody id="threadsList" class="loading">
+        <tr><td colspan="4" style="text-align: center; padding: 30px;">Cargando hilos...</td></tr>
+      </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <div id="pagination" class="pagination"></div>
+
+    <!-- Modals -->
+    <div class="modal" id="authModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <span>Participar en el foro</span>
+          <button class="modal-close" onclick="cerrarAuthModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+          <form id="formAuth" onsubmit="login(event)">
+            <div class="form-group">
+              <label>
+                <input type="checkbox" id="modoInvitado" onchange="toggleModoInvitado()" />
+                Participar como invitado
+              </label>
+            </div>
+            <div class="form-group">
+              <label for="authEmail">Email *</label>
+              <input type="email" id="authEmail" required />
+            </div>
+            <div class="form-group">
+              <label for="authNombre">Nombre *</label>
+              <input type="text" id="authNombre" required />
+            </div>
+            <div class="form-group" id="passwordGroup">
+              <label for="authPassword">Contraseña *</label>
+              <input type="password" id="authPassword" required />
+            </div>
+            <div id="authError"></div>
+            <button type="submit" class="btn">Entrar</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="preguntaModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <span>Nueva pregunta</span>
+          <button class="modal-close" onclick="cerrarPreguntaModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+          <form id="formPregunta" onsubmit="crearPregunta(event)">
+            <div class="form-group">
+              <label for="catSelect">Categoría *</label>
+              <select id="catSelect" required></select>
+            </div>
+            <div class="form-group">
+              <label for="pregTitulo">Asunto *</label>
+              <input type="text" id="pregTitulo" placeholder="Tema de tu pregunta..." required />
+            </div>
+            <div class="form-group">
+              <label for="pregContenido">Mensaje *</label>
+              <textarea id="pregContenido" placeholder="Describe tu duda en detalle..." required></textarea>
+            </div>
+            <div class="form-group">
+              <label for="pregImagenes">Imágenes (máx 3)</label>
+              <input type="file" id="pregImagenes" accept="image/*" multiple />
+            </div>
+            <div id="pregError"></div>
+            <button type="submit" class="btn">Publicar</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="threadModal" style="display: none; background: rgba(0,0,0,0.3);">
+      <div class="modal-content" style="max-width: 800px; width: 95%;">
+        <div id="threadContent" style="padding: 20px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const ENDPOINT = "https://cotizador-forum.fgpereyra-92.workers.dev";
+    let usuarioActual = null;
+    let paginaActual = 1;
+    let categorias = [];
+
+    // Init
+    window.addEventListener("load", () => {
+      const saved = localStorage.getItem("usuarioForo");
+      if (saved) usuarioActual = JSON.parse(saved);
+      actualizarUserStatus();
+      cargarCategorias();
+      cargarHilos();
+    });
+
+    // Auth
+    function login(e) {
+      e.preventDefault();
+      const esInvitado = document.getElementById("modoInvitado").checked;
+      const email = document.getElementById("authEmail").value;
+      const nombre = document.getElementById("authNombre").value;
+      const password = document.getElementById("authPassword").value;
+
+      const endpoint = esInvitado
+        ? `${ENDPOINT}/api/auth/invitado`
+        : `${ENDPOINT}/api/auth/login`;
+
+      const body = esInvitado
+        ? { email, nombre }
+        : { email, password: password || "" };
+
+      if (!esInvitado && !password) {
+        const reg = `${ENDPOINT}/api/auth/registro`;
+        fetch(reg, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, nombre, password: "guest" }) })
+          .then(r => r.json())
+          .then(d => {
+            if (d.ok) {
+              usuarioActual = { id: d.usuario?.id || 1, nombre, email, es_invitado: false };
+              localStorage.setItem("usuarioForo", JSON.stringify(usuarioActual));
+              actualizarUserStatus();
+              cerrarAuthModal();
+            }
+          });
+        return;
+      }
+
+      fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })
+        .then(r => r.json())
+        .then(d => {
+          if (d.ok) {
+            usuarioActual = d.usuario;
+            localStorage.setItem("usuarioForo", JSON.stringify(usuarioActual));
+            actualizarUserStatus();
+            cerrarAuthModal();
+          } else {
+            document.getElementById("authError").innerHTML = `<div class="alert alert-error">${d.error}</div>`;
+          }
+        });
+    }
+
+    function toggleModoInvitado() {
+      const checked = document.getElementById("modoInvitado").checked;
+      document.getElementById("passwordGroup").style.display = checked ? "none" : "block";
+    }
+
+    function actualizarUserStatus() {
+      const status = document.getElementById("userStatus");
+      const loginBtn = document.getElementById("loginBtnHeader");
+      if (usuarioActual) {
+        status.innerHTML = `<span style="color: var(--color-accent); font-weight: bold;">${usuarioActual.nombre}</span><br><span style="font-size: 10px; color: var(--color-text-muted);">${usuarioActual.es_invitado ? "Invitado" : "Registrado"}</span>`;
+        loginBtn.style.display = "none";
+        const logoutBtn = document.createElement("button");
+        logoutBtn.className = "btn";
+        logoutBtn.style.cssText = "padding: 4px 12px; font-size: 10px; background: var(--color-error);";
+        logoutBtn.textContent = "Desconectar";
+        logoutBtn.onclick = () => {
+          usuarioActual = null;
+          localStorage.removeItem("usuarioForo");
+          actualizarUserStatus();
+          cargarHilos();
+        };
+        if (!status.querySelector("button")) {
+          status.appendChild(logoutBtn);
+        }
+      } else {
+        status.textContent = "";
+        loginBtn.style.display = "inline-block";
+      }
+    }
+
+    // Forum Logic
+    function cargarCategorias() {
+      fetch(`${ENDPOINT}/api/categorias`)
+        .then(r => r.json())
+        .then(d => {
+          categorias = d.categorias || [];
+          const select = document.getElementById("catSelect");
+          select.innerHTML = '<option value="">-- Selecciona una categoría --</option>' +
+            categorias.map(c => `<option value="${c.id}">${c.nombre}</option>`).join("");
+        });
+    }
+
+    function cargarHilos(pagina = 1) {
+      paginaActual = pagina;
+      fetch(`${ENDPOINT}/api/preguntas?pagina=${pagina}`)
+        .then(r => r.json())
+        .then(d => {
+          const list = document.getElementById("threadsList");
+          if (!d.preguntas || d.preguntas.length === 0) {
+            list.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 30px;">No hay preguntas aún</td></tr>';
+          } else {
+            list.innerHTML = d.preguntas.map(p => `
+              <tr onclick="verHilo(${p.id})">
+                <td>
+                  <div class="thread-title">${escapeHtml(p.titulo)}</div>
+                  <div class="thread-meta">por <strong>${escapeHtml(p.autor)}</strong> en ${new Date(p.fecha).toLocaleDateString()}</div>
+                </td>
+                <td style="text-align: center;"><strong>${p.respuestas_count || 0}</strong></td>
+                <td style="text-align: center;"><strong>${p.vistas || 0}</strong></td>
+                <td style="font-size: 10px;">${p.fecha_actualizada ? new Date(p.fecha_actualizada).toLocaleDateString() : 'N/A'}</td>
+              </tr>
+            `).join("");
+          }
+
+          // Pagination
+          const pag = document.getElementById("pagination");
+          if (d.total_paginas > 1) {
+            let html = '';
+            if (pagina > 1) html += `<a onclick="cargarHilos(${pagina-1})">← Anterior</a>`;
+            for (let i = 1; i <= Math.min(d.total_paginas, 5); i++) {
+              html += pagina === i
+                ? `<span class="active">${i}</span>`
+                : `<a onclick="cargarHilos(${i})">${i}</a>`;
+            }
+            if (pagina < d.total_paginas) html += `<a onclick="cargarHilos(${pagina+1})">Siguiente →</a>`;
+            pag.innerHTML = html;
+          }
+
+          document.getElementById("totalStats").textContent = `Total: ${d.total} preguntas`;
+        });
+    }
+
+    function verHilo(id) {
+      const modal = document.getElementById("threadModal");
+      const content = document.getElementById("threadContent");
+      content.innerHTML = '<div class="loading">Cargando hilo...</div>';
+      modal.style.display = "flex";
+
+      fetch(`${ENDPOINT}/api/preguntas/${id}/respuestas`)
+        .then(r => r.json())
+        .then(d => {
+          // Fetch pregunta
+          fetch(`${ENDPOINT}/api/preguntas?pagina=1`)
+            .then(r => r.json())
+            .then(d2 => {
+              const p = d2.preguntas.find(x => x.id === id);
+              if (p) {
+                content.innerHTML = `
+                  <h2 style="color: #0d47a1; margin-top: 0;">${escapeHtml(p.titulo)}</h2>
+                  <div class="post-container" style="margin-bottom: 15px;">
+                    <div class="post-header">#1 — Post Original</div>
+                    <div style="display: flex; gap: 15px; padding: 10px;">
+                      <div class="post-avatar">👤</div>
+                      <div style="flex: 1;">
+                        <div style="font-weight: bold; color: #0d47a1;">${escapeHtml(p.autor)}</div>
+                        <div style="font-size: 10px; color: #666;">Publicado el ${new Date(p.fecha).toLocaleString()}</div>
+                      </div>
+                    </div>
+                    <div class="post-content">${escapeHtml(p.contenido).replace(/\n/g, '<br>')}</div>
+                    ${p.imagenes ? `<div class="post-images">${JSON.parse(p.imagenes).map(img => `<img src="${img}" />`).join('')}</div>` : ''}
+                  </div>
+                  <div style="margin-top: 20px; padding-top: 15px; border-top: 2px solid #0d47a1;">
+                    <h3 style="color: #0d47a1;">Respuestas (${d.respuestas?.length || 0})</h3>
+                    ${(d.respuestas || []).map((r, i) => `
+                      <div class="post-container" style="margin-bottom: 10px;">
+                        <div class="post-header">#${i+2} — ${escapeHtml(r.autor)}</div>
+                        <div style="display: flex; gap: 15px; padding: 10px;">
+                          <div class="post-avatar">${escapeHtml(r.autor).charAt(0).toUpperCase()}</div>
+                          <div style="flex: 1;">
+                            <div style="font-weight: bold; color: #0d47a1;">${escapeHtml(r.autor)}</div>
+                            <div style="font-size: 10px; color: #666;">Posts: ${r.posts_count || 0}</div>
+                            <div style="font-size: 10px; color: #666;">Publicado el ${new Date(r.fecha).toLocaleString()}</div>
+                          </div>
+                        </div>
+                        <div class="post-content">${escapeHtml(r.contenido).replace(/\n/g, '<br>')}</div>
+                        ${r.imagenes ? `<div class="post-images">${JSON.parse(r.imagenes).map(img => `<img src="${img}" />`).join('')}</div>` : ''}
+                        <div class="post-footer">
+                          <div class="vote-controls">
+                            <button class="vote-btn" onclick="votar(${r.id}, 'respuestas', 'up')">👍</button>
+                            <span>${r.votos || 0}</span>
+                            <button class="vote-btn" onclick="votar(${r.id}, 'respuestas', 'down')">👎</button>
+                          </div>
+                        </div>
+                      </div>
+                    `).join('')}
+                  </div>
+                  <div style="margin-top: 20px; text-align: center;">
+                    <button class="btn" onclick="cerrarThread()">Cerrar</button>
+                  </div>
+                `;
+              }
+            });
+        });
+    }
+
+    function cerrarThread() {
+      document.getElementById("threadModal").style.display = "none";
+    }
+
+    function votar(id, tabla, tipo) {
+      if (!usuarioActual) {
+        mostrarAuthModal();
+        return;
+      }
+      fetch(`${ENDPOINT}/api/votos/${tabla}/${id}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ usuario_id: usuarioActual.id, tipo_voto: tipo })
+      }).then(r => r.json()).then(d => {
+        if (d.ok) {
+          alert("Voto registrado");
+          // Recargar hilo
+        }
+      });
+    }
+
+    function mostrarNuevaPregunta() {
+      if (!usuarioActual) {
+        mostrarAuthModal();
+        return;
+      }
+      document.getElementById("preguntaModal").style.display = "flex";
+    }
+
+    function cerrarPreguntaModal() {
+      document.getElementById("preguntaModal").style.display = "none";
+    }
+
+    function mostrarAuthModal() {
+      document.getElementById("authModal").style.display = "flex";
+    }
+
+    function cerrarAuthModal() {
+      document.getElementById("authModal").style.display = "none";
+    }
+
+    function crearPregunta(e) {
+      e.preventDefault();
+      const titulo = document.getElementById("pregTitulo").value;
+      const contenido = document.getElementById("pregContenido").value;
+      const catId = document.getElementById("catSelect").value;
+
+      fetch(`${ENDPOINT}/api/preguntas`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          usuario_id: usuarioActual.id,
+          categoria_id: catId || null,
+          titulo,
+          contenido,
+          imagenes: null
+        })
+      }).then(r => r.json()).then(d => {
+        if (d.ok) {
+          alert("Pregunta publicada");
+          cerrarPreguntaModal();
+          cargarHilos();
+        }
+      });
+    }
+
+    function buscar() {
+      const q = document.getElementById("buscar").value;
+      if (q.length < 2) return;
+      fetch(`${ENDPOINT}/api/buscar?q=${encodeURIComponent(q)}`)
+        .then(r => r.json())
+        .then(d => {
+          const list = document.getElementById("threadsList");
+          if (d.preguntas.length === 0) {
+            list.innerHTML = '<tr><td colspan="4" style="text-align: center;">No se encontraron resultados</td></tr>';
+          } else {
+            list.innerHTML = d.preguntas.map(p => `
+              <tr onclick="verHilo(${p.id})">
+                <td>
+                  <div class="thread-title">${escapeHtml(p.titulo)}</div>
+                  <div class="thread-meta">por <strong>${escapeHtml(p.autor)}</strong></div>
+                </td>
+                <td style="text-align: center;">0</td>
+                <td style="text-align: center;">${p.vistas || 0}</td>
+                <td>${new Date(p.fecha).toLocaleDateString()}</td>
+              </tr>
+            `).join("");
+          }
+        });
+    }
+
+    function escapeHtml(text) {
+      const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+      return text.replace(/[&<>"']/g, m => map[m]);
+    }
+  </script>
+</body>
+</html>
