@@ -352,6 +352,95 @@ export default {
         }
       }
 
+      // ADMIN: Eliminar respuesta
+      if (path.match(/^\/api\/admin\/respuestas\/\d+$/) && request.method === "DELETE") {
+        const adminToken = url.searchParams.get("token");
+        if (adminToken !== "admin123") {
+          return json({ ok: false, error: "No autorizado" }, 401, headers);
+        }
+
+        const id = path.split("/")[4];
+        try {
+          // Obtener info de la respuesta
+          const resp = await env.DB.prepare("SELECT id_pregunta FROM respuestas WHERE id = ?").bind(id).first();
+          if (!resp) {
+            return json({ ok: false, error: "Respuesta no encontrada" }, 404, headers);
+          }
+
+          // Eliminar votos de la respuesta
+          await env.DB.prepare("DELETE FROM votos WHERE tipo = 'respuestas' AND contenido_id = ?").bind(id).run();
+          // Eliminar respuesta
+          await env.DB.prepare("DELETE FROM respuestas WHERE id = ?").bind(id).run();
+          // Actualizar contador
+          await env.DB.prepare("UPDATE preguntas SET respuestas_count = respuestas_count - 1 WHERE id = ?").bind(resp.id_pregunta).run();
+
+          return json({ ok: true, message: "Respuesta eliminada" }, 200, headers);
+        } catch (e) {
+          console.error("Error DELETE respuesta:", e);
+          return json({ ok: false, error: e.message }, 500, headers);
+        }
+      }
+
+      // ADMIN: Lock/Unlock pregunta
+      if (path.match(/^\/api\/admin\/preguntas\/\d+\/lock$/) && request.method === "PUT") {
+        const adminToken = url.searchParams.get("token");
+        if (adminToken !== "admin123") {
+          return json({ ok: false, error: "No autorizado" }, 401, headers);
+        }
+
+        const id = path.split("/")[4];
+        const { is_locked } = await request.json();
+
+        try {
+          await env.DB.prepare("UPDATE preguntas SET is_locked = ? WHERE id = ?").bind(is_locked ? 1 : 0, id).run();
+          return json({ ok: true, message: is_locked ? "Hilo cerrado" : "Hilo reabierto" }, 200, headers);
+        } catch (e) {
+          return json({ ok: false, error: e.message }, 500, headers);
+        }
+      }
+
+      // ADMIN: Pin/Unpin pregunta
+      if (path.match(/^\/api\/admin\/preguntas\/\d+\/pin$/) && request.method === "PUT") {
+        const adminToken = url.searchParams.get("token");
+        if (adminToken !== "admin123") {
+          return json({ ok: false, error: "No autorizado" }, 401, headers);
+        }
+
+        const id = path.split("/")[4];
+        const { is_pinned } = await request.json();
+
+        try {
+          await env.DB.prepare("UPDATE preguntas SET is_pinned = ? WHERE id = ?").bind(is_pinned ? 1 : 0, id).run();
+          return json({ ok: true, message: is_pinned ? "Hilo fijado" : "Hilo desfijado" }, 200, headers);
+        } catch (e) {
+          return json({ ok: false, error: e.message }, 500, headers);
+        }
+      }
+
+      // ADMIN: Listar todas las respuestas (para tab de moderación)
+      if (path === "/api/admin/respuestas" && request.method === "GET") {
+        const adminToken = url.searchParams.get("token");
+        if (adminToken !== "admin123") {
+          return json({ ok: false, error: "No autorizado" }, 401, headers);
+        }
+
+        try {
+          const respuestas = await env.DB.prepare(`
+            SELECT r.id, r.contenido, r.fecha, r.votos, r.is_locked,
+                   u.nombre as autor, p.id as id_pregunta, p.titulo as pregunta_titulo
+            FROM respuestas r
+            JOIN usuarios u ON r.usuario_id = u.id
+            JOIN preguntas p ON r.id_pregunta = p.id
+            ORDER BY r.fecha DESC
+            LIMIT 100
+          `).all();
+
+          return json({ ok: true, respuestas: respuestas.results || [] }, 200, headers);
+        } catch (e) {
+          return json({ ok: false, error: e.message }, 500, headers);
+        }
+      }
+
       // 404
       return json({ ok: false, error: "Endpoint no encontrado" }, 404, headers);
     } catch (error) {
