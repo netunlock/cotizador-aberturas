@@ -110,10 +110,19 @@
     .voto-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
     .respuestas-section { margin-top: 40px; }
-    .respuesta { background: var(--color-bg-alt); padding: 16px; border-radius: 8px; margin-bottom: 12px; border-left: 4px solid var(--color-primary); }
+    .respuesta {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      padding: 16px;
+      border-radius: 0;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      border-left: 4px solid var(--color-primary);
+    }
     .respuesta-autor { font-weight: 600; font-size: 0.95rem; }
     .respuesta-fecha { font-size: 0.85rem; color: var(--color-text-muted); }
     .respuesta-contenido { margin-top: 8px; line-height: 1.6; }
+    .respuesta-imagenes { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 12px; }
 
     .formulario-respuesta { background: var(--color-surface); padding: 20px; border-radius: 8px; margin-top: 20px; }
     .form-grupo { margin-bottom: 16px; }
@@ -495,6 +504,11 @@
             <div class="respuesta-autor">${escape(r.autor)}</div>
             <div class="respuesta-fecha">${formatearFecha(r.fecha)} • 👍 ${r.votos || 0}</div>
             <div class="respuesta-contenido">${escape(r.contenido)}</div>
+            ${r.imagenes ? `
+              <div class="respuesta-imagenes">
+                ${JSON.parse(r.imagenes).map(img => `<img src="${img}" alt="Imagen" class="imagen-thumb" />`).join("")}
+              </div>
+            ` : ""}
           </div>
         `).join("");
       } catch (e) {
