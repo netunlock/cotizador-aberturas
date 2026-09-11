@@ -502,13 +502,18 @@
         container.innerHTML = data.respuestas.map(r => `
           <div class="respuesta">
             <div class="respuesta-autor">${escape(r.autor)}</div>
-            <div class="respuesta-fecha">${formatearFecha(r.fecha)} • 👍 ${r.votos || 0}</div>
+            <div class="respuesta-fecha">${formatearFecha(r.fecha)}</div>
             <div class="respuesta-contenido">${escape(r.contenido)}</div>
             ${r.imagenes ? `
               <div class="respuesta-imagenes">
                 ${JSON.parse(r.imagenes).map(img => `<img src="${img}" alt="Imagen" class="imagen-thumb" />`).join("")}
               </div>
             ` : ""}
+            <div class="votos-section" style="border-top: 1px solid var(--color-border); padding-top: 12px; margin-top: 12px;">
+              <button class="voto-btn" onclick="votar(${r.id}, 'respuestas', 'up')" ${!usuarioActual ? "disabled" : ""}>👍</button>
+              <span style="font-size: 0.9rem;">${r.votos || 0}</span>
+              <button class="voto-btn" onclick="votar(${r.id}, 'respuestas', 'down')" ${!usuarioActual ? "disabled" : ""}>👎</button>
+            </div>
           </div>
         `).join("");
       } catch (e) {
@@ -598,8 +603,12 @@
           body: JSON.stringify({ usuario_id: usuarioActual.id, tipo_voto: tipo })
         });
         const data = await res.json();
-        if (data.ok && preguntaSeleccionada) {
-          cargarPreguntas();
+        if (data.ok) {
+          if (tabla === "preguntas") {
+            cargarPreguntas();
+          } else if (tabla === "respuestas" && preguntaSeleccionada) {
+            cargarRespuestas(preguntaSeleccionada);
+          }
         }
       } catch (e) {
         console.error("Error votando:", e);
