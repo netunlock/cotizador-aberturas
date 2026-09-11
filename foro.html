@@ -7,7 +7,9 @@
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="styles.css" />
   <style>
-    /* Paleta de colores — sincronizada con styles.css */
+    /* ===== PALETAS DE TRES TEMAS ===== */
+
+    /* TEMA 1: ACTUAL (Violeta/Dark - Paleta principal) */
     :root {
       --color-primary: #7C3AED;
       --color-primary-hover: #9F5AFF;
@@ -21,9 +23,44 @@
       --color-border: #333333;
       --color-error: #EF4444;
       --color-success: #10B981;
+      --color-warning: #F59E0B;
     }
 
-    /* Classic Forum Reset */
+    /* TEMA 2: CLÁSICO (Azul/Light - phpBB classic) */
+    :root[data-tema="clasico"] {
+      --color-primary: #0d47a1;
+      --color-primary-hover: #003d82;
+      --color-accent: #0066cc;
+      --color-text: #333;
+      --color-text-body: #666;
+      --color-text-muted: #999;
+      --color-bg: #e8e8e8;
+      --color-bg-alt: #f0f0f0;
+      --color-surface: #ffffff;
+      --color-border: #999;
+      --color-error: #cc3333;
+      --color-success: #33cc33;
+      --color-warning: #ff9900;
+    }
+
+    /* TEMA 3: GRISES (Monocromático - Escala de grises) */
+    :root[data-tema="grises"] {
+      --color-primary: #555555;
+      --color-primary-hover: #333333;
+      --color-accent: #777777;
+      --color-text: #222222;
+      --color-text-body: #555555;
+      --color-text-muted: #888888;
+      --color-bg: #f5f5f5;
+      --color-bg-alt: #ebebeb;
+      --color-surface: #ffffff;
+      --color-border: #aaaaaa;
+      --color-error: #666666;
+      --color-success: #555555;
+      --color-warning: #777777;
+    }
+
+    /* Classic Forum Styling */
     * { box-sizing: border-box; }
     body {
       margin: 0;
@@ -32,9 +69,9 @@
       font-family: Verdana, Geneva, sans-serif;
       font-size: 12px;
       line-height: 1.5;
+      transition: background-color 0.3s, color 0.3s;
     }
 
-    /* Header Bar */
     .forum-header {
       background: var(--color-surface);
       color: var(--color-text);
@@ -52,39 +89,61 @@
     }
     .forum-header-right {
       display: flex;
-      gap: 20px;
+      gap: 15px;
       align-items: center;
       font-size: 11px;
     }
-    .forum-header-right a {
+    .forum-header-right a, .forum-header-right button {
       color: var(--color-accent);
       text-decoration: none;
+      background: none;
+      border: none;
+      cursor: pointer;
       transition: color 0.2s;
     }
-    .forum-header-right a:hover {
+    .forum-header-right a:hover, .forum-header-right button:hover {
       color: var(--color-primary);
     }
 
-    /* Main Container */
-    .forum-container {
-      max-width: 1200px;
-      margin: 20px auto;
-      padding: 0 10px;
-    }
-
-    /* Breadcrumb */
     .breadcrumb {
       background: var(--color-bg-alt);
       border: 1px solid var(--color-border);
       padding: 8px 12px;
-      margin-bottom: 15px;
+      margin: 15px 20px 0;
       font-size: 11px;
       color: var(--color-text-muted);
     }
     .breadcrumb a { color: var(--color-accent); text-decoration: none; }
-    .breadcrumb a:hover { color: var(--color-primary); text-decoration: underline; }
+    .breadcrumb a:hover { color: var(--color-primary); }
 
-    /* Forum Stats Bar */
+    .tema-selector {
+      background: var(--color-bg-alt);
+      border: 1px solid var(--color-border);
+      padding: 8px 12px;
+      margin: 0 20px 15px;
+      font-size: 11px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .tema-btn {
+      padding: 4px 10px;
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text);
+      cursor: pointer;
+      font-size: 11px;
+      border-radius: 3px;
+      transition: all 0.2s;
+    }
+    .tema-btn.activo {
+      background: var(--color-primary);
+      color: var(--color-text);
+      border-color: var(--color-primary);
+    }
+    .tema-btn:hover { background: var(--color-primary-hover); }
+
+    .forum-container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
     .forum-stats {
       background: var(--color-bg-alt);
       border: 1px solid var(--color-border);
@@ -95,7 +154,6 @@
     }
     .forum-stats strong { color: var(--color-primary); }
 
-    /* Table Styling (Classic) */
     .forum-table {
       width: 100%;
       border-collapse: collapse;
@@ -103,12 +161,10 @@
       border: 1px solid var(--color-border);
       margin-bottom: 15px;
     }
-
     .forum-table thead {
       background: var(--color-bg-alt);
       border-bottom: 2px solid var(--color-primary);
     }
-
     .forum-table th {
       padding: 8px 10px;
       text-align: left;
@@ -117,50 +173,97 @@
       color: var(--color-primary);
       border-right: 1px solid var(--color-border);
     }
-
     .forum-table th:last-child { border-right: none; }
-
-    .forum-table tbody tr {
-      border-bottom: 1px solid var(--color-border);
-    }
-
+    .forum-table tbody tr { border-bottom: 1px solid var(--color-border); }
     .forum-table tbody tr:hover { background: var(--color-bg-alt); }
-
     .forum-table td {
       padding: 10px;
       border-right: 1px solid var(--color-border);
       vertical-align: top;
       color: var(--color-text);
     }
-
     .forum-table td:last-child { border-right: none; }
 
-    /* Thread Row Styling */
     .thread-title {
       font-weight: 600;
       color: var(--color-primary);
       cursor: pointer;
     }
     .thread-title:hover { color: var(--color-primary-hover); }
-
-    .thread-meta {
-      font-size: 11px;
-      color: var(--color-text-muted);
-      margin-top: 3px;
-    }
-
-    .thread-icon {
-      font-size: 14px;
+    .thread-meta { font-size: 11px; color: var(--color-text-muted); margin-top: 3px; }
+    .thread-badge {
+      display: inline-block;
+      font-size: 12px;
       margin-right: 5px;
     }
 
-    /* Post View */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 5px;
+      margin: 15px 0;
+      font-size: 11px;
+    }
+    .pagination a, .pagination span {
+      padding: 4px 8px;
+      border: 1px solid var(--color-border);
+      background: var(--color-bg-alt);
+      color: var(--color-accent);
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .pagination a:hover { background: var(--color-surface); color: var(--color-primary); }
+    .pagination .active {
+      background: var(--color-primary);
+      color: var(--color-text);
+      border-color: var(--color-primary);
+    }
+
+    .forum-nav {
+      background: var(--color-bg-alt);
+      color: var(--color-text);
+      padding: 8px 12px;
+      margin-bottom: 15px;
+      border: 1px solid var(--color-border);
+      font-size: 11px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+    }
+    .forum-nav a {
+      color: var(--color-accent);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .forum-nav a:hover { color: var(--color-primary); }
+    .forum-nav input {
+      padding: 4px;
+      font-size: 10px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      color: var(--color-text);
+    }
+    .forum-nav button {
+      padding: 4px 10px;
+      font-size: 10px;
+      background: var(--color-primary);
+      color: var(--color-text);
+      border: 1px solid var(--color-primary);
+      cursor: pointer;
+      border-radius: 3px;
+      transition: all 0.2s;
+    }
+    .forum-nav button:hover {
+      background: var(--color-primary-hover);
+      border-color: var(--color-primary-hover);
+    }
+
     .post-container {
       background: var(--color-surface);
       border: 1px solid var(--color-border);
       margin-bottom: 10px;
     }
-
     .post-header {
       background: var(--color-bg-alt);
       border-bottom: 1px solid var(--color-border);
@@ -171,7 +274,6 @@
       font-weight: bold;
       color: var(--color-primary);
     }
-
     .post-user-info {
       display: flex;
       gap: 12px;
@@ -179,7 +281,6 @@
       border-right: 1px solid var(--color-border);
       background: var(--color-bg-alt);
     }
-
     .post-avatar {
       width: 48px;
       height: 48px;
@@ -193,7 +294,6 @@
       font-weight: bold;
       color: var(--color-primary);
     }
-
     .post-user-details {
       display: flex;
       flex-direction: column;
@@ -201,13 +301,11 @@
       font-size: 11px;
       color: var(--color-text-muted);
     }
-
     .post-user-details .username {
       font-weight: bold;
       color: var(--color-primary);
       font-size: 12px;
     }
-
     .post-user-details .badge {
       display: inline-block;
       background: var(--color-primary);
@@ -218,33 +316,23 @@
       margin-top: 3px;
       font-weight: bold;
     }
-
-    .post-user-details .posts-count {
-      color: var(--color-text-muted);
-      margin-top: 2px;
-    }
-
     .post-content {
       padding: 15px;
       line-height: 1.6;
       color: var(--color-text);
     }
-
     .post-content p { margin: 0 0 8px 0; }
-
     .post-images {
       display: flex;
       gap: 10px;
       margin-top: 10px;
       flex-wrap: wrap;
     }
-
     .post-images img {
       max-width: 200px;
       max-height: 200px;
       border: 1px solid var(--color-border);
     }
-
     .post-footer {
       border-top: 1px solid var(--color-border);
       padding: 8px 10px;
@@ -255,18 +343,6 @@
       font-size: 11px;
       color: var(--color-text-muted);
     }
-
-    .post-actions {
-      display: flex;
-      gap: 15px;
-    }
-
-    .vote-controls {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
     .vote-btn {
       background: none;
       border: none;
@@ -276,96 +352,8 @@
       padding: 0;
       transition: color 0.2s;
     }
-
     .vote-btn:hover { color: var(--color-primary); }
 
-    /* Pagination */
-    .pagination {
-      display: flex;
-      justify-content: center;
-      gap: 5px;
-      margin: 15px 0;
-      font-size: 11px;
-    }
-
-    .pagination a, .pagination span {
-      padding: 4px 8px;
-      border: 1px solid var(--color-border);
-      background: var(--color-bg-alt);
-      color: var(--color-accent);
-      text-decoration: none;
-      transition: all 0.2s;
-    }
-
-    .pagination a:hover { background: var(--color-surface); color: var(--color-primary); }
-
-    .pagination .active {
-      background: var(--color-primary);
-      color: var(--color-text);
-      border-color: var(--color-primary);
-    }
-
-    /* Forms */
-    .form-box {
-      background: var(--color-surface);
-      border: 1px solid var(--color-border);
-      padding: 15px;
-      margin-bottom: 15px;
-    }
-
-    .form-box h3 {
-      margin-top: 0;
-      color: var(--color-primary);
-      border-bottom: 1px solid var(--color-border);
-      padding-bottom: 8px;
-    }
-
-    .form-group {
-      margin-bottom: 12px;
-    }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 4px;
-      font-weight: bold;
-      font-size: 11px;
-      color: var(--color-text);
-    }
-
-    .form-group input[type="text"],
-    .form-group input[type="email"],
-    .form-group input[type="password"],
-    .form-group textarea,
-    .form-group select {
-      width: 100%;
-      padding: 6px;
-      border: 1px solid var(--color-border);
-      font-family: Verdana, sans-serif;
-      font-size: 11px;
-      background: var(--color-bg-alt);
-      color: var(--color-text);
-    }
-
-    .form-group textarea {
-      resize: vertical;
-      min-height: 100px;
-    }
-
-    .btn {
-      padding: 6px 16px;
-      background: var(--color-primary);
-      color: var(--color-text);
-      border: 1px solid var(--color-primary);
-      border-radius: 3px;
-      cursor: pointer;
-      font-size: 11px;
-      font-weight: bold;
-      transition: all 0.2s;
-    }
-
-    .btn:hover { background: var(--color-primary-hover); border-color: var(--color-primary-hover); }
-
-    /* Modal */
     .modal {
       display: none;
       position: fixed;
@@ -378,7 +366,6 @@
       align-items: center;
       justify-content: center;
     }
-
     .modal-content {
       background: var(--color-surface);
       border: 1px solid var(--color-border);
@@ -388,7 +375,6 @@
       overflow-y: auto;
       position: relative;
     }
-
     .modal-header {
       background: var(--color-bg-alt);
       border-bottom: 1px solid var(--color-border);
@@ -399,7 +385,6 @@
       font-weight: bold;
       color: var(--color-primary);
     }
-
     .modal-close {
       background: none;
       border: none;
@@ -408,15 +393,47 @@
       color: var(--color-primary);
       transition: color 0.2s;
     }
-
     .modal-close:hover { color: var(--color-primary-hover); }
+    .modal-body { padding: 15px; color: var(--color-text); }
 
-    .modal-body {
-      padding: 15px;
+    .form-group {
+      margin-bottom: 12px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 4px;
+      font-weight: bold;
+      font-size: 11px;
       color: var(--color-text);
     }
+    .form-group input, .form-group textarea, .form-group select {
+      width: 100%;
+      padding: 6px;
+      border: 1px solid var(--color-border);
+      font-family: Verdana, sans-serif;
+      font-size: 11px;
+      background: var(--color-bg-alt);
+      color: var(--color-text);
+      border-radius: 3px;
+    }
+    .form-group textarea { min-height: 100px; resize: vertical; }
+    .form-group input[type="checkbox"] { width: auto; margin-right: 8px; }
 
-    /* Alerts */
+    .btn {
+      padding: 6px 16px;
+      background: var(--color-primary);
+      color: var(--color-text);
+      border: 1px solid var(--color-primary);
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: bold;
+      transition: all 0.2s;
+    }
+    .btn:hover { background: var(--color-primary-hover); border-color: var(--color-primary-hover); }
+    .btn-secondary { background: var(--color-bg-alt); color: var(--color-text); border-color: var(--color-border); }
+    .btn-secondary:hover { background: var(--color-surface); }
+
     .alert {
       padding: 10px 12px;
       margin-bottom: 15px;
@@ -424,75 +441,24 @@
       border-radius: 3px;
       font-size: 12px;
     }
-
     .alert-error {
       background: rgba(239, 68, 68, 0.1);
       border-color: var(--color-error);
       color: var(--color-error);
     }
-
     .alert-success {
       background: rgba(16, 185, 129, 0.1);
       border-color: var(--color-success);
       color: var(--color-success);
     }
 
-    /* Nav */
-    .forum-nav {
-      background: var(--color-bg-alt);
-      color: var(--color-text);
-      padding: 8px 12px;
-      margin-bottom: 15px;
-      border: 1px solid var(--color-border);
-      font-size: 11px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .forum-nav a {
-      color: var(--color-accent);
-      text-decoration: none;
-      margin-right: 15px;
-      transition: color 0.2s;
-    }
-
-    .forum-nav a:hover { color: var(--color-primary); text-decoration: underline; }
-
-    .forum-nav input {
-      padding: 4px;
-      font-size: 10px;
-      background: var(--color-bg);
-      border: 1px solid var(--color-border);
-      color: var(--color-text);
-    }
-
-    .forum-nav button {
-      padding: 4px 10px;
-      font-size: 10px;
-      background: var(--color-primary);
-      color: var(--color-text);
-      border: 1px solid var(--color-primary);
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .forum-nav button:hover {
-      background: var(--color-primary-hover);
-      border-color: var(--color-primary-hover);
-    }
-
-    /* Loading */
-    .loading {
-      text-align: center;
-      padding: 40px;
-      color: #666;
-    }
+    .loading { text-align: center; padding: 40px; color: var(--color-text-muted); }
 
     @media (max-width: 768px) {
       .forum-table { font-size: 10px; }
-      .post-user-info { flex-direction: column; border-right: none; border-bottom: 1px solid #ddd; }
-      .forum-header { flex-direction: column; gap: 10px; text-align: center; }
+      .forum-header { flex-direction: column; gap: 10px; }
+      .forum-nav { flex-direction: column; }
+      .post-user-info { flex-direction: column; border-right: none; border-bottom: 1px solid var(--color-border); }
     }
   </style>
 </head>
@@ -501,13 +467,13 @@
   <div class="forum-header">
     <div>
       <h1>🏗️ Foro de Carpinteros</h1>
-      <div style="font-size: 11px; margin-top: 4px; color: var(--color-text-muted);">Comunidad de Carpinteros — Cotizador de Aberturas</div>
+      <div style="font-size: 11px; margin-top: 4px; color: var(--color-text-muted);">Comunidad de Carpinteros</div>
     </div>
     <div class="forum-header-right">
-      <a href="index.html">← Volver a inicio</a>
-      <a href="index.html#descargas" style="background: var(--color-primary); padding: 6px 12px; border-radius: 3px; font-size: 10px; font-weight: bold;">📥 Descargar Software</a>
+      <a href="index.html">← Volver</a>
+      <a href="index.html#descargas" style="background: var(--color-primary); padding: 6px 12px; border-radius: 3px; font-weight: bold;">📥 Descargar</a>
       <div id="userStatus" style="font-size: 11px;"></div>
-      <button id="loginBtnHeader" class="btn" style="padding: 4px 12px; font-size: 10px;" onclick="mostrarAuthModal()">Conectar</button>
+      <button id="loginBtn" class="btn" style="padding: 4px 12px; font-size: 10px;" onclick="mostrarAuthModal()">Conectar</button>
     </div>
   </div>
 
@@ -517,16 +483,23 @@
       <a href="index.html">Inicio</a> → <strong>Foro</strong>
     </div>
 
+    <!-- Tema Selector -->
+    <div class="tema-selector">
+      <strong>Tema:</strong>
+      <button class="tema-btn activo" data-tema="actual" onclick="cambiarTema('actual')">Actual</button>
+      <button class="tema-btn" data-tema="clasico" onclick="cambiarTema('clasico')">Clásico</button>
+      <button class="tema-btn" data-tema="grises" onclick="cambiarTema('grises')">Grises</button>
+    </div>
+
     <!-- Stats -->
     <div class="forum-stats">
-      <strong id="totalStats">Cargando...</strong>
+      <strong id="totalStats">Cargando estadísticas...</strong>
     </div>
 
     <!-- Navigation -->
     <div class="forum-nav">
       <div>
         <a href="#" onclick="mostrarNuevaPregunta(); return false;">+ Nueva pregunta</a>
-        <a href="#" onclick="location.href='index.html#descargas'; return false;">📥 Descargar</a>
       </div>
       <div style="display: flex; gap: 10px; align-items: center;">
         <input type="text" id="buscar" placeholder="Buscar en el foro..." style="padding: 4px; font-size: 10px; width: 200px;">
@@ -557,31 +530,49 @@
     <div class="modal" id="authModal">
       <div class="modal-content">
         <div class="modal-header">
-          <span>Participar en el foro</span>
+          <span>Autenticación</span>
           <button class="modal-close" onclick="cerrarAuthModal()">&times;</button>
         </div>
         <div class="modal-body">
-          <form id="formAuth" onsubmit="login(event)">
+          <div id="authTabs" style="display: flex; gap: 10px; margin-bottom: 15px; border-bottom: 1px solid var(--color-border); padding-bottom: 10px;">
+            <button id="tabLogin" class="btn btn-secondary" style="flex: 1;" onclick="mostrarTabLogin()">Iniciar Sesión</button>
+            <button id="tabRegistro" class="btn btn-secondary" style="flex: 1;" onclick="mostrarTabRegistro()">Registrarse</button>
+          </div>
+
+          <!-- Login Form -->
+          <form id="formLogin" onsubmit="login(event)">
             <div class="form-group">
-              <label>
-                <input type="checkbox" id="modoInvitado" onchange="toggleModoInvitado()" />
-                Participar como invitado
-              </label>
+              <label for="loginEmail">Email *</label>
+              <input type="email" id="loginEmail" required />
             </div>
             <div class="form-group">
-              <label for="authEmail">Email *</label>
-              <input type="email" id="authEmail" required />
+              <label for="loginPassword">Contraseña *</label>
+              <input type="password" id="loginPassword" required />
+            </div>
+            <div id="loginError"></div>
+            <button type="submit" class="btn" style="width: 100%;">Entrar</button>
+          </form>
+
+          <!-- Registro Form (Hidden initially) -->
+          <form id="formRegistro" onsubmit="registro(event)" style="display: none;">
+            <div class="form-group">
+              <label for="regEmail">Email *</label>
+              <input type="email" id="regEmail" required />
             </div>
             <div class="form-group">
-              <label for="authNombre">Nombre *</label>
-              <input type="text" id="authNombre" required />
+              <label for="regNombre">Nombre *</label>
+              <input type="text" id="regNombre" required />
             </div>
-            <div class="form-group" id="passwordGroup">
-              <label for="authPassword">Contraseña *</label>
-              <input type="password" id="authPassword" required />
+            <div class="form-group">
+              <label for="regPassword">Contraseña (mín. 6 caracteres) *</label>
+              <input type="password" id="regPassword" required minlength="6" />
             </div>
-            <div id="authError"></div>
-            <button type="submit" class="btn">Entrar</button>
+            <div class="form-group">
+              <label for="regPasswordConfirm">Confirmar Contraseña *</label>
+              <input type="password" id="regPasswordConfirm" required />
+            </div>
+            <div id="regError"></div>
+            <button type="submit" class="btn" style="width: 100%;">Registrarse</button>
           </form>
         </div>
       </div>
@@ -612,13 +603,38 @@
               <input type="file" id="pregImagenes" accept="image/*" multiple />
             </div>
             <div id="pregError"></div>
-            <button type="submit" class="btn">Publicar</button>
+            <button type="submit" class="btn" style="width: 100%;">Publicar Pregunta</button>
           </form>
         </div>
       </div>
     </div>
 
-    <div class="modal" id="threadModal" style="display: none; background: rgba(0,0,0,0.3);">
+    <div class="modal" id="respuestaGuestModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <span>Responder al hilo</span>
+          <button class="modal-close" onclick="cerrarRespuestaGuestModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p style="color: var(--color-text-muted); font-size: 11px;">¿Cómo quieres responder?</p>
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <button class="btn" onclick="mostrarRespuestaAnonima()" style="text-align: left;">
+              📝 Responder anónimamente<br>
+              <span style="font-size: 10px; color: var(--color-text-muted);">Proporciona nombre y email</span>
+            </button>
+            <button class="btn" onclick="mostrarRegistroRapido()" style="text-align: left;">
+              ⚡ Crear cuenta rápida<br>
+              <span style="font-size: 10px; color: var(--color-text-muted);">Email + Contraseña</span>
+            </button>
+            <button class="btn btn-secondary" onclick="mostrarAuthModal()">
+              🔑 Iniciar sesión
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="threadModal" style="background: rgba(0,0,0,0.3);">
       <div class="modal-content" style="max-width: 800px; width: 95%;">
         <div id="threadContent" style="padding: 20px;"></div>
       </div>
@@ -630,92 +646,135 @@
     let usuarioActual = null;
     let paginaActual = 1;
     let categorias = [];
+    let hiloActualId = null;
 
-    // Init
+    // ===== INIT =====
     window.addEventListener("load", () => {
-      const saved = localStorage.getItem("usuarioForo");
-      if (saved) usuarioActual = JSON.parse(saved);
+      // Restaurar tema guardado
+      const temaSaved = localStorage.getItem("temaBlog") || "actual";
+      cambiarTema(temaSaved, false);
+
+      // Restaurar usuario guardado
+      const savedUser = localStorage.getItem("usuarioForo");
+      if (savedUser) usuarioActual = JSON.parse(savedUser);
+
       actualizarUserStatus();
       cargarCategorias();
       cargarHilos();
     });
 
-    // Auth
+    // ===== TEMAS =====
+    function cambiarTema(tema, save = true) {
+      document.documentElement.setAttribute("data-tema", tema);
+      document.querySelectorAll(".tema-btn").forEach(b => b.classList.remove("activo"));
+      document.querySelector(`[data-tema="${tema}"]`).classList.add("activo");
+      if (save) localStorage.setItem("temaBlog", tema);
+    }
+
+    // ===== AUTH / USUARIO =====
+    function mostrarAuthModal() {
+      document.getElementById("authModal").style.display = "flex";
+      mostrarTabLogin();
+    }
+
+    function cerrarAuthModal() {
+      document.getElementById("authModal").style.display = "none";
+      document.getElementById("loginError").innerHTML = "";
+      document.getElementById("regError").innerHTML = "";
+      document.getElementById("loginEmail").value = "";
+      document.getElementById("loginPassword").value = "";
+      document.getElementById("regEmail").value = "";
+      document.getElementById("regNombre").value = "";
+      document.getElementById("regPassword").value = "";
+      document.getElementById("regPasswordConfirm").value = "";
+    }
+
+    function mostrarTabLogin() {
+      document.getElementById("formLogin").style.display = "block";
+      document.getElementById("formRegistro").style.display = "none";
+      document.getElementById("tabLogin").style.background = "var(--color-primary)";
+      document.getElementById("tabRegistro").style.background = "var(--color-bg-alt)";
+    }
+
+    function mostrarTabRegistro() {
+      document.getElementById("formLogin").style.display = "none";
+      document.getElementById("formRegistro").style.display = "block";
+      document.getElementById("tabLogin").style.background = "var(--color-bg-alt)";
+      document.getElementById("tabRegistro").style.background = "var(--color-primary)";
+    }
+
     function login(e) {
       e.preventDefault();
-      const esInvitado = document.getElementById("modoInvitado").checked;
-      const email = document.getElementById("authEmail").value;
-      const nombre = document.getElementById("authNombre").value;
-      const password = document.getElementById("authPassword").value;
+      const email = document.getElementById("loginEmail").value;
+      const password = document.getElementById("loginPassword").value;
 
-      const endpoint = esInvitado
-        ? `${ENDPOINT}/api/auth/invitado`
-        : `${ENDPOINT}/api/auth/login`;
+      fetch(`${ENDPOINT}/api/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      }).then(r => r.json()).then(d => {
+        if (d.ok) {
+          usuarioActual = d.usuario;
+          localStorage.setItem("usuarioForo", JSON.stringify(usuarioActual));
+          actualizarUserStatus();
+          cerrarAuthModal();
+        } else {
+          document.getElementById("loginError").innerHTML = `<div class="alert alert-error">${d.error}</div>`;
+        }
+      });
+    }
 
-      const body = esInvitado
-        ? { email, nombre }
-        : { email, password: password || "" };
+    function registro(e) {
+      e.preventDefault();
+      const email = document.getElementById("regEmail").value;
+      const nombre = document.getElementById("regNombre").value;
+      const password = document.getElementById("regPassword").value;
+      const passwordConfirm = document.getElementById("regPasswordConfirm").value;
 
-      if (!esInvitado && !password) {
-        const reg = `${ENDPOINT}/api/auth/registro`;
-        fetch(reg, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, nombre, password: "guest" }) })
-          .then(r => r.json())
-          .then(d => {
-            if (d.ok) {
-              usuarioActual = { id: d.usuario?.id || 1, nombre, email, es_invitado: false };
-              localStorage.setItem("usuarioForo", JSON.stringify(usuarioActual));
-              actualizarUserStatus();
-              cerrarAuthModal();
-            }
-          });
+      if (password !== passwordConfirm) {
+        document.getElementById("regError").innerHTML = '<div class="alert alert-error">Las contraseñas no coinciden</div>';
         return;
       }
 
-      fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })
-        .then(r => r.json())
-        .then(d => {
-          if (d.ok) {
-            usuarioActual = d.usuario;
-            localStorage.setItem("usuarioForo", JSON.stringify(usuarioActual));
-            actualizarUserStatus();
-            cerrarAuthModal();
-          } else {
-            document.getElementById("authError").innerHTML = `<div class="alert alert-error">${d.error}</div>`;
-          }
-        });
-    }
-
-    function toggleModoInvitado() {
-      const checked = document.getElementById("modoInvitado").checked;
-      document.getElementById("passwordGroup").style.display = checked ? "none" : "block";
+      fetch(`${ENDPOINT}/api/auth/registro`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, nombre, password })
+      }).then(r => r.json()).then(d => {
+        if (d.ok) {
+          // Auto login después del registro
+          usuarioActual = { id: d.usuario?.id || Math.random(), nombre, email, es_invitado: false };
+          localStorage.setItem("usuarioForo", JSON.stringify(usuarioActual));
+          actualizarUserStatus();
+          cerrarAuthModal();
+        } else {
+          document.getElementById("regError").innerHTML = `<div class="alert alert-error">${d.error}</div>`;
+        }
+      });
     }
 
     function actualizarUserStatus() {
       const status = document.getElementById("userStatus");
-      const loginBtn = document.getElementById("loginBtnHeader");
+      const loginBtn = document.getElementById("loginBtn");
+
       if (usuarioActual) {
-        status.innerHTML = `<span style="color: var(--color-accent); font-weight: bold;">${usuarioActual.nombre}</span><br><span style="font-size: 10px; color: var(--color-text-muted);">${usuarioActual.es_invitado ? "Invitado" : "Registrado"}</span>`;
+        status.innerHTML = `<span style="color: var(--color-accent); font-weight: bold;">${usuarioActual.nombre}</span>
+          <button class="btn" style="padding: 4px 12px; font-size: 10px; margin-left: 10px;" onclick="logout()">Desconectar</button>`;
         loginBtn.style.display = "none";
-        const logoutBtn = document.createElement("button");
-        logoutBtn.className = "btn";
-        logoutBtn.style.cssText = "padding: 4px 12px; font-size: 10px; background: var(--color-error);";
-        logoutBtn.textContent = "Desconectar";
-        logoutBtn.onclick = () => {
-          usuarioActual = null;
-          localStorage.removeItem("usuarioForo");
-          actualizarUserStatus();
-          cargarHilos();
-        };
-        if (!status.querySelector("button")) {
-          status.appendChild(logoutBtn);
-        }
       } else {
         status.textContent = "";
         loginBtn.style.display = "inline-block";
       }
     }
 
-    // Forum Logic
+    function logout() {
+      usuarioActual = null;
+      localStorage.removeItem("usuarioForo");
+      actualizarUserStatus();
+      cargarHilos();
+    }
+
+    // ===== FORO =====
     function cargarCategorias() {
       fetch(`${ENDPOINT}/api/categorias`)
         .then(r => r.json())
@@ -739,7 +798,11 @@
             list.innerHTML = d.preguntas.map(p => `
               <tr onclick="verHilo(${p.id})">
                 <td>
-                  <div class="thread-title">${escapeHtml(p.titulo)}</div>
+                  <div class="thread-title">
+                    ${p.is_pinned ? '<span class="thread-badge">📌</span>' : ''}
+                    ${p.is_locked ? '<span class="thread-badge">🔒</span>' : ''}
+                    ${escapeHtml(p.titulo)}
+                  </div>
                   <div class="thread-meta">por <strong>${escapeHtml(p.autor)}</strong> en ${new Date(p.fecha).toLocaleDateString()}</div>
                 </td>
                 <td style="text-align: center;"><strong>${p.respuestas_count || 0}</strong></td>
@@ -749,7 +812,7 @@
             `).join("");
           }
 
-          // Pagination
+          // Paginación
           const pag = document.getElementById("pagination");
           if (d.total_paginas > 1) {
             let html = '';
@@ -768,6 +831,7 @@
     }
 
     function verHilo(id) {
+      hiloActualId = id;
       const modal = document.getElementById("threadModal");
       const content = document.getElementById("threadContent");
       content.innerHTML = '<div class="loading">Cargando hilo...</div>';
@@ -775,44 +839,55 @@
 
       fetch(`${ENDPOINT}/api/preguntas/${id}/respuestas`)
         .then(r => r.json())
-        .then(d => {
-          // Fetch pregunta
+        .then(respuestas => {
+          // Obtener pregunta original
           fetch(`${ENDPOINT}/api/preguntas?pagina=1`)
             .then(r => r.json())
-            .then(d2 => {
-              const p = d2.preguntas.find(x => x.id === id);
+            .then(d => {
+              const p = d.preguntas.find(x => x.id === id);
               if (p) {
                 content.innerHTML = `
-                  <h2 style="color: #0d47a1; margin-top: 0;">${escapeHtml(p.titulo)}</h2>
-                  <div class="post-container" style="margin-bottom: 15px;">
-                    <div class="post-header">#1 — Post Original</div>
-                    <div style="display: flex; gap: 15px; padding: 10px;">
-                      <div class="post-avatar">👤</div>
-                      <div style="flex: 1;">
-                        <div style="font-weight: bold; color: #0d47a1;">${escapeHtml(p.autor)}</div>
-                        <div style="font-size: 10px; color: #666;">Publicado el ${new Date(p.fecha).toLocaleString()}</div>
+                  <div style="margin-bottom: 20px;">
+                    <h2 style="color: var(--color-primary); margin-top: 0;">${escapeHtml(p.titulo)}</h2>
+                    ${p.is_locked ? '<div class="alert alert-error">🔒 Este hilo está cerrado. No se permiten nuevas respuestas.</div>' : ''}
+
+                    <div class="post-container">
+                      <div class="post-header">#1 — Post Original</div>
+                      <div style="display: flex; gap: 15px; padding: 10px;">
+                        <div class="post-avatar">${escapeHtml(p.autor).charAt(0).toUpperCase()}</div>
+                        <div style="flex: 1;">
+                          <div style="font-weight: bold; color: var(--color-primary);">${escapeHtml(p.autor)}</div>
+                          <div style="font-size: 10px; color: var(--color-text-muted);">Publicado el ${new Date(p.fecha).toLocaleString()}</div>
+                        </div>
+                      </div>
+                      <div class="post-content">${escapeHtml(p.contenido).replace(/\n/g, '<br>')}</div>
+                      ${p.imagenes ? `<div class="post-images">${JSON.parse(p.imagenes).map(img => `<img src="${img}" />`).join('')}</div>` : ''}
+                      <div class="post-footer">
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                          <button class="vote-btn" onclick="votar(${p.id}, 'preguntas', 'up')">👍</button>
+                          <span>${p.votos || 0}</span>
+                          <button class="vote-btn" onclick="votar(${p.id}, 'preguntas', 'down')">👎</button>
+                        </div>
                       </div>
                     </div>
-                    <div class="post-content">${escapeHtml(p.contenido).replace(/\n/g, '<br>')}</div>
-                    ${p.imagenes ? `<div class="post-images">${JSON.parse(p.imagenes).map(img => `<img src="${img}" />`).join('')}</div>` : ''}
                   </div>
-                  <div style="margin-top: 20px; padding-top: 15px; border-top: 2px solid #0d47a1;">
-                    <h3 style="color: #0d47a1;">Respuestas (${d.respuestas?.length || 0})</h3>
-                    ${(d.respuestas || []).map((r, i) => `
-                      <div class="post-container" style="margin-bottom: 10px;">
+
+                  <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--color-border);">
+                    <h3 style="color: var(--color-primary);">Respuestas (${respuestas.respuestas?.length || 0})</h3>
+                    ${(respuestas.respuestas || []).map((r, i) => `
+                      <div class="post-container">
                         <div class="post-header">#${i+2} — ${escapeHtml(r.autor)}</div>
                         <div style="display: flex; gap: 15px; padding: 10px;">
                           <div class="post-avatar">${escapeHtml(r.autor).charAt(0).toUpperCase()}</div>
                           <div style="flex: 1;">
-                            <div style="font-weight: bold; color: #0d47a1;">${escapeHtml(r.autor)}</div>
-                            <div style="font-size: 10px; color: #666;">Posts: ${r.posts_count || 0}</div>
-                            <div style="font-size: 10px; color: #666;">Publicado el ${new Date(r.fecha).toLocaleString()}</div>
+                            <div style="font-weight: bold; color: var(--color-primary);">${escapeHtml(r.autor)}</div>
+                            <div style="font-size: 10px; color: var(--color-text-muted);">Publicado el ${new Date(r.fecha).toLocaleString()}</div>
                           </div>
                         </div>
                         <div class="post-content">${escapeHtml(r.contenido).replace(/\n/g, '<br>')}</div>
                         ${r.imagenes ? `<div class="post-images">${JSON.parse(r.imagenes).map(img => `<img src="${img}" />`).join('')}</div>` : ''}
                         <div class="post-footer">
-                          <div class="vote-controls">
+                          <div style="display: flex; gap: 8px; align-items: center;">
                             <button class="vote-btn" onclick="votar(${r.id}, 'respuestas', 'up')">👍</button>
                             <span>${r.votos || 0}</span>
                             <button class="vote-btn" onclick="votar(${r.id}, 'respuestas', 'down')">👎</button>
@@ -820,9 +895,24 @@
                         </div>
                       </div>
                     `).join('')}
+
+                    ${!p.is_locked ? `
+                      <div style="margin-top: 20px; padding: 20px; background: var(--color-bg-alt); border-radius: 3px;">
+                        <h4 style="margin-top: 0; color: var(--color-primary);">Responder</h4>
+                        <form id="formRespuesta" onsubmit="enviarRespuesta(event, ${id})">
+                          <div class="form-group">
+                            <label for="respContenido">Tu respuesta *</label>
+                            <textarea id="respContenido" placeholder="Escribe tu respuesta..." required></textarea>
+                          </div>
+                          <div id="respError"></div>
+                          <button type="submit" class="btn">Publicar Respuesta</button>
+                        </form>
+                      </div>
+                    ` : ''}
                   </div>
+
                   <div style="margin-top: 20px; text-align: center;">
-                    <button class="btn" onclick="cerrarThread()">Cerrar</button>
+                    <button class="btn btn-secondary" onclick="cerrarThread()">Cerrar</button>
                   </div>
                 `;
               }
@@ -832,6 +922,7 @@
 
     function cerrarThread() {
       document.getElementById("threadModal").style.display = "none";
+      hiloActualId = null;
     }
 
     function votar(id, tabla, tipo) {
@@ -845,8 +936,8 @@
         body: JSON.stringify({ usuario_id: usuarioActual.id, tipo_voto: tipo })
       }).then(r => r.json()).then(d => {
         if (d.ok) {
-          alert("Voto registrado");
           // Recargar hilo
+          if (hiloActualId) verHilo(hiloActualId);
         }
       });
     }
@@ -861,14 +952,6 @@
 
     function cerrarPreguntaModal() {
       document.getElementById("preguntaModal").style.display = "none";
-    }
-
-    function mostrarAuthModal() {
-      document.getElementById("authModal").style.display = "flex";
-    }
-
-    function cerrarAuthModal() {
-      document.getElementById("authModal").style.display = "none";
     }
 
     function crearPregunta(e) {
@@ -889,9 +972,38 @@
         })
       }).then(r => r.json()).then(d => {
         if (d.ok) {
-          alert("Pregunta publicada");
+          alert("✓ Pregunta publicada correctamente");
           cerrarPreguntaModal();
           cargarHilos();
+          document.getElementById("pregTitulo").value = "";
+          document.getElementById("pregContenido").value = "";
+          document.getElementById("catSelect").value = "";
+        }
+      });
+    }
+
+    function enviarRespuesta(e, idPregunta) {
+      e.preventDefault();
+      if (!usuarioActual) {
+        mostrarAuthModal();
+        return;
+      }
+
+      const contenido = document.getElementById("respContenido").value;
+
+      fetch(`${ENDPOINT}/api/respuestas`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          usuario_id: usuarioActual.id,
+          id_pregunta: idPregunta,
+          contenido,
+          imagenes: null
+        })
+      }).then(r => r.json()).then(d => {
+        if (d.ok) {
+          document.getElementById("respContenido").value = "";
+          verHilo(idPregunta);
         }
       });
     }
@@ -919,6 +1031,21 @@
             `).join("");
           }
         });
+    }
+
+    function mostrarRespuestaAnonima() {
+      alert("Sistema de respuestas anónimas: Implementado en próxima versión");
+      cerrarRespuestaGuestModal();
+    }
+
+    function mostrarRegistroRapido() {
+      mostrarTabRegistro();
+      cerrarRespuestaGuestModal();
+      mostrarAuthModal();
+    }
+
+    function cerrarRespuestaGuestModal() {
+      document.getElementById("respuestaGuestModal").style.display = "none";
     }
 
     function escapeHtml(text) {
