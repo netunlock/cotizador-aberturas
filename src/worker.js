@@ -93,14 +93,19 @@ export default {
         return json({ categorias: cats.results || [] }, 200, headers);
       }
 
-      // PREGUNTAS: Listar
+      // PREGUNTAS: Listar (con paginación)
       if (path === "/api/preguntas" && request.method === "GET") {
         const categoria = url.searchParams.get("categoria");
+        const pagina = parseInt(url.searchParams.get("pagina")) || 1;
+        const por_pagina = 20;
+        const offset = (pagina - 1) * por_pagina;
+
         let query = `
           SELECT
             p.id, p.usuario_id, p.categoria_id, p.titulo, p.contenido,
-            p.imagenes, p.fecha, p.votos,
-            u.nombre as autor,
+            p.imagenes, p.fecha, p.fecha_actualizada, p.votos, p.vistas,
+            p.respuestas_count, p.is_locked, p.is_pinned,
+            u.nombre as autor, u.rol,
             c.nombre as categoria_nombre
           FROM preguntas p
           JOIN usuarios u ON p.usuario_id = u.id
@@ -113,10 +118,25 @@ export default {
           params.push(categoria);
         }
 
-        query += " ORDER BY p.fecha DESC LIMIT 50";
+        // Contar total para paginación
+        let countQuery = "SELECT COUNT(*) as total FROM preguntas p";
+        if (categoria) {
+          countQuery += " WHERE p.categoria_id = ?";
+        }
+        const countResult = await env.DB.prepare(countQuery).bind(...params).first();
+        const total = countResult?.total || 0;
+
+        query += " ORDER BY p.is_pinned DESC, p.fecha_actualizada DESC LIMIT ? OFFSET ?";
+        params.push(por_pagina, offset);
 
         const result = await env.DB.prepare(query).bind(...params).all();
-        return json({ preguntas: result.results || [] }, 200, headers);
+        return json({
+          preguntas: result.results || [],
+          total,
+          pagina,
+          por_pagina,
+          total_paginas: Math.ceil(total / por_pagina)
+        }, 200, headers);
       }
 
       // PREGUNTAS: Crear
@@ -129,9 +149,12 @@ export default {
 
         try {
           const result = await env.DB.prepare(
-            `INSERT INTO preguntas (usuario_id, categoria_id, titulo, contenido, imagenes, fecha, votos)
-             VALUES (?, ?, ?, ?, ?, datetime('now'), 0)`
+            `INSERT INTO preguntas (usuario_id, categoria_id, titulo, contenido, imagenes, fecha, fecha_actualizada, votos, vistas, respuestas_count)
+             VALUES (?, ?, ?, ?, ?, datetime('now'), datetime('now'), 0, 0, 0)`
           ).bind(usuario_id, categoria_id || null, titulo, contenido, imagenes ? JSON.stringify(imagenes) : null).run();
+
+          // Incrementar contador de posts del usuario
+          await env.DB.prepare("UPDATE usuarios SET posts_count = posts_count + 1 WHERE id = ?").bind(usuario_id).run();
 
           return json({ ok: true, id: result.meta.last_row_id }, 201, headers);
         } catch (e) {
@@ -143,9 +166,13 @@ export default {
       // RESPUESTAS: Listar
       if (path.match(/^\/api\/preguntas\/\d+\/respuestas$/) && request.method === "GET") {
         const id = path.split("/")[3];
+
+        // Incrementar vistas de la pregunta
+        await env.DB.prepare("UPDATE preguntas SET vistas = vistas + 1 WHERE id = ?").bind(id).run();
+
         const result = await env.DB.prepare(
-          `SELECT r.id, r.usuario_id, r.contenido, r.imagenes, r.fecha, r.votos,
-                  u.nombre as autor
+          `SELECT r.id, r.usuario_id, r.contenido, r.imagenes, r.fecha, r.votos, r.is_locked,
+                  u.nombre as autor, u.rol, u.posts_count
            FROM respuestas r
            JOIN usuarios u ON r.usuario_id = u.id
            WHERE r.id_pregunta = ?
@@ -167,6 +194,12 @@ export default {
             `INSERT INTO respuestas (usuario_id, id_pregunta, contenido, imagenes, fecha, votos)
              VALUES (?, ?, ?, ?, datetime('now'), 0)`
           ).bind(usuario_id, id_pregunta, contenido, imagenes ? JSON.stringify(imagenes) : null).run();
+
+          // Incrementar contador de respuestas en la pregunta
+          await env.DB.prepare("UPDATE preguntas SET respuestas_count = respuestas_count + 1, fecha_actualizada = datetime('now') WHERE id = ?").bind(id_pregunta).run();
+
+          // Incrementar contador de posts del usuario
+          await env.DB.prepare("UPDATE usuarios SET posts_count = posts_count + 1 WHERE id = ?").bind(usuario_id).run();
 
           return json({ ok: true, id: result.meta.last_row_id }, 201, headers);
         } catch (e) {

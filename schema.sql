@@ -8,7 +8,11 @@ CREATE TABLE IF NOT EXISTS usuarios (
   password_hash TEXT,
   es_invitado BOOLEAN DEFAULT 0,
   fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
-  es_admin BOOLEAN DEFAULT 0
+  es_admin BOOLEAN DEFAULT 0,
+  rol TEXT DEFAULT 'usuario',
+  avatar_url TEXT,
+  firma TEXT,
+  posts_count INTEGER DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS categorias (
@@ -26,7 +30,12 @@ CREATE TABLE IF NOT EXISTS preguntas (
   contenido TEXT NOT NULL,
   imagenes TEXT,
   fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
+  fecha_actualizada DATETIME DEFAULT CURRENT_TIMESTAMP,
   votos INTEGER DEFAULT 0,
+  vistas INTEGER DEFAULT 0,
+  respuestas_count INTEGER DEFAULT 0,
+  is_locked BOOLEAN DEFAULT 0,
+  is_pinned BOOLEAN DEFAULT 0,
   FOREIGN KEY(usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
   FOREIGN KEY(categoria_id) REFERENCES categorias(id)
 );
@@ -39,6 +48,7 @@ CREATE TABLE IF NOT EXISTS respuestas (
   imagenes TEXT,
   fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
   votos INTEGER DEFAULT 0,
+  is_locked BOOLEAN DEFAULT 0,
   FOREIGN KEY(usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
   FOREIGN KEY(id_pregunta) REFERENCES preguntas(id) ON DELETE CASCADE
 );
@@ -52,6 +62,14 @@ CREATE TABLE IF NOT EXISTS votos (
   UNIQUE(usuario_id, tipo, contenido_id),
   FOREIGN KEY(usuario_id) REFERENCES usuarios(id)
 );
+
+-- Índices para optimización
+CREATE INDEX IF NOT EXISTS idx_preguntas_fecha ON preguntas(fecha_actualizada DESC);
+CREATE INDEX IF NOT EXISTS idx_preguntas_categoria ON preguntas(categoria_id);
+CREATE INDEX IF NOT EXISTS idx_preguntas_usuario ON preguntas(usuario_id);
+CREATE INDEX IF NOT EXISTS idx_respuestas_pregunta ON respuestas(id_pregunta);
+CREATE INDEX IF NOT EXISTS idx_respuestas_usuario ON respuestas(usuario_id);
+CREATE INDEX IF NOT EXISTS idx_votos_usuario ON votos(usuario_id);
 
 -- Categorías actualizadas
 INSERT INTO categorias (id, nombre, slug, descripcion) VALUES
