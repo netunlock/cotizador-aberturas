@@ -255,6 +255,12 @@
           <textarea id="preguntaContenido" placeholder="Describe tu pregunta con detalles..." required style="min-height: 120px;"></textarea>
         </div>
 
+        <div class="form-grupo">
+          <label>Imágenes (máx. 3)</label>
+          <input type="file" id="preguntaImagenes" accept="image/*" multiple style="padding: 8px;" />
+          <div id="preguntaImagenesPreview" style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;"></div>
+        </div>
+
         <button class="btn-responder" type="submit" id="btnEnviarPregunta">Publicar pregunta</button>
         <div id="preguntaError" style="color: var(--color-error); margin-top: 10px; display: none;"></div>
       </form>
@@ -445,6 +451,11 @@
                 <label>Tu respuesta *</label>
                 <textarea id="respuestaTexto" placeholder="Escribe tu respuesta aquí..." required></textarea>
               </div>
+              <div class="form-grupo">
+                <label>Imágenes (máx. 3)</label>
+                <input type="file" id="respuestaImagenes" accept="image/*" multiple style="padding: 8px;" />
+                <div id="respuestaImagenesPreview" style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;"></div>
+              </div>
               <button type="submit" class="btn-responder">Enviar respuesta</button>
               <div id="respuestaError"></div>
             </form>
@@ -486,13 +497,17 @@
       }
 
       try {
+        // Procesar imágenes
+        const imagenes = await procesarImagenes("respuestaImagenes", "respuestaImagenesPreview");
+
         const res = await fetch(ENDPOINT + "/api/respuestas", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             usuario_id: usuarioActual.id,
             id_pregunta: idPregunta,
-            contenido
+            contenido,
+            imagenes: imagenes.length > 0 ? imagenes : null
           })
         });
 
@@ -562,6 +577,42 @@
       }
     }
 
+    // Convertir imágenes a base64
+    function procesarImagenes(inputId, previewId) {
+      return new Promise((resolve) => {
+        const input = document.getElementById(inputId);
+        const files = Array.from(input.files).slice(0, 3); // Máx 3 imágenes
+        const preview = document.getElementById(previewId);
+        preview.innerHTML = "";
+        const imagenes = [];
+        let procesadas = 0;
+
+        if (files.length === 0) {
+          resolve(imagenes);
+          return;
+        }
+
+        files.forEach((file) => {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const img = document.createElement("img");
+            img.src = e.target.result;
+            img.style.maxWidth = "100px";
+            img.style.maxHeight = "100px";
+            img.style.borderRadius = "6px";
+            preview.appendChild(img);
+
+            imagenes.push(e.target.result);
+            procesadas++;
+            if (procesadas === files.length) {
+              resolve(imagenes);
+            }
+          };
+          reader.readAsDataURL(file);
+        });
+      });
+    }
+
     // Modal Nueva Pregunta
     async function mostrarModalPregunta() {
       if (!usuarioActual) {
@@ -617,6 +668,9 @@
       btnEnviar.textContent = "Enviando...";
 
       try {
+        // Procesar imágenes
+        const imagenes = await procesarImagenes("preguntaImagenes", "preguntaImagenesPreview");
+
         const res = await fetch(ENDPOINT + "/api/preguntas", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -624,7 +678,8 @@
             usuario_id: usuarioActual.id,
             categoria_id: categoriaid,
             titulo: titulo,
-            contenido: contenido
+            contenido: contenido,
+            imagenes: imagenes.length > 0 ? imagenes : null
           })
         });
 
@@ -649,6 +704,15 @@
         btnEnviar.textContent = "Publicar pregunta";
       }
     }
+
+    // Event listeners para imágenes
+    document.addEventListener("change", (e) => {
+      if (e.target.id === "preguntaImagenes") {
+        procesarImagenes("preguntaImagenes", "preguntaImagenesPreview");
+      } else if (e.target.id === "respuestaImagenes") {
+        procesarImagenes("respuestaImagenes", "respuestaImagenesPreview");
+      }
+    });
 
     // Init
     window.addEventListener("load", () => {
