@@ -4,6 +4,19 @@
 **Commit**: 7fca5f0  
 **Status**: ✅ IMPLEMENTADO Y PUSHEADO
 
+> **⚠️ Actualización de seguridad — 2026-09-14**
+>
+> - Este documento tenía el email, la contraseña y el token del administrador.
+>   Se sacaron, y esos valores **quedan invalidados**: siguen en el historial de
+>   git (el repo es público), así que no se pueden volver a usar.
+> - El login del panel ya no se valida en el navegador: `admin.html` manda la
+>   contraseña al worker (`POST /api/admin/login`), que la compara contra el
+>   secreto `ADMIN_PASSWORD` y devuelve un token de sesión firmado que vence a
+>   las 8 horas. Ninguna credencial vive en el código ni en el repo.
+> - Los botones **Mostrar/Ocultar** respuestas eran una simulación: mostraban un
+>   `alert` pero no cambiaban nada en la base. Se quitaron del panel para que no
+>   den una falsa sensación de moderación. **Eliminar** sí funciona.
+
 ---
 
 ## 🎯 CAMBIOS REALIZADOS
@@ -144,13 +157,11 @@ Abre vista detallada de un post:
 
 ```
 1. Admin entra en admin.html
-2. Token: admin123
-3. Credenciales: admin@cotaber / lucardo
-4. Click en tab "Respuestas"
-5. Ve tabla con todas las respuestas
-6. Opción A: Ocultar → respuesta desaparece para usuarios
-7. Opción B: Mostrar → respuesta reaparece
-8. Opción C: Eliminar → respuesta se borra (con confirmación)
+2. Ingresa la contraseña de administrador (secreto ADMIN_PASSWORD del worker)
+3. Click en tab "Respuestas"
+4. Ve tabla con todas las respuestas
+5. Eliminar → respuesta se borra (con confirmación)
+   (Ocultar/Mostrar: no existe en el backend, ver la nota de seguridad de arriba)
 ```
 
 ### Escenario 2: Centro de Moderación (Vista Rápida)
@@ -174,15 +185,15 @@ Abre vista detallada de un post:
 
 ---
 
-## 🔐 CREDENCIALES DE ADMIN
+## 🔐 ACCESO DE ADMIN
 
-```
-Email:    admin@cotaber
-Password: lucardo
-Token:    admin123
-```
+Las credenciales **no se escriben en ningún archivo del repo** (es público).
 
-**Nota**: En producción, usar JWT tokens seguros y autenticación real.
+- La contraseña del panel es el secreto `ADMIN_PASSWORD` del worker. Se cambia con
+  `wrangler secret put ADMIN_PASSWORD` y conviene guardarla en un gestor de contraseñas.
+- Al ingresar, el worker devuelve un token firmado con `SESSION_SECRET` (HMAC-SHA256)
+  que vence a las 8 horas. `admin.html` lo guarda en `sessionStorage` (se borra al
+  cerrar la pestaña) y lo manda en el header `Authorization: Bearer ...`.
 
 ---
 
@@ -249,22 +260,20 @@ ESTILOS
 
 ## 📝 NOTAS TÉCNICAS
 
-### Endpoints Utilizados (Simulados)
+### Endpoints Utilizados
 ```javascript
-DELETE /api/admin/respuestas/:id?token=admin123
-  Elimina respuesta permanentemente
+// Todos (menos el login) llevan el header  Authorization: Bearer <token de admin>
+POST   /api/admin/login              { password } → { ok, token, vence }
+DELETE /api/admin/respuestas/:id     Elimina respuesta permanentemente
+GET    /api/admin/respuestas         Lista las últimas 100 respuestas
 
-PUT /api/admin/respuestas/:id/toggle?token=admin123
-  Alterna visibilidad (mostrar/ocultar)
-
-GET /api/admin/respuestas?token=admin123
-  Lista todas las respuestas con status
+// PUT /api/admin/respuestas/:id/toggle  → NO existe (era simulado)
 ```
 
 ### Almacenamiento de Estado
 ```javascript
-localStorage.setItem("adminLogin", JSON.stringify(usuarioAdmin))
-// Mantiene sesión admin durante la navegación
+sessionStorage.setItem("adminSesion", JSON.stringify({ token, vence }))
+// Dura hasta cerrar la pestaña o hasta que vence el token (8 h)
 ```
 
 ---

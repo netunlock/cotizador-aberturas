@@ -454,6 +454,49 @@
 
     .loading { text-align: center; padding: 40px; color: var(--color-text-muted); }
 
+    /* Insignias al lado del nombre del autor */
+    .insignia {
+      display: inline-block;
+      font-size: 9px;
+      font-weight: normal;
+      padding: 1px 5px;
+      border: 1px solid var(--color-border);
+      border-radius: 2px;
+      color: var(--color-text-muted);
+      vertical-align: middle;
+    }
+    .insignia-admin {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+      font-weight: bold;
+    }
+
+    /* Imágenes de un post: miniaturas que abren la original */
+    .post-container > .post-images { margin: 0; padding: 0 15px 15px; }
+    .post-images a { display: inline-block; line-height: 0; }
+
+    /* Campo para adjuntar imágenes (gana sobre ".form-group input") */
+    .form-group .input-archivo {
+      display: block;
+      width: 100%;
+      padding: 8px;
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      color: var(--color-text);
+      cursor: pointer;
+    }
+    .ayuda { font-size: 10px; color: var(--color-text-muted); margin-top: 4px; }
+
+    .alert-info {
+      background: rgba(6, 182, 212, 0.1);
+      border-color: var(--color-accent);
+      color: var(--color-accent);
+    }
+    .btn:disabled { opacity: 0.6; cursor: wait; }
+
+    /* Estos modales se abren ENCIMA de un hilo abierto: tienen que quedar más arriba */
+    #authModal, #respuestaGuestModal { z-index: 1100; }
+
     @media (max-width: 768px) {
       .forum-table { font-size: 10px; }
       .forum-header { flex-direction: column; gap: 10px; }
@@ -534,7 +577,8 @@
           <button class="modal-close" onclick="cerrarAuthModal()">&times;</button>
         </div>
         <div class="modal-body">
-          <div id="authTabs" style="display: flex; gap: 10px; margin-bottom: 15px; border-bottom: 1px solid var(--color-border); padding-bottom: 10px;">
+          <div id="authAviso"></div>
+          <div id="authTabs"style="display: flex; gap: 10px; margin-bottom: 15px; border-bottom: 1px solid var(--color-border); padding-bottom: 10px;">
             <button id="tabLogin" class="btn btn-secondary" style="flex: 1;" onclick="mostrarTabLogin()">Iniciar Sesión</button>
             <button id="tabRegistro" class="btn btn-secondary" style="flex: 1;" onclick="mostrarTabRegistro()">Registrarse</button>
           </div>
@@ -592,15 +636,16 @@
             </div>
             <div class="form-group">
               <label for="pregTitulo">Asunto *</label>
-              <input type="text" id="pregTitulo" placeholder="Tema de tu pregunta..." required />
+              <input type="text" id="pregTitulo" placeholder="Tema de tu pregunta..." maxlength="200" required />
             </div>
             <div class="form-group">
               <label for="pregContenido">Mensaje *</label>
-              <textarea id="pregContenido" placeholder="Describe tu duda en detalle..." required></textarea>
+              <textarea id="pregContenido" placeholder="Describe tu duda en detalle..." maxlength="10000" required></textarea>
             </div>
             <div class="form-group">
               <label for="pregImagenes">Imágenes (máx 3)</label>
-              <input type="file" id="pregImagenes" accept="image/*" multiple style="display: block; width: 100%; padding: 8px; background: var(--color-bg); border: 1px solid var(--color-border); color: var(--color-text); cursor: pointer;" />
+              <input type="file" id="pregImagenes" class="input-archivo" accept="image/*" multiple />
+              <div class="ayuda">Fotos o capturas. Se achican solas antes de subirlas.</div>
             </div>
             <div id="pregError"></div>
             <button type="submit" class="btn" style="width: 100%;">Publicar Pregunta</button>
@@ -616,20 +661,39 @@
           <button class="modal-close" onclick="cerrarRespuestaGuestModal()">&times;</button>
         </div>
         <div class="modal-body">
-          <p style="color: var(--color-text-muted); font-size: 11px;">¿Cómo quieres responder?</p>
-          <div style="display: flex; flex-direction: column; gap: 10px;">
-            <button class="btn" onclick="mostrarRespuestaAnonima()" style="text-align: left;">
-              📝 Responder anónimamente<br>
-              <span style="font-size: 10px; color: var(--color-text-muted);">Proporciona nombre y email</span>
-            </button>
-            <button class="btn" onclick="mostrarRegistroRapido()" style="text-align: left;">
-              ⚡ Crear cuenta rápida<br>
-              <span style="font-size: 10px; color: var(--color-text-muted);">Email + Contraseña</span>
-            </button>
-            <button class="btn btn-secondary" onclick="mostrarAuthModal()">
-              🔑 Iniciar sesión
-            </button>
+          <!-- Paso 1: elegir cómo responder -->
+          <div id="opcionesInvitado">
+            <p style="color: var(--color-text-muted); font-size: 11px;">¿Cómo querés responder?</p>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <button class="btn" onclick="mostrarRespuestaAnonima()" style="text-align: left;">
+                📝 Responder anónimamente<br>
+                <span style="font-size: 10px; color: var(--color-text-muted);">Sólo nombre y email, sin contraseña</span>
+              </button>
+              <button class="btn" onclick="mostrarRegistroRapido()" style="text-align: left;">
+                ⚡ Crear cuenta rápida<br>
+                <span style="font-size: 10px; color: var(--color-text-muted);">Email + Contraseña</span>
+              </button>
+              <button class="btn btn-secondary" onclick="irAIniciarSesion()">
+                🔑 Iniciar sesión
+              </button>
+            </div>
           </div>
+
+          <!-- Paso 2: datos del invitado (se publica la respuesta que ya escribió) -->
+          <form id="formInvitado" onsubmit="responderComoInvitado(event)" style="display: none;">
+            <div class="form-group">
+              <label for="invNombre">Nombre *</label>
+              <input type="text" id="invNombre" maxlength="60" required />
+            </div>
+            <div class="form-group">
+              <label for="invEmail">Email *</label>
+              <input type="email" id="invEmail" maxlength="254" required />
+              <div class="ayuda">No se muestra en el foro. Tu respuesta aparece con tu nombre y la marca "invitado".</div>
+            </div>
+            <div id="invError"></div>
+            <button type="submit" class="btn" style="width: 100%;">Publicar respuesta</button>
+            <button type="button" class="btn btn-secondary" style="width: 100%; margin-top: 8px;" onclick="volverAOpcionesInvitado()">← Volver</button>
+          </form>
         </div>
       </div>
     </div>
@@ -641,417 +705,6 @@
     </div>
   </div>
 
-  <script>
-    const ENDPOINT = "https://cotizador-forum.fgpereyra-92.workers.dev";
-    let usuarioActual = null;
-    let paginaActual = 1;
-    let categorias = [];
-    let hiloActualId = null;
-
-    // ===== INIT =====
-    window.addEventListener("load", () => {
-      // Restaurar tema guardado
-      const temaSaved = localStorage.getItem("temaBlog") || "actual";
-      cambiarTema(temaSaved, false);
-
-      // Restaurar usuario guardado
-      const savedUser = localStorage.getItem("usuarioForo");
-      if (savedUser) usuarioActual = JSON.parse(savedUser);
-
-      actualizarUserStatus();
-      cargarCategorias();
-      cargarHilos();
-    });
-
-    // ===== TEMAS =====
-    function cambiarTema(tema, save = true) {
-      document.documentElement.setAttribute("data-tema", tema);
-      document.querySelectorAll(".tema-btn").forEach(b => b.classList.remove("activo"));
-      document.querySelector(`[data-tema="${tema}"]`).classList.add("activo");
-      if (save) localStorage.setItem("temaBlog", tema);
-    }
-
-    // ===== AUTH / USUARIO =====
-    function mostrarAuthModal() {
-      document.getElementById("authModal").style.display = "flex";
-      mostrarTabLogin();
-    }
-
-    function cerrarAuthModal() {
-      document.getElementById("authModal").style.display = "none";
-      document.getElementById("loginError").innerHTML = "";
-      document.getElementById("regError").innerHTML = "";
-      document.getElementById("loginEmail").value = "";
-      document.getElementById("loginPassword").value = "";
-      document.getElementById("regEmail").value = "";
-      document.getElementById("regNombre").value = "";
-      document.getElementById("regPassword").value = "";
-      document.getElementById("regPasswordConfirm").value = "";
-    }
-
-    function mostrarTabLogin() {
-      document.getElementById("formLogin").style.display = "block";
-      document.getElementById("formRegistro").style.display = "none";
-      document.getElementById("tabLogin").style.background = "var(--color-primary)";
-      document.getElementById("tabRegistro").style.background = "var(--color-bg-alt)";
-    }
-
-    function mostrarTabRegistro() {
-      document.getElementById("formLogin").style.display = "none";
-      document.getElementById("formRegistro").style.display = "block";
-      document.getElementById("tabLogin").style.background = "var(--color-bg-alt)";
-      document.getElementById("tabRegistro").style.background = "var(--color-primary)";
-    }
-
-    function login(e) {
-      e.preventDefault();
-      const email = document.getElementById("loginEmail").value;
-      const password = document.getElementById("loginPassword").value;
-
-      fetch(`${ENDPOINT}/api/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
-      }).then(r => r.json()).then(d => {
-        if (d.ok) {
-          usuarioActual = d.usuario;
-          localStorage.setItem("usuarioForo", JSON.stringify(usuarioActual));
-          actualizarUserStatus();
-          cerrarAuthModal();
-        } else {
-          document.getElementById("loginError").innerHTML = `<div class="alert alert-error">${d.error}</div>`;
-        }
-      });
-    }
-
-    function registro(e) {
-      e.preventDefault();
-      const email = document.getElementById("regEmail").value;
-      const nombre = document.getElementById("regNombre").value;
-      const password = document.getElementById("regPassword").value;
-      const passwordConfirm = document.getElementById("regPasswordConfirm").value;
-
-      if (password !== passwordConfirm) {
-        document.getElementById("regError").innerHTML = '<div class="alert alert-error">Las contraseñas no coinciden</div>';
-        return;
-      }
-
-      fetch(`${ENDPOINT}/api/auth/registro`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, nombre, password })
-      }).then(r => r.json()).then(d => {
-        if (d.ok) {
-          // Auto login después del registro
-          usuarioActual = { id: d.usuario?.id || Math.random(), nombre, email, es_invitado: false };
-          localStorage.setItem("usuarioForo", JSON.stringify(usuarioActual));
-          actualizarUserStatus();
-          cerrarAuthModal();
-        } else {
-          document.getElementById("regError").innerHTML = `<div class="alert alert-error">${d.error}</div>`;
-        }
-      });
-    }
-
-    function actualizarUserStatus() {
-      const status = document.getElementById("userStatus");
-      const loginBtn = document.getElementById("loginBtn");
-
-      if (usuarioActual) {
-        status.innerHTML = `<span style="color: var(--color-accent); font-weight: bold;">${usuarioActual.nombre}</span>
-          <button class="btn" style="padding: 4px 12px; font-size: 10px; margin-left: 10px;" onclick="logout()">Desconectar</button>`;
-        loginBtn.style.display = "none";
-      } else {
-        status.textContent = "";
-        loginBtn.style.display = "inline-block";
-      }
-    }
-
-    function logout() {
-      usuarioActual = null;
-      localStorage.removeItem("usuarioForo");
-      actualizarUserStatus();
-      cargarHilos();
-    }
-
-    // ===== FORO =====
-    function cargarCategorias() {
-      fetch(`${ENDPOINT}/api/categorias`)
-        .then(r => r.json())
-        .then(d => {
-          categorias = d.categorias || [];
-          const select = document.getElementById("catSelect");
-          select.innerHTML = '<option value="">-- Selecciona una categoría --</option>' +
-            categorias.map(c => `<option value="${c.id}">${c.nombre}</option>`).join("");
-        });
-    }
-
-    function cargarHilos(pagina = 1) {
-      paginaActual = pagina;
-      fetch(`${ENDPOINT}/api/preguntas?pagina=${pagina}`)
-        .then(r => r.json())
-        .then(d => {
-          const list = document.getElementById("threadsList");
-          if (!d.preguntas || d.preguntas.length === 0) {
-            list.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 30px;">No hay preguntas aún</td></tr>';
-          } else {
-            list.innerHTML = d.preguntas.map(p => `
-              <tr onclick="verHilo(${p.id})">
-                <td>
-                  <div class="thread-title">
-                    ${p.is_pinned ? '<span class="thread-badge">📌</span>' : ''}
-                    ${p.is_locked ? '<span class="thread-badge">🔒</span>' : ''}
-                    ${escapeHtml(p.titulo)}
-                  </div>
-                  <div class="thread-meta">por <strong>${escapeHtml(p.autor)}</strong> en ${new Date(p.fecha).toLocaleDateString()}</div>
-                </td>
-                <td style="text-align: center;"><strong>${p.respuestas_count || 0}</strong></td>
-                <td style="text-align: center;"><strong>${p.vistas || 0}</strong></td>
-                <td style="font-size: 10px;">${p.fecha_actualizada ? new Date(p.fecha_actualizada).toLocaleDateString() : 'N/A'}</td>
-              </tr>
-            `).join("");
-          }
-
-          // Paginación
-          const pag = document.getElementById("pagination");
-          if (d.total_paginas > 1) {
-            let html = '';
-            if (pagina > 1) html += `<a onclick="cargarHilos(${pagina-1})">← Anterior</a>`;
-            for (let i = 1; i <= Math.min(d.total_paginas, 5); i++) {
-              html += pagina === i
-                ? `<span class="active">${i}</span>`
-                : `<a onclick="cargarHilos(${i})">${i}</a>`;
-            }
-            if (pagina < d.total_paginas) html += `<a onclick="cargarHilos(${pagina+1})">Siguiente →</a>`;
-            pag.innerHTML = html;
-          }
-
-          document.getElementById("totalStats").textContent = `Total: ${d.total} preguntas`;
-        });
-    }
-
-    function verHilo(id) {
-      hiloActualId = id;
-      const modal = document.getElementById("threadModal");
-      const content = document.getElementById("threadContent");
-      content.innerHTML = '<div class="loading">Cargando hilo...</div>';
-      modal.style.display = "flex";
-
-      fetch(`${ENDPOINT}/api/preguntas/${id}/respuestas`)
-        .then(r => r.json())
-        .then(respuestas => {
-          // Obtener pregunta original
-          fetch(`${ENDPOINT}/api/preguntas?pagina=1`)
-            .then(r => r.json())
-            .then(d => {
-              const p = d.preguntas.find(x => x.id === id);
-              if (p) {
-                content.innerHTML = `
-                  <div style="margin-bottom: 20px;">
-                    <h2 style="color: var(--color-primary); margin-top: 0;">${escapeHtml(p.titulo)}</h2>
-                    ${p.is_locked ? '<div class="alert alert-error">🔒 Este hilo está cerrado. No se permiten nuevas respuestas.</div>' : ''}
-
-                    <div class="post-container">
-                      <div class="post-header">#1 — Post Original</div>
-                      <div style="display: flex; gap: 15px; padding: 10px;">
-                        <div class="post-avatar">${escapeHtml(p.autor).charAt(0).toUpperCase()}</div>
-                        <div style="flex: 1;">
-                          <div style="font-weight: bold; color: var(--color-primary);">${escapeHtml(p.autor)}</div>
-                          <div style="font-size: 10px; color: var(--color-text-muted);">Publicado el ${new Date(p.fecha).toLocaleString()}</div>
-                        </div>
-                      </div>
-                      <div class="post-content">${escapeHtml(p.contenido).replace(/\n/g, '<br>')}</div>
-                      ${p.imagenes ? `<div class="post-images">${JSON.parse(p.imagenes).map(img => `<img src="${img}" />`).join('')}</div>` : ''}
-                      <div class="post-footer">
-                        <div style="display: flex; gap: 8px; align-items: center;">
-                          <button class="vote-btn" onclick="votar(${p.id}, 'preguntas', 'up')">👍</button>
-                          <span>${p.votos || 0}</span>
-                          <button class="vote-btn" onclick="votar(${p.id}, 'preguntas', 'down')">👎</button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--color-border);">
-                    <h3 style="color: var(--color-primary);">Respuestas (${respuestas.respuestas?.length || 0})</h3>
-                    ${(respuestas.respuestas || []).map((r, i) => `
-                      <div class="post-container">
-                        <div class="post-header">#${i+2} — ${escapeHtml(r.autor)}</div>
-                        <div style="display: flex; gap: 15px; padding: 10px;">
-                          <div class="post-avatar">${escapeHtml(r.autor).charAt(0).toUpperCase()}</div>
-                          <div style="flex: 1;">
-                            <div style="font-weight: bold; color: var(--color-primary);">${escapeHtml(r.autor)}</div>
-                            <div style="font-size: 10px; color: var(--color-text-muted);">Publicado el ${new Date(r.fecha).toLocaleString()}</div>
-                          </div>
-                        </div>
-                        <div class="post-content">${escapeHtml(r.contenido).replace(/\n/g, '<br>')}</div>
-                        ${r.imagenes ? `<div class="post-images">${JSON.parse(r.imagenes).map(img => `<img src="${img}" />`).join('')}</div>` : ''}
-                        <div class="post-footer">
-                          <div style="display: flex; gap: 8px; align-items: center;">
-                            <button class="vote-btn" onclick="votar(${r.id}, 'respuestas', 'up')">👍</button>
-                            <span>${r.votos || 0}</span>
-                            <button class="vote-btn" onclick="votar(${r.id}, 'respuestas', 'down')">👎</button>
-                          </div>
-                        </div>
-                      </div>
-                    `).join('')}
-
-                    ${!p.is_locked ? `
-                      <div style="margin-top: 20px; padding: 20px; background: var(--color-bg-alt); border-radius: 3px;">
-                        <h4 style="margin-top: 0; color: var(--color-primary);">Responder</h4>
-                        <form id="formRespuesta" onsubmit="enviarRespuesta(event, ${id})">
-                          <div class="form-group">
-                            <label for="respContenido">Tu respuesta *</label>
-                            <textarea id="respContenido" placeholder="Escribe tu respuesta..." required></textarea>
-                          </div>
-                          <div id="respError"></div>
-                          <button type="submit" class="btn">Publicar Respuesta</button>
-                        </form>
-                      </div>
-                    ` : ''}
-                  </div>
-
-                  <div style="margin-top: 20px; text-align: center;">
-                    <button class="btn btn-secondary" onclick="cerrarThread()">Cerrar</button>
-                  </div>
-                `;
-              }
-            });
-        });
-    }
-
-    function cerrarThread() {
-      document.getElementById("threadModal").style.display = "none";
-      hiloActualId = null;
-    }
-
-    function votar(id, tabla, tipo) {
-      if (!usuarioActual) {
-        mostrarAuthModal();
-        return;
-      }
-      fetch(`${ENDPOINT}/api/votos/${tabla}/${id}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ usuario_id: usuarioActual.id, tipo_voto: tipo })
-      }).then(r => r.json()).then(d => {
-        if (d.ok) {
-          // Recargar hilo
-          if (hiloActualId) verHilo(hiloActualId);
-        }
-      });
-    }
-
-    function mostrarNuevaPregunta() {
-      if (!usuarioActual) {
-        mostrarAuthModal();
-        return;
-      }
-      document.getElementById("preguntaModal").style.display = "flex";
-    }
-
-    function cerrarPreguntaModal() {
-      document.getElementById("preguntaModal").style.display = "none";
-    }
-
-    function crearPregunta(e) {
-      e.preventDefault();
-      const titulo = document.getElementById("pregTitulo").value;
-      const contenido = document.getElementById("pregContenido").value;
-      const catId = document.getElementById("catSelect").value;
-
-      fetch(`${ENDPOINT}/api/preguntas`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          usuario_id: usuarioActual.id,
-          categoria_id: catId || null,
-          titulo,
-          contenido,
-          imagenes: null
-        })
-      }).then(r => r.json()).then(d => {
-        if (d.ok) {
-          alert("✓ Pregunta publicada correctamente");
-          cerrarPreguntaModal();
-          cargarHilos();
-          document.getElementById("pregTitulo").value = "";
-          document.getElementById("pregContenido").value = "";
-          document.getElementById("catSelect").value = "";
-        }
-      });
-    }
-
-    function enviarRespuesta(e, idPregunta) {
-      e.preventDefault();
-      if (!usuarioActual) {
-        mostrarAuthModal();
-        return;
-      }
-
-      const contenido = document.getElementById("respContenido").value;
-
-      fetch(`${ENDPOINT}/api/respuestas`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          usuario_id: usuarioActual.id,
-          id_pregunta: idPregunta,
-          contenido,
-          imagenes: null
-        })
-      }).then(r => r.json()).then(d => {
-        if (d.ok) {
-          document.getElementById("respContenido").value = "";
-          verHilo(idPregunta);
-        }
-      });
-    }
-
-    function buscar() {
-      const q = document.getElementById("buscar").value;
-      if (q.length < 2) return;
-      fetch(`${ENDPOINT}/api/buscar?q=${encodeURIComponent(q)}`)
-        .then(r => r.json())
-        .then(d => {
-          const list = document.getElementById("threadsList");
-          if (d.preguntas.length === 0) {
-            list.innerHTML = '<tr><td colspan="4" style="text-align: center;">No se encontraron resultados</td></tr>';
-          } else {
-            list.innerHTML = d.preguntas.map(p => `
-              <tr onclick="verHilo(${p.id})">
-                <td>
-                  <div class="thread-title">${escapeHtml(p.titulo)}</div>
-                  <div class="thread-meta">por <strong>${escapeHtml(p.autor)}</strong></div>
-                </td>
-                <td style="text-align: center;">0</td>
-                <td style="text-align: center;">${p.vistas || 0}</td>
-                <td>${new Date(p.fecha).toLocaleDateString()}</td>
-              </tr>
-            `).join("");
-          }
-        });
-    }
-
-    function mostrarRespuestaAnonima() {
-      alert("Sistema de respuestas anónimas: Implementado en próxima versión");
-      cerrarRespuestaGuestModal();
-    }
-
-    function mostrarRegistroRapido() {
-      mostrarTabRegistro();
-      cerrarRespuestaGuestModal();
-      mostrarAuthModal();
-    }
-
-    function cerrarRespuestaGuestModal() {
-      document.getElementById("respuestaGuestModal").style.display = "none";
-    }
-
-    function escapeHtml(text) {
-      const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
-      return text.replace(/[&<>"']/g, m => map[m]);
-    }
-  </script>
+  <script src="foro.js"></script>
 </body>
 </html>

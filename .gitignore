@@ -3,3 +3,11 @@
 .env.*.local
 .env.*.example
 dist/
+
+# Secretos para `wrangler dev` en tu PC. NUNCA se suben: el repo es público.
+.dev.vars
+.dev.vars.*
+
+# Respaldos de la base D1 (tienen emails y hashes de usuarios)
+respaldos/
+*.backup.sql

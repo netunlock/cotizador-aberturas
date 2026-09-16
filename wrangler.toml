@@ -9,6 +9,16 @@ binding = "DB"
 database_name = "cotizador-forum"
 database_id = "53320c1e-4b7d-4d5e-975c-8df30c94ef36"
 
-# Cloudflare Turnstile para anti-spam
-[env.production]
-vars = { TURNSTILE_SECRET_KEY = "YOUR_TURNSTILE_SECRET_KEY" }
+# ---------------------------------------------------------------------
+# SECRETOS: acá NO van. Este archivo es público (está en el repo y
+# GitHub Pages lo sirve). El worker necesita dos, que se cargan con:
+#
+#   wrangler secret put SESSION_SECRET   → clave para firmar las sesiones
+#   wrangler secret put ADMIN_PASSWORD   → contraseña del panel admin.html
+#
+# Si falta alguno, el worker NO usa un valor por defecto: rechaza los
+# logins (falla cerrado). Para probar en tu PC con `wrangler dev`, poné
+# esos mismos nombres en un archivo .dev.vars (ya está en .gitignore)
+# con valores de prueba. Si algún día sumás Turnstile u otra clave, va
+# por el mismo camino. Detalles en la sección "Foro" del README.
+# ---------------------------------------------------------------------

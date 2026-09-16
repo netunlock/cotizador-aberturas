@@ -63,6 +63,19 @@ CREATE TABLE IF NOT EXISTS votos (
   FOREIGN KEY(usuario_id) REFERENCES usuarios(id)
 );
 
+-- Imágenes adjuntas a preguntas y respuestas. preguntas.imagenes y
+-- respuestas.imagenes guardan un JSON con los id de esta tabla, y cada
+-- imagen se sirve con GET /api/imagenes/:id.
+CREATE TABLE IF NOT EXISTS imagenes (
+  id TEXT PRIMARY KEY,                 -- UUID aleatorio, no se puede adivinar
+  usuario_id INTEGER NOT NULL,         -- quién la subió
+  mime TEXT NOT NULL,                  -- image/jpeg, image/png o image/webp
+  bytes INTEGER NOT NULL,              -- tamaño en bytes
+  datos BLOB NOT NULL,                 -- la imagen en sí (ya comprimida en el navegador)
+  fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY(usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+);
+
 -- Índices para optimización
 CREATE INDEX IF NOT EXISTS idx_preguntas_fecha ON preguntas(fecha_actualizada DESC);
 CREATE INDEX IF NOT EXISTS idx_preguntas_categoria ON preguntas(categoria_id);
@@ -70,6 +83,7 @@ CREATE INDEX IF NOT EXISTS idx_preguntas_usuario ON preguntas(usuario_id);
 CREATE INDEX IF NOT EXISTS idx_respuestas_pregunta ON respuestas(id_pregunta);
 CREATE INDEX IF NOT EXISTS idx_respuestas_usuario ON respuestas(usuario_id);
 CREATE INDEX IF NOT EXISTS idx_votos_usuario ON votos(usuario_id);
+CREATE INDEX IF NOT EXISTS idx_imagenes_usuario ON imagenes(usuario_id);
 
 -- Categorías actualizadas
 INSERT INTO categorias (id, nombre, slug, descripcion) VALUES

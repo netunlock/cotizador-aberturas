@@ -1,17 +1,24 @@
 # Landing Page — Cotizador de Aberturas
 
-Sitio estático (HTML + CSS + JS, sin backend) publicado en GitHub Pages.
+Sitio estático (HTML + CSS + JS) publicado en GitHub Pages. El foro suma un backend chico
+aparte, en Cloudflare (ver punto 11).
 
 ```
 landing-cotizador/
-├── index.html            Estructura y textos de la página
-├── styles.css            Diseño y los DOS temas (Blanco / Silver)
-├── script.js             Versiones, datos de contacto y formulario de descarga
-├── favicon.svg           Ícono de la pestaña
-├── img/                  Fotos de la galería  ← reemplazables (ver punto 5)
+├── index.html              Estructura y textos de la página
+├── styles.css              Diseño y los DOS temas (Blanco / Silver)
+├── script.js               Versiones, datos de contacto y formulario de descarga
+├── favicon.svg             Ícono de la pestaña
+├── img/                    Fotos de la galería  ← reemplazables (ver punto 5)
 ├── apps-script/
-│   └── Codigo.gs         Script de Google: base de datos + mail con el link
-└── README.md             Este archivo
+│   └── Codigo.gs           Script de Google: base de datos + mail con el link
+├── foro.html / foro.js     Foro de Carpinteros (ver punto 11)
+├── admin.html / admin.js   Panel de moderación del foro
+├── src/                    Backend del foro: Cloudflare Worker
+├── schema.sql              Esquema completo de la base del foro (para una base nueva)
+├── migraciones/            Pasos para llevar la base que ya existe hasta ese esquema
+├── wrangler.toml           Configuración del worker (sin secretos)
+└── README.md               Este archivo
 ```
 
 - **Repositorio:** https://github.com/netunlock/cotizador-aberturas
@@ -262,7 +269,7 @@ Con eso se actualizan solos la tarjeta grande de descarga, el cartel del hero y 
 python -m http.server 8010
 ```
 
-y abrí `http://localhost:8010`.
+y abrí `http://localhost:8010`. Para probar también el foro con su API local, ver el punto 11.5.
 
 ---
 
@@ -274,3 +281,93 @@ y abrí `http://localhost:8010`.
   No rompe nada, pero es lo que va a ver el interesado.
 - **El link se puede reenviar.** No importa: sin licencia el programa no se usa, y para la
   licencia te tienen que escribir igual. La puerta sirve para tener el registro de quién lo pidió.
+
+---
+
+## 11. El foro: backend, sesiones y secretos
+
+`foro.html` y `admin.html` son páginas estáticas como el resto, pero leen y escriben en una API
+propia: un **Cloudflare Worker** (carpeta `src/`) con una base **D1** llamada `cotizador-forum`.
+
+- **API:** https://cotizador-forum.fgpereyra-92.workers.dev
+- **Todas las rutas**, explicadas, están arriba de todo en `src/worker.js`.
+
+### 11.1 Cómo se sabe quién escribe
+
+1. Al entrar (login, registro o "responder anónimamente"), el worker devuelve un **token de sesión
+   firmado** con HMAC-SHA256 y el secreto `SESSION_SECRET`. Vence a los 30 días (7 si es invitado).
+2. `foro.js` lo guarda en el navegador y lo manda en el header `Authorization` cada vez que alguien
+   pregunta, responde o vota.
+3. El worker verifica la firma y el vencimiento, y **toma el usuario del token**. Si alguien manda un
+   `usuario_id` a mano, se ignora.
+
+Leer el foro no pide sesión. Los invitados sólo pueden responder: preguntar y votar pide cuenta.
+
+Las contraseñas se guardan con **PBKDF2-SHA256 y sal**. Las cuentas creadas antes (SHA-256 sin sal)
+se pasan solas al formato nuevo la próxima vez que entran.
+
+### 11.2 El panel de administración
+
+`admin.html` pide una sola contraseña, que el worker compara con el secreto `ADMIN_PASSWORD`. Si
+coincide, devuelve un token de admin que vence a las 8 horas y se borra al cerrar la pestaña.
+**Ninguna credencial está escrita en el código ni en el repo**, porque el repo es público.
+
+Tener `rol = 'admin'` en la tabla `usuarios` sólo muestra la insignia "Admin" en el foro: no da
+acceso al panel.
+
+### 11.3 Los secretos
+
+| Secreto | Para qué sirve | Cómo se carga |
+|---|---|---|
+| `SESSION_SECRET` | Firma las sesiones. Cambiarlo cierra **todas** las sesiones abiertas. | `wrangler secret put SESSION_SECRET` |
+| `ADMIN_PASSWORD` | Contraseña del panel. Mínimo 12 caracteres; mejor 20 al azar, guardada en un gestor de contraseñas. | `wrangler secret put ADMIN_PASSWORD` |
+
+Nunca van en `wrangler.toml` ni en el código. Si falta alguno, el worker rechaza los logins en vez
+de usar un valor por defecto. `wrangler secret put` pide el valor sin mostrarlo en pantalla.
+
+### 11.4 Imágenes
+
+El navegador achica cada foto (lado mayor de 1600 px) antes de subirla. El worker comprueba que sea
+de verdad JPG, PNG o WebP y la guarda en la tabla `imagenes`: hasta 3 por mensaje y 1 MB cada una.
+Al borrar un mensaje desde el panel se borran también sus imágenes.
+
+### 11.5 Probar el foro en tu PC sin tocar la base real
+
+1. Creá un archivo `.dev.vars` en esta carpeta (ya está en `.gitignore`) con valores **de prueba**:
+
+   ```
+   SESSION_SECRET="un-texto-de-prueba-de-al-menos-32-caracteres"
+   ADMIN_PASSWORD="contraseña-de-prueba"
+   ```
+
+2. Creá la base local. Si ya tenías una de antes, borrá primero la carpeta `.wrangler/state`:
+
+   ```bash
+   wrangler d1 execute cotizador-forum --local --file schema.sql
+   ```
+
+3. Levantá la API local, que queda en `http://127.0.0.1:8787`:
+
+   ```bash
+   wrangler dev --local
+   ```
+
+4. En otra terminal, levantá la web (punto 9) y abrí `http://localhost:8010/foro.html`.
+
+Abiertas desde `localhost`, `foro.js` y `admin.js` usan solas la API local.
+**Nunca pruebes con `--remote`**: eso lee y escribe la base de producción.
+
+### 11.6 Publicar cambios del foro
+
+- **`foro.html`, `foro.js`, `admin.html` o `admin.js`:** `git push`, como el resto de la web.
+- **`src/`:** `wrangler deploy`.
+- **La base:** primero un respaldo **fuera del repo** (tiene emails y hashes) y después el archivo
+  de `migraciones/` que corresponda:
+
+  ```bash
+  wrangler d1 export cotizador-forum --remote --output "../respaldos/foro-AAAA-MM-DD.sql"
+  wrangler d1 execute cotizador-forum --remote --file migraciones/NOMBRE.sql
+  ```
+
+`schema.sql` es el esquema completo para una base nueva; `migraciones/` son los pasos para llevar
+la base que ya existe hasta ese esquema.
