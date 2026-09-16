@@ -66,7 +66,7 @@
       margin: 0;
       background: var(--color-bg);
       color: var(--color-text);
-      font-family: Verdana, Geneva, sans-serif;
+      font-family: 'Segoe UI', Verdana, Geneva, sans-serif;
       font-size: 12px;
       line-height: 1.5;
       transition: background-color 0.3s, color 0.3s;
@@ -700,6 +700,10 @@
 
     <div class="modal" id="threadModal" style="background: rgba(0,0,0,0.3);">
       <div class="modal-content" style="max-width: 800px; width: 95%;">
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; border-bottom: 1px solid var(--color-border); background: var(--color-surface);">
+          <span style="color: var(--color-primary); font-weight: bold;">Hilo</span>
+          <button onclick="cerrarThread()" style="background: none; border: none; color: var(--color-text); font-size: 20px; cursor: pointer; padding: 0 5px; line-height: 1;">×</button>
+        </div>
         <div id="threadContent" style="padding: 20px;"></div>
       </div>
     </div>
