@@ -5,28 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Foro de Carpinteros — Cotizador de Aberturas</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="css/variables-brand.css" />
   <link rel="stylesheet" href="styles.css" />
   <style>
-    /* ===== PALETAS DE TRES TEMAS ===== */
+    /* ===== PALETAS DE DOS TEMAS ===== */
 
-    /* TEMA 1: ACTUAL (Violeta/Dark - Paleta principal) */
-    :root {
-      --color-primary: #7C3AED;
-      --color-primary-hover: #9F5AFF;
-      --color-accent: #06B6D4;
-      --color-text: #EDEDED;
-      --color-text-body: #A1A1A1;
-      --color-text-muted: #6B7280;
-      --color-bg: #0A0A0A;
-      --color-bg-alt: #141414;
-      --color-surface: #1A1A1A;
-      --color-border: #333333;
-      --color-error: #EF4444;
-      --color-success: #10B981;
-      --color-warning: #F59E0B;
-    }
-
-    /* TEMA 2: CLÁSICO (Azul/Light - phpBB classic) */
+    /* TEMA 1: CLÁSICO (Azul/Light - phpBB classic) */
     :root[data-tema="clasico"] {
       --color-primary: #0d47a1;
       --color-primary-hover: #003d82;
@@ -43,7 +27,7 @@
       --color-warning: #ff9900;
     }
 
-    /* TEMA 3: GRISES (Monocromático - Escala de grises) */
+    /* TEMA 2: GRISES (Monocromático - Escala de grises) */
     :root[data-tema="grises"] {
       --color-primary: #555555;
       --color-primary-hover: #333333;
@@ -529,8 +513,7 @@
     <!-- Tema Selector -->
     <div class="tema-selector">
       <strong>Tema:</strong>
-      <button class="tema-btn activo" data-tema="actual" onclick="cambiarTema('actual')">Actual</button>
-      <button class="tema-btn" data-tema="clasico" onclick="cambiarTema('clasico')">Clásico</button>
+      <button class="tema-btn activo" data-tema="clasico" onclick="cambiarTema('clasico')">Clásico</button>
       <button class="tema-btn" data-tema="grises" onclick="cambiarTema('grises')">Grises</button>
     </div>
 
@@ -708,6 +691,51 @@
       </div>
     </div>
   </div>
+
+  <!-- Botón flotante de WhatsApp -->
+  <style>
+    .whatsapp-flotante {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: #25D366;
+      color: white;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      z-index: 999;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      transition: all 0.3s;
+      text-decoration: none;
+    }
+    .whatsapp-flotante:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 16px rgba(37, 211, 102, 0.4);
+    }
+    @media (max-width: 768px) {
+      .whatsapp-flotante {
+        bottom: 15px;
+        right: 15px;
+        width: 50px;
+        height: 50px;
+        font-size: 24px;
+      }
+    }
+  </style>
+
+  <a href="https://wa.me/5492215929482?text=Hola%2C%20quiero%20consultar%20por%20el%20soft%20de%20aberturas..."
+     class="whatsapp-flotante"
+     title="Contactar por WhatsApp"
+     target="_blank"
+     rel="noopener">
+    💬
+  </a>
 
   <script src="foro.js"></script>
 </body>

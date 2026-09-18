@@ -1,0 +1,80 @@
+/* ============================================================
+   VARIABLES DE MARCA - PALETA GLOBAL
+   ============================================================
+
+   Estos colores están extraídos de la aplicación de escritorio
+   (cotizador de aberturas) y se aplican consistentemente en:
+   - Landing (index.html)
+   - Foro (foro.html)
+   - Admin (admin.html)
+
+   El sistema soporta dos modos: Blanco y Silver
+   ============================================================ */
+
+:root {
+  /* Colores primarios del software */
+  --brand-primary-light: #1B3A57;     /* Azul oscuro (modo claro) */
+  --brand-primary-dark: #8D99AE;      /* Gris azulado (modo dark/silver) */
+
+  --brand-accent-light: #0F766E;      /* Teal (modo claro) */
+  --brand-accent-dark: #6EC1A7;       /* Teal claro (modo dark) */
+
+  /* Paleta adicional (modo light) */
+  --brand-bg-light: #EEF1F5;          /* Fondo ventana claro */
+  --brand-surface-light: #FFFFFF;     /* Superficie principal claro */
+  --brand-border-light: #D3DAE3;      /* Bordes claro */
+  --brand-text-light: #16202B;        /* Texto principal claro */
+  --brand-text-muted-light: #5B6B7C;  /* Texto suave claro */
+  --brand-error-light: #B91C1C;       /* Error/advertencia claro */
+  --brand-ok-light: #15803D;          /* Éxito claro */
+
+  /* Paleta adicional (modo dark/silver) */
+  --brand-bg-dark: #2B2D42;           /* Fondo ventana oscuro */
+  --brand-surface-dark: #3D405B;      /* Superficie principal oscuro */
+  --brand-border-dark: #525777;       /* Bordes oscuro */
+  --brand-text-dark: #EDF0F6;         /* Texto principal oscuro */
+  --brand-text-muted-dark: #B4BECD;   /* Texto suave oscuro */
+  --brand-error-dark: #E87A7A;        /* Error/advertencia oscuro */
+  --brand-ok-dark: #7FD1A8;           /* Éxito oscuro */
+
+  /* Alias para facilitar uso en CSS */
+  --color-brand-primary: var(--brand-primary-light);
+  --color-brand-accent: var(--brand-accent-light);
+  --color-brand-bg: var(--brand-bg-light);
+  --color-brand-surface: var(--brand-surface-light);
+  --color-brand-border: var(--brand-border-light);
+  --color-brand-text: var(--brand-text-light);
+  --color-brand-text-muted: var(--brand-text-muted-light);
+  --color-brand-error: var(--brand-error-light);
+  --color-brand-ok: var(--brand-ok-light);
+}
+
+/* Modo Silver (dark) */
+[data-tema="silver"],
+[data-tema="grises"],
+[data-tema="oscuro"] {
+  --color-brand-primary: var(--brand-primary-dark);
+  --color-brand-accent: var(--brand-accent-dark);
+  --color-brand-bg: var(--brand-bg-dark);
+  --color-brand-surface: var(--brand-surface-dark);
+  --color-brand-border: var(--brand-border-dark);
+  --color-brand-text: var(--brand-text-dark);
+  --color-brand-text-muted: var(--brand-text-muted-dark);
+  --color-brand-error: var(--brand-error-dark);
+  --color-brand-ok: var(--brand-ok-dark);
+}
+
+/* Compatibilidad con nombres antiguos del foro */
+:root {
+  --color-primary: var(--color-brand-primary);
+  --color-primary-hover: var(--color-brand-primary);
+  --color-accent: var(--color-brand-accent);
+  --color-bg: var(--color-brand-bg);
+  --color-surface: var(--color-brand-surface);
+  --color-border: var(--color-brand-border);
+  --color-text: var(--color-brand-text);
+  --color-text-muted: var(--color-brand-text-muted);
+  --color-error: var(--color-brand-error);
+  --color-ok: var(--color-brand-ok);
+  --color-success: var(--color-brand-ok);
+}

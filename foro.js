@@ -33,8 +33,49 @@ let categorias = [];
 let hiloActualId = null;
 let respuestaPendiente = null; // id de la pregunta que se estaba respondiendo sin sesión
 
+// ============================================================
+// BLOQUE 1.5 — Slugs y URLs amigables
+// ============================================================
+
+/** Genera un slug legible: "Mi Pregunta #123" → "mi-pregunta-123" */
+function crearSlug(titulo, id) {
+  const limpio = String(titulo)
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "") // quita acentos
+    .replace(/[^\w\s-]/g, "") // quita caracteres especiales
+    .replace(/[\s]+/g, "-") // espacios a guiones
+    .replace(/[-]+/g, "-") // guiones múltiples a uno solo
+    .replace(/^-+|-+$/g, ""); // quita guiones al inicio/final
+  return `${limpio}-${id}`.substring(0, 80);
+}
+
+/** Obtiene la URL amigable para un post */
+function urlDelPost(titulo, id) {
+  const slug = crearSlug(titulo, id);
+  return `foro.html?post=${slug}`;
+}
+
+/** Extrae el ID del slug: "mi-pregunta-123" → 123 */
+function idDelSlug(slug) {
+  const match = slug.match(/-(\d+)$/);
+  return match ? Number(match[1]) : null;
+}
+
+/** Lee el slug desde la URL y abre el post automáticamente */
+function cargarPostDesdUrl() {
+  const params = new URLSearchParams(location.search);
+  const slug = params.get("post");
+  if (slug) {
+    const id = idDelSlug(slug);
+    if (id) {
+      setTimeout(() => verHilo(id), 100); // después de que carguen los hilos
+    }
+  }
+}
+
 window.addEventListener("load", () => {
-  cambiarTema(localStorage.getItem("temaBlog") || "actual", false);
+  cambiarTema(localStorage.getItem("temaBlog") || "clasico", false);
 
   // La versión anterior guardaba el usuario SIN token: esa "sesión" ya no sirve.
   localStorage.removeItem("usuarioForo");
@@ -43,6 +84,7 @@ window.addEventListener("load", () => {
   actualizarUserStatus();
   cargarCategorias();
   cargarHilos();
+  cargarPostDesdUrl(); // abre post si viene desde URL amigable
 });
 
 // ============================================================
@@ -367,16 +409,21 @@ async function verHilo(id) {
   const p = dPregunta.pregunta;
   const respuestas = dRespuestas.respuestas || [];
 
+  // Actualizar URL amigable usando history.pushState
+  const slug = crearSlug(p.titulo, id);
+  const urlAmigable = `foro.html?post=${slug}`;
+  history.pushState({ postId: id, slug }, p.titulo, urlAmigable);
+
   contenido.innerHTML = `
     <div style="margin-bottom: 20px;">
       <h2 style="color: var(--color-primary); margin-top: 0;">${escapeHtml(p.titulo)}</h2>
       ${p.is_locked ? '<div class="alert alert-error">🔒 Este hilo está cerrado. No se permiten nuevas respuestas.</div>' : ""}
-      ${htmlPost(p, "#1 — Post Original", "preguntas")}
+      ${htmlPost(p, "#1 — Post Original", "preguntas", urlAmigable)}
     </div>
 
     <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--color-border);">
       <h3 style="color: var(--color-primary);">Respuestas (${respuestas.length})</h3>
-      ${respuestas.map((r, i) => htmlPost(r, `#${i + 2} — ${escapeHtml(r.autor)}`, "respuestas")).join("")}
+      ${respuestas.map((r, i) => htmlPost(r, `#${i + 2} — ${escapeHtml(r.autor)}`, "respuestas", urlAmigable)).join("")}
       ${p.is_locked ? "" : htmlFormularioRespuesta(Number(p.id))}
     </div>
 
@@ -389,9 +436,12 @@ async function verHilo(id) {
  * Un post: la pregunta original o una respuesta.
  * OJO: "encabezado" tiene que llegar YA escapado.
  */
-function htmlPost(post, encabezado, tipo) {
+function htmlPost(post, encabezado, tipo, urlCompartir = "") {
   const id = Number(post.id);
   const inicial = String(post.autor || "?").charAt(0).toUpperCase();
+  const urlCompleta = urlCompartir ? `${location.origin}${location.pathname}?${urlCompartir.split("?")[1]}` : location.href;
+  const vistas = Number(post.vistas) || 0;
+
   return `
     <div class="post-container">
       <div class="post-header">${encabezado}</div>
@@ -399,19 +449,67 @@ function htmlPost(post, encabezado, tipo) {
         <div class="post-avatar">${escapeHtml(inicial)}</div>
         <div style="flex: 1;">
           <div style="font-weight: bold; color: var(--color-primary);">${htmlAutor(post)}</div>
-          <div style="font-size: 10px; color: var(--color-text-muted);">Publicado el ${fechaHora(post.fecha)}</div>
+          <div style="font-size: 10px; color: var(--color-text-muted);">Publicado el ${fechaHora(post.fecha)} · 👁️ ${vistas} vistas</div>
         </div>
       </div>
       <div class="post-content">${escapeHtml(post.contenido).replace(/\n/g, "<br>")}</div>
       ${htmlImagenes(post.imagenes)}
       <div class="post-footer">
-        <div style="display: flex; gap: 8px; align-items: center;">
-          <button class="vote-btn" onclick="votar(${id}, '${tipo}', 'up')">👍</button>
-          <span>${Number(post.votos) || 0}</span>
-          <button class="vote-btn" onclick="votar(${id}, '${tipo}', 'down')">👎</button>
+        <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <button class="vote-btn" onclick="votar(${id}, '${tipo}', 'up')">👍</button>
+            <span>${Number(post.votos) || 0}</span>
+            <button class="vote-btn" onclick="votar(${id}, '${tipo}', 'down')">👎</button>
+          </div>
+          ${tipo === "preguntas" ? `
+            <div style="display: flex; gap: 6px; border-left: 1px solid var(--color-border); padding-left: 12px;">
+              <button class="vote-btn" title="Compartir en Facebook" onclick="compartirEn('facebook', '${escapeHtml(post.titulo)}', '${encodeURIComponent(urlCompleta)}')">f</button>
+              <button class="vote-btn" title="Compartir en WhatsApp" onclick="compartirEn('whatsapp', '${escapeHtml(post.titulo)}', '${encodeURIComponent(urlCompleta)}')">wa</button>
+              <button class="vote-btn" title="Compartir en X" onclick="compartirEn('twitter', '${escapeHtml(post.titulo)}', '${encodeURIComponent(urlCompleta)}')">𝕏</button>
+              <button class="vote-btn" title="Copiar enlace" onclick="copiarEnlace('${encodeURIComponent(urlCompleta)}')">🔗</button>
+            </div>
+          ` : ""}
         </div>
       </div>
     </div>`;
+}
+
+/** Abre la URL de compartir en la red social especificada */
+function compartirEn(red, titulo, url) {
+  let enlace = "";
+  const titulo_enc = encodeURIComponent(titulo);
+  switch(red) {
+    case "facebook":
+      enlace = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+      break;
+    case "whatsapp":
+      const msg = encodeURIComponent(`${titulo}\n\n${decodeURIComponent(url)}`);
+      enlace = `https://wa.me/?text=${msg}`;
+      break;
+    case "twitter":
+      enlace = `https://twitter.com/intent/tweet?text=${titulo_enc}&url=${url}`;
+      break;
+  }
+  if (enlace) window.open(enlace, "_blank", "width=600,height=400");
+}
+
+/** Copia el enlace al portapapeles */
+function copiarEnlace(url) {
+  const texto = decodeURIComponent(url);
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(texto).then(() => {
+      alert("Enlace copiado al portapapeles");
+    });
+  } else {
+    // Fallback para navegadores viejos
+    const input = document.createElement("textarea");
+    input.value = texto;
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand("copy");
+    document.body.removeChild(input);
+    alert("Enlace copiado al portapapeles");
+  }
 }
 
 function htmlFormularioRespuesta(idPregunta) {

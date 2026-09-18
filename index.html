@@ -42,6 +42,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
 
+  <link rel="stylesheet" href="css/variables-brand.css" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 
@@ -715,6 +716,51 @@
 
     </div>
   </div>
+
+  <!-- Botón flotante de WhatsApp -->
+  <style>
+    .whatsapp-flotante {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: #25D366;
+      color: white;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      z-index: 999;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      transition: all 0.3s;
+      text-decoration: none;
+    }
+    .whatsapp-flotante:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 16px rgba(37, 211, 102, 0.4);
+    }
+    @media (max-width: 768px) {
+      .whatsapp-flotante {
+        bottom: 15px;
+        right: 15px;
+        width: 50px;
+        height: 50px;
+        font-size: 24px;
+      }
+    }
+  </style>
+
+  <a href="https://wa.me/5492215929482?text=Hola%2C%20quiero%20consultar%20por%20el%20soft%20de%20aberturas..."
+     class="whatsapp-flotante"
+     title="Contactar por WhatsApp"
+     target="_blank"
+     rel="noopener">
+    💬
+  </a>
 
   <script src="script.js" defer></script>
 </body>
