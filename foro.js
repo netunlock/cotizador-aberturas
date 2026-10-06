@@ -31,6 +31,7 @@ let sesion = null; // { token, vence, usuario: { id, nombre, es_invitado } }
 let paginaActual = 1;
 let categorias = [];
 let hiloActualId = null;
+let hiloActual = null; // { titulo, url } del hilo abierto: lo usan los botones de compartir
 let respuestaPendiente = null; // id de la pregunta que se estaba respondiendo sin sesión
 
 // ============================================================
@@ -47,13 +48,9 @@ function crearSlug(titulo, id) {
     .replace(/[\s]+/g, "-") // espacios a guiones
     .replace(/[-]+/g, "-") // guiones múltiples a uno solo
     .replace(/^-+|-+$/g, ""); // quita guiones al inicio/final
-  return `${limpio}-${id}`.substring(0, 80);
-}
-
-/** Obtiene la URL amigable para un post */
-function urlDelPost(titulo, id) {
-  const slug = crearSlug(titulo, id);
-  return `foro.html?post=${slug}`;
+  // Se recorta SÓLO el título: el id del final tiene que quedar entero para poder abrir el hilo.
+  const base = limpio.substring(0, 70).replace(/-+$/, "") || "pregunta";
+  return `${base}-${id}`;
 }
 
 /** Extrae el ID del slug: "mi-pregunta-123" → 123 */
@@ -75,7 +72,9 @@ function cargarPostDesdUrl() {
 }
 
 window.addEventListener("load", () => {
-  cambiarTema(localStorage.getItem("temaBlog") || "clasico", false);
+  // Si quedó guardado un tema que ya no existe (el viejo "actual"), se usa el clásico.
+  const temaGuardado = localStorage.getItem("temaBlog");
+  cambiarTema(["clasico", "grises"].includes(temaGuardado) ? temaGuardado : "clasico", false);
 
   // La versión anterior guardaba el usuario SIN token: esa "sesión" ya no sirve.
   localStorage.removeItem("usuarioForo");
@@ -85,6 +84,16 @@ window.addEventListener("load", () => {
   cargarCategorias();
   cargarHilos();
   cargarPostDesdUrl(); // abre post si viene desde URL amigable
+});
+
+// El botón "atrás" del navegador cierra o vuelve a abrir el hilo según la dirección que quede.
+window.addEventListener("popstate", () => {
+  const id = idDelSlug(new URLSearchParams(location.search).get("post") || "");
+  if (id) {
+    if (id !== hiloActualId) verHilo(id, false);
+  } else if (hiloActualId !== null) {
+    cerrarThread(false);
+  }
 });
 
 // ============================================================
@@ -387,7 +396,7 @@ async function buscar() {
 // BLOQUE 6 — Un hilo: ver, votar y responder
 // ============================================================
 
-async function verHilo(id) {
+async function verHilo(id, empujarUrl = true) {
   hiloActualId = id;
   const contenido = document.getElementById("threadContent");
   contenido.innerHTML = '<div class="loading">Cargando hilo...</div>';
@@ -409,21 +418,24 @@ async function verHilo(id) {
   const p = dPregunta.pregunta;
   const respuestas = dRespuestas.respuestas || [];
 
-  // Actualizar URL amigable usando history.pushState
-  const slug = crearSlug(p.titulo, id);
-  const urlAmigable = `foro.html?post=${slug}`;
-  history.pushState({ postId: id, slug }, p.titulo, urlAmigable);
+  // URL amigable: foro.html?post=titulo-del-hilo-123. Sólo se suma al historial si cambió:
+  // votar o responder vuelven a llamar a verHilo y no deben apilar entradas repetidas.
+  const consulta = `?post=${crearSlug(p.titulo, id)}`;
+  hiloActual = { titulo: p.titulo, url: `${location.origin}${location.pathname}${consulta}` };
+  if (empujarUrl && location.search !== consulta) {
+    history.pushState({ postId: id }, "", `${location.pathname}${consulta}`);
+  }
 
   contenido.innerHTML = `
     <div style="margin-bottom: 20px;">
       <h2 style="color: var(--color-primary); margin-top: 0;">${escapeHtml(p.titulo)}</h2>
       ${p.is_locked ? '<div class="alert alert-error">🔒 Este hilo está cerrado. No se permiten nuevas respuestas.</div>' : ""}
-      ${htmlPost(p, "#1 — Post Original", "preguntas", urlAmigable)}
+      ${htmlPost(p, "#1 — Post Original", "preguntas")}
     </div>
 
     <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--color-border);">
       <h3 style="color: var(--color-primary);">Respuestas (${respuestas.length})</h3>
-      ${respuestas.map((r, i) => htmlPost(r, `#${i + 2} — ${escapeHtml(r.autor)}`, "respuestas", urlAmigable)).join("")}
+      ${respuestas.map((r, i) => htmlPost(r, `#${i + 2} — ${escapeHtml(r.autor)}`, "respuestas")).join("")}
       ${p.is_locked ? "" : htmlFormularioRespuesta(Number(p.id))}
     </div>
 
@@ -435,12 +447,23 @@ async function verHilo(id) {
 /**
  * Un post: la pregunta original o una respuesta.
  * OJO: "encabezado" tiene que llegar YA escapado.
+ * Los botones de compartir no llevan datos del usuario en el onclick: leen el hilo abierto
+ * (hiloActual), así un título con comillas no puede colarse como código.
  */
-function htmlPost(post, encabezado, tipo, urlCompartir = "") {
+function htmlPost(post, encabezado, tipo) {
   const id = Number(post.id);
   const inicial = String(post.autor || "?").charAt(0).toUpperCase();
-  const urlCompleta = urlCompartir ? `${location.origin}${location.pathname}?${urlCompartir.split("?")[1]}` : location.href;
   const vistas = Number(post.vistas) || 0;
+  const info = tipo === "preguntas" ? ` · ${vistas} vistas` : "";
+
+  const compartir = tipo === "preguntas" ? `
+    <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap; border-left: 1px solid var(--color-border); padding-left: 12px;">
+      <span>Compartir:</span>
+      <button class="vote-btn compartir-btn" onclick="compartirEn('facebook')">Facebook</button>
+      <button class="vote-btn compartir-btn" onclick="compartirEn('whatsapp')">WhatsApp</button>
+      <button class="vote-btn compartir-btn" onclick="compartirEn('twitter')">X</button>
+      <button class="vote-btn compartir-btn" onclick="copiarEnlace()">Copiar enlace</button>
+    </div>` : "";
 
   return `
     <div class="post-container">
@@ -449,7 +472,7 @@ function htmlPost(post, encabezado, tipo, urlCompartir = "") {
         <div class="post-avatar">${escapeHtml(inicial)}</div>
         <div style="flex: 1;">
           <div style="font-weight: bold; color: var(--color-primary);">${htmlAutor(post)}</div>
-          <div style="font-size: 10px; color: var(--color-text-muted);">Publicado el ${fechaHora(post.fecha)} · 👁️ ${vistas} vistas</div>
+          <div style="font-size: 10px; color: var(--color-text-muted);">Publicado el ${fechaHora(post.fecha)}${info}</div>
         </div>
       </div>
       <div class="post-content">${escapeHtml(post.contenido).replace(/\n/g, "<br>")}</div>
@@ -461,54 +484,33 @@ function htmlPost(post, encabezado, tipo, urlCompartir = "") {
             <span>${Number(post.votos) || 0}</span>
             <button class="vote-btn" onclick="votar(${id}, '${tipo}', 'down')">👎</button>
           </div>
-          ${tipo === "preguntas" ? `
-            <div style="display: flex; gap: 6px; border-left: 1px solid var(--color-border); padding-left: 12px;">
-              <button class="vote-btn" title="Compartir en Facebook" onclick="compartirEn('facebook', '${escapeHtml(post.titulo)}', '${encodeURIComponent(urlCompleta)}')">f</button>
-              <button class="vote-btn" title="Compartir en WhatsApp" onclick="compartirEn('whatsapp', '${escapeHtml(post.titulo)}', '${encodeURIComponent(urlCompleta)}')">wa</button>
-              <button class="vote-btn" title="Compartir en X" onclick="compartirEn('twitter', '${escapeHtml(post.titulo)}', '${encodeURIComponent(urlCompleta)}')">𝕏</button>
-              <button class="vote-btn" title="Copiar enlace" onclick="copiarEnlace('${encodeURIComponent(urlCompleta)}')">🔗</button>
-            </div>
-          ` : ""}
+          ${compartir}
         </div>
       </div>
     </div>`;
 }
 
-/** Abre la URL de compartir en la red social especificada */
-function compartirEn(red, titulo, url) {
-  let enlace = "";
-  const titulo_enc = encodeURIComponent(titulo);
-  switch(red) {
-    case "facebook":
-      enlace = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
-      break;
-    case "whatsapp":
-      const msg = encodeURIComponent(`${titulo}\n\n${decodeURIComponent(url)}`);
-      enlace = `https://wa.me/?text=${msg}`;
-      break;
-    case "twitter":
-      enlace = `https://twitter.com/intent/tweet?text=${titulo_enc}&url=${url}`;
-      break;
-  }
-  if (enlace) window.open(enlace, "_blank", "width=600,height=400");
+/** Abre la red social elegida con el hilo que está abierto. */
+function compartirEn(red) {
+  if (!hiloActual) return;
+  const { titulo, url } = hiloActual;
+  const enlaces = {
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
+    whatsapp: `https://wa.me/?text=${encodeURIComponent(`${titulo}\n\n${url}`)}`,
+    twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(titulo)}&url=${encodeURIComponent(url)}`,
+  };
+  if (enlaces[red]) window.open(enlaces[red], "_blank", "noopener,noreferrer,width=600,height=500");
 }
 
-/** Copia el enlace al portapapeles */
-function copiarEnlace(url) {
-  const texto = decodeURIComponent(url);
+/** Copia al portapapeles el enlace del hilo abierto. */
+function copiarEnlace() {
+  if (!hiloActual) return;
+  const avisar = () => alert("Enlace copiado al portapapeles");
+  const mostrar = () => prompt("Copiá el enlace:", hiloActual.url);
   if (navigator.clipboard) {
-    navigator.clipboard.writeText(texto).then(() => {
-      alert("Enlace copiado al portapapeles");
-    });
+    navigator.clipboard.writeText(hiloActual.url).then(avisar, mostrar);
   } else {
-    // Fallback para navegadores viejos
-    const input = document.createElement("textarea");
-    input.value = texto;
-    document.body.appendChild(input);
-    input.select();
-    document.execCommand("copy");
-    document.body.removeChild(input);
-    alert("Enlace copiado al portapapeles");
+    mostrar();
   }
 }
 
@@ -557,9 +559,14 @@ function urlDeImagen(valor) {
   return null;
 }
 
-function cerrarThread() {
+function cerrarThread(actualizarUrl = true) {
   document.getElementById("threadModal").style.display = "none";
   hiloActualId = null;
+  hiloActual = null;
+  // La dirección vuelve a la del listado (sin sumar una entrada más al historial).
+  if (actualizarUrl && new URLSearchParams(location.search).has("post")) {
+    history.replaceState(null, "", location.pathname);
+  }
 }
 
 async function votar(id, tabla, tipo) {

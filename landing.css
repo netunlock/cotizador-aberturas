@@ -1,0 +1,403 @@
+/* ============================================================================
+   COTIZADOR DE ABERTURAS — Hoja de estilos de la landing (index.html)
+   ----------------------------------------------------------------------------
+   Los COLORES no están acá: salen de css/variables-brand.css (la paleta del
+   programa). Acá sólo está la forma: tipografía, espacios y componentes.
+
+   Estilo clásico: fondos lisos, bordes finos, esquinas casi rectas, sin
+   degradados ni brillos. foro.html y admin.html usan styles.css, no este archivo.
+
+   Organización:
+     1.  Base
+     2.  Estructura (contenedor, secciones, títulos)
+     3.  Botones
+     4.  Barra superior
+     5.  Inicio
+     6.  Versión web y de escritorio (video + puntos)
+     7.  Filas de descargas y contacto
+     8.  Preguntas frecuentes
+     9.  Pie
+     10. Botón flotante de WhatsApp
+     11. Ventana de pedido de descarga
+   ========================================================================== */
+
+
+/* ============================================================================
+   1. BASE
+   ========================================================================== */
+:root {
+  color-scheme: light;
+
+  /* Nombres cortos para la paleta de css/variables-brand.css */
+  --bg:            var(--color-brand-bg);
+  --surface:       var(--color-brand-surface);
+  --surface-2:     var(--color-brand-surface-2);
+  --line:          var(--color-brand-border);
+  --line-soft:     var(--color-brand-border-soft);
+  --text:          var(--color-brand-text);
+  --muted:         var(--color-brand-text-muted);
+  --primary:       var(--color-brand-primary);
+  --primary-hover: var(--color-brand-primary-hover);
+  --on-primary:    var(--color-brand-on-primary);
+  --accent:        var(--color-brand-accent);
+  --accent-hover:  var(--color-brand-accent-hover);
+  --error:         var(--color-brand-error);
+  --ok:            var(--color-brand-ok);
+  --field:         var(--color-brand-field);
+  --field-line:    var(--color-brand-field-border);
+  --selection:     var(--color-brand-selection);
+  --head-bg:       var(--color-brand-header-bg);
+  --head-text:     var(--color-brand-header-text);
+
+  /* Iguales en los dos modos */
+  --wa:       #25D366;   /* verde de WhatsApp (botón flotante) */
+  --wa-dark:  #0B7261;   /* verde oscuro: el texto blanco se lee bien encima */
+  --font:     "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --radius:   4px;
+  --wrap:     1040px;
+}
+
+:root[data-tema="silver"] { color-scheme: dark; }
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+[hidden] { display: none !important; }
+
+img, svg { max-width: 100%; }
+
+h1, h2, h3 { margin: 0; color: var(--text); line-height: 1.25; }
+p { margin: 0 0 1em; }
+
+a { color: var(--accent); text-underline-offset: 2px; }
+a:hover { color: var(--accent-hover); }
+
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+.salto {
+  position: absolute; left: -9999px; top: 0; z-index: 2000;
+  padding: 10px 14px; background: var(--primary); color: var(--on-primary);
+}
+.salto:focus { left: 8px; top: 8px; }
+
+
+/* ============================================================================
+   2. ESTRUCTURA
+   ========================================================================== */
+.wrap {
+  width: 100%;
+  max-width: var(--wrap);
+  margin-inline: auto;
+  padding-inline: 16px;
+}
+.wrap--angosto { max-width: 760px; }
+
+.seccion {
+  padding-block: 40px;
+  border-top: 1px solid var(--line);
+  scroll-margin-top: 8px;
+}
+.seccion--banda { background: var(--surface); }
+
+.titulo {
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--primary);
+  font-size: 1.6rem;
+}
+
+.lead { max-width: 72ch; margin-bottom: 24px; color: var(--muted); }
+
+
+/* ============================================================================
+   3. BOTONES
+   ========================================================================== */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 44px; padding: 10px 20px;
+  background: var(--primary); color: var(--on-primary);
+  border: 1px solid var(--primary); border-radius: var(--radius);
+  font: 600 .95rem/1.2 var(--font);
+  text-align: center; text-decoration: none; cursor: pointer;
+}
+.btn:hover { background: var(--primary-hover); border-color: var(--primary-hover); color: var(--on-primary); }
+.btn:disabled { opacity: .6; cursor: wait; }
+
+.btn--sec { background: transparent; color: var(--text); border-color: var(--primary); }
+.btn--sec:hover { background: var(--selection); border-color: var(--primary); color: var(--text); }
+
+.btn--wa { background: var(--wa-dark); border-color: var(--wa-dark); color: #fff; }
+.btn--wa:hover { background: #095A4C; border-color: #095A4C; color: #fff; }
+
+.btn svg { width: 20px; height: 20px; flex: none; }
+
+
+/* ============================================================================
+   4. BARRA SUPERIOR
+   En celular: marca + tema arriba y el menú entero abajo (sin hamburguesa,
+   todo a la vista). En pantallas grandes: una sola fila y queda fija.
+   ========================================================================== */
+.top { background: var(--head-bg); color: var(--head-text); }
+
+.top__in {
+  display: flex; flex-wrap: wrap; align-items: center;
+  gap: 6px 12px; padding-block: 10px;
+}
+
+.marca {
+  display: inline-flex; align-items: center; gap: 10px; margin-right: auto;
+  color: var(--head-text); text-decoration: none;
+  font-size: 1.05rem; font-weight: 700;
+}
+.marca:hover { color: var(--head-text); }
+.marca svg { width: 26px; height: 26px; flex: none; }
+
+.menu {
+  order: 3; width: 100%;
+  display: flex; flex-wrap: wrap; justify-content: space-between;
+}
+.menu a {
+  padding: 8px; border-radius: var(--radius);
+  color: var(--head-text); font-size: .95rem; text-decoration: none;
+}
+.menu a:hover { background: rgba(255, 255, 255, .14); color: var(--head-text); }
+
+.tema {
+  display: inline-flex; overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, .4); border-radius: var(--radius);
+}
+.tema button {
+  padding: 6px 8px; border: 0; background: transparent;
+  color: var(--head-text); font: 600 .75rem var(--font); cursor: pointer;
+}
+.tema button[aria-pressed="true"] { background: var(--head-text); color: var(--head-bg); }
+
+.top :focus-visible { outline-color: var(--head-text); }
+
+@media (min-width: 860px) {
+  .top { position: sticky; top: 0; z-index: 50; }
+  .top__in { flex-wrap: nowrap; gap: 4px 20px; }
+  .menu { order: 0; width: auto; justify-content: flex-start; gap: 4px; }
+  .menu a { padding: 8px 12px; }
+}
+
+
+/* ============================================================================
+   5. INICIO
+   ========================================================================== */
+.inicio {
+  padding-block: 40px;
+  background: var(--surface);
+  scroll-margin-top: 8px;
+}
+.inicio h1 { margin-bottom: 12px; font-size: clamp(1.7rem, 5.5vw, 2.4rem); }
+.inicio__txt { max-width: 62ch; margin-bottom: 24px; color: var(--muted); font-size: 1.08rem; }
+
+.eleccion { display: grid; gap: 16px; }
+
+.opcion {
+  display: flex; flex-direction: column; gap: 6px; padding: 20px;
+  background: var(--surface-2);
+  border: 1px solid var(--line); border-top: 3px solid var(--primary);
+  border-radius: var(--radius);
+}
+.opcion h2 { font-size: 1.25rem; }
+.opcion p { margin: 0 0 12px; color: var(--muted); }
+.opcion .btn { margin-top: auto; }
+
+
+/* ============================================================================
+   6. VERSIÓN WEB Y DE ESCRITORIO
+   ========================================================================== */
+.dos { display: grid; gap: 24px; }
+
+.video-bloque { margin: 0; min-width: 0; }
+.video {
+  position: relative; aspect-ratio: 16 / 9; overflow: hidden;
+  background: #000; border: 1px solid var(--line); border-radius: var(--radius);
+}
+.video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.video__pie { margin: 8px 0 0; color: var(--muted); font-size: .9rem; }
+
+.puntos { margin: 0 0 20px; padding: 0; list-style: none; }
+.puntos li {
+  position: relative; padding: 8px 0 8px 28px;
+  border-bottom: 1px solid var(--line-soft);
+}
+.puntos li:first-child { border-top: 1px solid var(--line-soft); }
+.puntos li::before {
+  content: ""; position: absolute; left: 4px; top: 1.05em;
+  width: 11px; height: 6px;
+  border-left: 2px solid var(--accent); border-bottom: 2px solid var(--accent);
+  transform: rotate(-45deg);
+}
+
+.acciones { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; }
+.acciones .btn { flex: 1 1 auto; }
+.nota { margin: 0; color: var(--muted); font-size: .92rem; }
+
+
+/* ============================================================================
+   7. FILAS DE DESCARGAS Y CONTACTO
+   ========================================================================== */
+.items {
+  margin: 0; padding: 0; list-style: none;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+}
+.item { display: grid; gap: 14px; padding: 16px; border-top: 1px solid var(--line); }
+.item:first-child { border-top: 0; }
+.item > div { min-width: 0; }
+
+.item h3 { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 4px; font-size: 1.05rem; }
+.item p { margin: 0 0 4px; color: var(--muted); font-size: .95rem; overflow-wrap: anywhere; }
+.item p:last-child { margin-bottom: 0; }
+
+.item__acc { display: flex; flex-wrap: wrap; gap: 8px; }
+.item__acc .btn { flex: 1 1 auto; }
+
+.etiqueta {
+  padding: 0 8px; border: 1px solid var(--accent); border-radius: 3px;
+  color: var(--accent); font-size: .75rem; font-weight: 700; line-height: 1.6;
+}
+.etiqueta--beta { border-color: var(--error); color: var(--error); }
+
+.versiones {
+  margin-top: 16px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+}
+.versiones summary { padding: 12px 16px; font-weight: 600; cursor: pointer; }
+.versiones__lista { margin: 0; padding: 0 16px 8px; list-style: none; }
+.version { padding: 10px 0; border-top: 1px solid var(--line-soft); }
+.version__cab { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin: 0 0 4px; }
+.version__cab span { color: var(--muted); font-size: .92rem; }
+.version__notas { margin: 0; padding-left: 20px; color: var(--muted); font-size: .92rem; }
+.enlace { padding: 0; border: 0; background: none; color: var(--accent); font: inherit; text-decoration: underline; cursor: pointer; }
+
+@media (min-width: 720px) {
+  .item { grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 24px; padding: 18px 20px; }
+  .item .item__acc { flex-direction: column; align-items: stretch; min-width: 230px; }
+  .item__acc .btn { flex: 0 0 auto; }
+}
+
+
+/* ============================================================================
+   8. PREGUNTAS FRECUENTES
+   ========================================================================== */
+.faq { background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius); }
+.faq details { border-top: 1px solid var(--line); }
+.faq details:first-child { border-top: 0; }
+.faq summary {
+  position: relative; padding: 14px 44px 14px 16px;
+  font-weight: 600; list-style: none; cursor: pointer;
+}
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary:hover { background: var(--surface); }
+.faq summary::after {
+  content: "+"; position: absolute; right: 16px; top: 50%;
+  transform: translateY(-50%); color: var(--accent); font-size: 1.4rem; line-height: 1;
+}
+.faq details[open] summary::after { content: "\2212"; }
+.faq details > div { padding: 0 16px 6px; color: var(--muted); }
+
+
+/* ============================================================================
+   9. PIE
+   ========================================================================== */
+.pie { padding-block: 24px 88px; background: var(--head-bg); color: var(--head-text); font-size: .92rem; }
+.pie__in { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; }
+.pie p { margin: 0; }
+.pie a { color: var(--head-text); }
+
+
+/* ============================================================================
+   10. BOTÓN FLOTANTE DE WHATSAPP
+   Debajo de la ventana de descarga (z-index 1000) y siempre a la vista.
+   ========================================================================== */
+.wa-flotante {
+  position: fixed; right: 16px; bottom: 16px; z-index: 900;
+  display: grid; place-items: center; width: 54px; height: 54px;
+  border-radius: 50%; background: var(--wa); color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .28);
+}
+.wa-flotante:hover { background: #1EBE5B; color: #fff; }
+.wa-flotante svg { width: 30px; height: 30px; }
+
+
+/* ============================================================================
+   11. VENTANA DE PEDIDO DE DESCARGA (sólo se usa si el formulario está conectado)
+   ========================================================================== */
+.modal { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 16px; }
+.modal__overlay { position: absolute; inset: 0; background: rgba(10, 14, 22, .65); }
+.modal__dialog {
+  position: relative; width: 100%; max-width: 480px; max-height: calc(100vh - 32px); overflow-y: auto;
+  padding: 24px; background: var(--surface); color: var(--text);
+  border: 1px solid var(--line); border-top: 4px solid var(--primary); border-radius: var(--radius);
+}
+.modal__close {
+  position: absolute; top: 6px; right: 8px; width: 40px; height: 40px;
+  border: 0; background: transparent; color: var(--muted); font-size: 1.7rem; line-height: 1; cursor: pointer;
+}
+.modal__etiqueta { margin: 0 0 4px; color: var(--accent); font-size: .8rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+.modal__titulo { margin-bottom: 8px; padding-right: 32px; font-size: 1.3rem; }
+.modal__lead { color: var(--muted); }
+
+.campo { margin-bottom: 14px; }
+.campo label { display: block; margin-bottom: 4px; font-size: .95rem; font-weight: 600; }
+.campo input {
+  width: 100%; min-height: 44px; padding: 8px 12px;
+  background: var(--field); color: var(--text);
+  border: 1px solid var(--field-line); border-radius: var(--radius); font: inherit;
+}
+.campo input.es-invalido { border-color: var(--error); }
+.campo__ayuda { display: block; margin-top: 4px; color: var(--muted); font-size: .85rem; }
+.campo__error { display: none; margin-top: 4px; color: var(--error); font-size: .85rem; }
+.campo__error.visible { display: block; }
+
+.honeypot { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.modal__submit { width: 100%; }
+.modal__nota { margin: 12px 0 0; color: var(--muted); font-size: .85rem; }
+
+.modal__paso--centro { text-align: center; }
+.modal__icono { display: grid; place-items: center; width: 56px; height: 56px; margin: 0 auto 12px; border-radius: 50%; }
+.modal__icono svg { width: 28px; height: 28px; }
+.modal__icono--ok { background: var(--ok); color: var(--surface); }
+.modal__icono--error { background: var(--error); color: var(--surface); }
+.modal__acciones { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 8px; }
+
+
+/* ============================================================================
+   PANTALLAS MEDIANAS Y GRANDES
+   ========================================================================== */
+@media (min-width: 640px) {
+  .wrap { padding-inline: 24px; }
+  .inicio { padding-block: 56px; }
+  .eleccion { grid-template-columns: 1fr 1fr; }
+  .opcion .btn { align-self: flex-start; }
+  .acciones .btn { flex: 0 0 auto; }
+}
+
+@media (min-width: 860px) {
+  .seccion { padding-block: 56px; scroll-margin-top: 64px; }
+  .inicio { scroll-margin-top: 64px; }
+  .dos { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 32px; align-items: start; }
+  .dos--inv { grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); }
+  .dos--inv .video-bloque { order: 2; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}

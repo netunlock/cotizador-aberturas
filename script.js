@@ -4,11 +4,15 @@
    Todo lo que vas a necesitar tocar día a día está en los BLOQUES 1, 2 y 3.
    De ahí para abajo es el motor que arma la página; no hace falta modificarlo.
 
-   IMPORTANTE — CÓMO FUNCIONA LA DESCARGA:
-   El link del .zip NO está en esta página ni en este archivo. El interesado
-   carga sus datos, se los mandamos a un script de Google (BLOQUE 3), y ese
-   script le envía el link por mail. Si el mail que puso es falso, no le llega
-   nada: esa es la única verificación real posible en un sitio estático.
+   CÓMO FUNCIONA LA DESCARGA DEL PROGRAMA DE ESCRITORIO:
+   El botón "Descargar" lleva directo al archivo en MediaFire (campo `enlace` de
+   la versión destacada, BLOQUE 2). El botón "Recibir el link por mail" sólo
+   aparece si el formulario está conectado (ENDPOINT, BLOQUE 3): en ese caso el
+   interesado carga sus datos, se los mandamos a un script de Google y ese script
+   le envía el link por mail.
+
+   El manual, el catálogo de Herrero, los videos y los links de la versión web
+   están directamente en index.html (buscá el href o el src).
    ========================================================================== */
 
 "use strict";
@@ -30,42 +34,51 @@ const CONTACTO = {
   responsable:     "Federico",
 
   // Mensajes que aparecen ya escritos cuando el visitante abre WhatsApp o el mail
+  msgGeneral:  "Hola, quiero consultar por el soft de aberturas...",
   msgLicencia: "Hola! Descargué el Cotizador de Aberturas y quiero pedir la licencia de prueba de 7 días.",
-  msgGeneral:  "Hola! Tengo una consulta sobre el Cotizador de Aberturas.",
+  msgCuenta:   "Hola, quiero pedir una cuenta para la versión web del Cotizador de Aberturas.",
   asuntoMail:  "Consultas y Sugerencias — Cotizador de Aberturas"
 };
 
 
 /* ============================================================================
-   BLOQUE 2 · VERSIONES DEL PROGRAMA   ★ EDITAR ACÁ PARA PUBLICAR UNA VERSIÓN ★
+   BLOQUE 2 · VERSIONES DEL PROGRAMA DE ESCRITORIO   ★ EDITAR ACÁ PARA PUBLICAR UNA VERSIÓN ★
    ----------------------------------------------------------------------------
-   OJO: acá NO va ningún link de descarga. El link vive solamente dentro del
-   script de Google (ver apps-script/Codigo.gs), para que nadie pueda sacarlo
-   mirando el código de la página y saltearse el formulario.
-
    CÓMO PUBLICAR UNA VERSIÓN NUEVA:
      1. Subí el .zip a MediaFire y copiá el link para compartir.
-     2. Pegá ese link en el objeto LINKS del script de Google.
-     3. Copiá un bloque { ... } de acá abajo, pegalo ARRIBA DE TODO,
-        y poné destacada: true en el nuevo (sacáselo al anterior).
+     2. Copiá un bloque { ... } de acá abajo, pegalo ARRIBA DE TODO, pegá el link
+        en `enlace` y poné destacada: true en el nuevo (sacáselo al anterior).
+     3. Si conectaste el formulario (ENDPOINT), agregá también la versión al
+        objeto LINKS del script de Google (apps-script/Codigo.gs).
 
    CAMPOS:
-     version    Número de versión. Tiene que coincidir EXACTO con la clave
-                usada en el objeto LINKS del script de Google.   Ej: "3.1.0"
+     version    Número de versión.                                  Ej: "3.3.0"
      fecha      Fecha de publicación, formato AAAA-MM-DD.
-     estado     "estable" o "beta" (cambia el color de la etiqueta).
+     estado     "estable" o "beta" (cambia la etiqueta).
      tamano     Texto libre con el peso del archivo.
-     destacada  true en UNA sola versión: es la del botón grande.
-     notas      Lista de novedades (las que quieras).
+     destacada  true en UNA sola versión: es la del botón de descarga.
+     enlace     Link directo a MediaFire. Si falta, esa versión no tiene
+                botón de descarga directa.
+     notas      Lista de novedades (puede quedar vacía).
    ========================================================================== */
 const VERSIONES = [
+
+  {
+    version:   "3.3.0",
+    fecha:     "2026-09-10",
+    estado:    "estable",
+    tamano:    "31,9 MB",
+    destacada: true,
+    enlace:    "https://www.mediafire.com/file/j6ku9o3sjkoomon/CotizadorAberturas_v3.3.0.zip/file",
+    notas: []
+  },
 
   {
     version:   "3.0.0",
     fecha:     "2026-08-29",
     estado:    "estable",
     tamano:    "31,5 MB",
-    destacada: true,
+    destacada: false,
     notas: [
       "Módulo de órdenes de trabajo con despiece congelado",
       "Inventario opcional con libro mayor de movimientos",
@@ -107,8 +120,9 @@ const VERSIONES = [
    Pegá acá la URL que te da Google al publicar el script como aplicación web
    (termina en /exec). El paso a paso está en README.md, punto 3.
 
-   Mientras esté vacío, el formulario valida los datos igual, pero en vez de
-   mandar el mail le ofrece al visitante pedirte el link por WhatsApp.
+   Mientras esté vacío, el botón "Recibir el link por mail" y la pregunta
+   frecuente que habla del formulario no se muestran: la descarga es sólo el
+   link directo.
    ========================================================================== */
 const ENDPOINT = "";
 
@@ -159,10 +173,17 @@ function linkMail(asunto, cuerpo) {
 
 /* --- 4.1 Contacto: completa todos los enlaces de la página ---------------- */
 function aplicarContacto() {
-  // Tarjetas y links de WhatsApp (consulta general)
+  // Botón de contacto y botón flotante de WhatsApp (consulta general)
   $$("[data-wa-contacto]").forEach((el) => { el.href = linkWhatsApp(CONTACTO.msgGeneral); });
 
-  // Botones "Pedir mi licencia de prueba"
+  // "Pedila por WhatsApp": pedir una cuenta de la versión web
+  $$("[data-wa-cuenta]").forEach((el) => {
+    el.href = linkWhatsApp(CONTACTO.msgCuenta);
+    el.target = "_blank";
+    el.rel = "noopener";
+  });
+
+  // Botones "Pedir licencia de prueba"
   $$("[data-wa-licencia]").forEach((el) => {
     el.href = linkWhatsApp(CONTACTO.msgLicencia);
     el.target = "_blank";
@@ -172,7 +193,7 @@ function aplicarContacto() {
   // Links de mail
   $$("[data-mail-contacto]").forEach((el) => { el.href = "mailto:" + CONTACTO.email; });
 
-  // Botón "Consultas y Sugerencias"
+  // Botón "Enviar un mail" (con el asunto ya escrito)
   $$("[data-consultas]").forEach((el) => { el.href = linkMail(CONTACTO.asuntoMail, ""); });
 
   // Textos visibles (por si cambiás el número o el mail en el BLOQUE 1)
@@ -181,23 +202,14 @@ function aplicarContacto() {
 }
 
 
-/* --- 4.2 Descargas: versión destacada + historial -------------------------- */
+/* --- 4.2 Descargas: programa destacado + historial ------------------------ */
 
 /** Devuelve la versión marcada como destacada; si no hay ninguna, la primera. */
 function versionDestacada() {
   return VERSIONES.find((v) => v.destacada) || VERSIONES[0];
 }
 
-/**
- * Devuelve el link de MediaFire para una versión.
- * El link real está en apps-script/Codigo.gs, pero mientras ENDPOINT esté vacío,
- * devolvemos un link placeholder. En producción, el script de Google lo maneja.
- */
-function linkMediaFire(version) {
-  return "https://www.mediafire.com/file/j6ku9o3sjkoomon/CotizadorAberturas_v3.3.0.zip/file";
-}
-
-/** Dibuja la tarjeta grande de la última versión */
+/** Dibuja la fila del programa de escritorio con la última versión */
 function pintarDestacada() {
   const cont = $("#descargaDestacada");
   const v = versionDestacada();
@@ -205,51 +217,42 @@ function pintarDestacada() {
 
   const esBeta = v.estado === "beta";
 
+  const datos = [
+    "Versión " + v.version,
+    "Windows 10 y 11",
+    "portable",
+    v.tamano || "",
+    v.fecha ? "publicada el " + fechaLegible(v.fecha) : ""
+  ].filter(Boolean).map((t) => esc(t)).join(" · ");
+
+  let botones = "";
+  if (v.enlace) {
+    botones += `<a class="btn" href="${esc(v.enlace)}" target="_blank" rel="noopener noreferrer">Descargar</a>`;
+  } else if (!ENDPOINT) {
+    // Sin link directo ni formulario: el único camino es pedirlo por WhatsApp
+    botones += `<a class="btn" data-wa-descarga href="#contacto" target="_blank" rel="noopener">Pedir el link por WhatsApp</a>`;
+  }
+  if (ENDPOINT) {
+    botones += `<button class="btn ${v.enlace ? "btn--sec" : ""}" type="button" data-abrir-modal data-version="${esc(v.version)}">Recibir el link por mail</button>`;
+  }
+  botones += `<a class="btn btn--wa" data-wa-licencia href="#contacto" target="_blank" rel="noopener">Pedir licencia de prueba</a>`;
+
   cont.innerHTML = `
-    <div class="dl__info">
-      <div class="dl__top">
-        <span class="dl__version">Versión ${esc(v.version)}</span>
-        <span class="dl__tag ${esBeta ? "dl__tag--beta" : ""}">
-          ${esBeta ? "Beta" : "Última versión"}
-        </span>
-      </div>
-
-      <div class="dl__meta">
-        <span>Publicada el ${esc(fechaLegible(v.fecha))}</span>
-        ${v.tamano ? `<span>${esc(v.tamano)}</span>` : ""}
-        <span>Windows 10 / 11</span>
-      </div>
-
-      ${Array.isArray(v.notas) && v.notas.length
-        ? `<ul class="dl__notas">${v.notas.map((n) => `<li>${esc(n)}</li>`).join("")}</ul>`
-        : ""}
+    <div>
+      <h3>Programa de escritorio
+        <span class="etiqueta ${esBeta ? "etiqueta--beta" : ""}">${esBeta ? "Beta" : "Última versión"}</span>
+      </h3>
+      <p>${datos}</p>
+      <p>Al abrirlo pide una licencia: la de prueba dura 7 días y es gratis. Pedila por WhatsApp.</p>
     </div>
-
-    <div class="dl__action">
-      <div class="dl__buttons">
-        <button class="btn btn--primary btn--lg" type="button" data-abrir-modal data-version="${esc(v.version)}">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/>
-          </svg>
-          Pedir descarga
-        </button>
-        <a class="btn btn--secondary btn--lg" href="${esc(linkMediaFire(v.version))}" target="_blank" rel="noopener noreferrer">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/>
-          </svg>
-          Descargar directo
-        </a>
-      </div>
-      <small>Gratis · sin registro</small>
-    </div>
+    <div class="item__acc">${botones}</div>
   `;
 }
 
-/** Dibuja la lista con todas las versiones */
+/** Dibuja la lista con todas las versiones (dentro de un <details>) */
 function pintarHistorial() {
   const lista  = $("#listaVersiones");
   const bloque = $("#bloqueVersiones");
-  const boton  = $("#toggleVersiones");
   if (!lista || !bloque) return;
 
   // Si sólo existe una versión, no tiene sentido mostrar el historial
@@ -258,39 +261,35 @@ function pintarHistorial() {
 
   lista.innerHTML = VERSIONES.map((v) => {
     const esBeta = v.estado === "beta";
+
+    const notas = Array.isArray(v.notas) && v.notas.length
+      ? `<ul class="version__notas">${v.notas.map((n) => `<li>${esc(n)}</li>`).join("")}</ul>`
+      : "";
+
+    let accion = "";
+    if (v.enlace) {
+      accion = `<a href="${esc(v.enlace)}" target="_blank" rel="noopener noreferrer">Descargar</a>`;
+    } else if (ENDPOINT) {
+      accion = `<button class="enlace" type="button" data-abrir-modal data-version="${esc(v.version)}">Pedir esta versión</button>`;
+    }
+
     return `
-      <li class="version-item">
-        <span class="version-item__num">
-          v${esc(v.version)}
-          ${esBeta ? '<span class="dl__tag dl__tag--beta">Beta</span>' : ""}
-        </span>
-        <span class="version-item__info">
-          ${esc(fechaLegible(v.fecha))}${v.tamano ? " · " + esc(v.tamano) : ""}
-          ${Array.isArray(v.notas) && v.notas.length ? " · " + esc(v.notas[0]) : ""}
-        </span>
-        <button class="version-item__link" type="button" data-abrir-modal data-version="${esc(v.version)}">
-          Descargar ↓
-        </button>
+      <li class="version">
+        <p class="version__cab">
+          <strong>v${esc(v.version)}</strong>
+          ${esBeta ? '<span class="etiqueta etiqueta--beta">Beta</span>' : ""}
+          <span>${esc(fechaLegible(v.fecha))}${v.tamano ? " · " + esc(v.tamano) : ""}</span>
+          ${accion}
+        </p>
+        ${notas}
       </li>
     `;
   }).join("");
-
-  // Mostrar / ocultar el historial
-  if (boton) {
-    boton.addEventListener("click", () => {
-      const abierto = boton.getAttribute("aria-expanded") === "true";
-      boton.setAttribute("aria-expanded", String(!abierto));
-      lista.hidden = abierto;
-      boton.textContent = abierto ? "Ver versiones anteriores" : "Ocultar historial";
-    });
-  }
 }
 
-/** Escribe el número de versión en la etiqueta del hero */
-function pintarBadgeVersion() {
-  const v = versionDestacada();
-  if (!v) return;
-  $$("[data-version-badge]").forEach((el) => { el.textContent = "Versión " + v.version + " disponible"; });
+/** Muestra lo que sólo tiene sentido con el formulario de descarga conectado */
+function aplicarModoFormulario() {
+  $$("[data-solo-formulario]").forEach((el) => { el.hidden = !ENDPOINT; });
 }
 
 
@@ -360,7 +359,7 @@ function validarWhatsApp(valor) {
 }
 
 
-/* --- 4.4 Modal de descarga ------------------------------------------------- */
+/* --- 4.4 Ventana de pedido de descarga ------------------------------------- */
 
 const modal = {
   raiz:      null,
@@ -374,7 +373,7 @@ function mostrarPaso(nombre) {
   $$("[data-paso]", modal.raiz).forEach((p) => { p.hidden = p.dataset.paso !== nombre; });
 }
 
-/** Abre el modal pidiendo una versión concreta */
+/** Abre la ventana pidiendo una versión concreta */
 function abrirModal(version) {
   if (!modal.raiz) return;
 
@@ -392,7 +391,7 @@ function abrirModal(version) {
   if (primero) setTimeout(() => primero.focus(), 60);
 }
 
-/** Cierra el modal y devuelve el foco al botón que lo abrió */
+/** Cierra la ventana y devuelve el foco al botón que la abrió */
 function cerrarModal() {
   if (!modal.raiz || modal.raiz.hidden) return;
   modal.raiz.hidden = true;
@@ -545,6 +544,7 @@ function activarModal() {
    Son los mismos dos temas del programa. El tema se guarda en el navegador de
    cada visitante, así lo encuentra igual la próxima vez que entre.
    El tema inicial se aplica en el <head> de index.html para que no parpadee.
+   Los colores de cada tema están en css/variables-brand.css.
    ------------------------------------------------------------------------- */
 const TEMAS = ["blanco", "silver"];
 
@@ -558,9 +558,9 @@ function aplicarTema(tema) {
     b.setAttribute("aria-pressed", String(b.dataset.temaBtn === tema));
   });
 
-  // El color de la barra del navegador en celular acompaña al tema
+  // El color de la barra del navegador en celular acompaña a la barra superior
   const meta = $('meta[name="theme-color"]');
-  if (meta) meta.setAttribute("content", tema === "silver" ? "#2B2D42" : "#FFFFFF");
+  if (meta) meta.setAttribute("content", tema === "silver" ? "#23253A" : "#1B3A57");
 
   try { localStorage.setItem("tema", tema); } catch (e) { /* modo incógnito: no pasa nada */ }
 }
@@ -577,44 +577,7 @@ function activarSelectorTema() {
 }
 
 
-/* --- 4.6 Navegación en celular -------------------------------------------- */
-function activarMenuMovil() {
-  const boton = $("#navToggle");
-  const menu  = $("#navMenu");
-  if (!boton || !menu) return;
-
-  const cerrar = () => {
-    menu.classList.remove("is-open");
-    boton.setAttribute("aria-expanded", "false");
-    boton.setAttribute("aria-label", "Abrir menú");
-  };
-
-  boton.addEventListener("click", () => {
-    const abierto = menu.classList.toggle("is-open");
-    boton.setAttribute("aria-expanded", String(abierto));
-    boton.setAttribute("aria-label", abierto ? "Cerrar menú" : "Abrir menú");
-  });
-
-  // Al tocar cualquier link del menú, se cierra
-  $$("a", menu).forEach((a) => a.addEventListener("click", cerrar));
-
-  // También se cierra con la tecla Escape
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape") cerrar(); });
-}
-
-
-/* --- 4.7 Sombra del encabezado al hacer scroll ---------------------------- */
-function activarHeaderScroll() {
-  const header = $("#header");
-  if (!header) return;
-
-  const actualizar = () => header.classList.toggle("is-scrolled", window.scrollY > 8);
-  actualizar();
-  window.addEventListener("scroll", actualizar, { passive: true });
-}
-
-
-/* --- 4.8 Año del pie ------------------------------------------------------ */
+/* --- 4.6 Año del pie ------------------------------------------------------ */
 function pintarAnio() {
   $$("[data-anio]").forEach((el) => { el.textContent = new Date().getFullYear(); });
 }
@@ -622,14 +585,12 @@ function pintarAnio() {
 
 /* --- Arranque ------------------------------------------------------------- */
 document.addEventListener("DOMContentLoaded", () => {
-  aplicarContacto();
-  pintarBadgeVersion();
-  pintarDestacada();
+  pintarDestacada();                // antes que aplicarContacto: arma botones con data-wa-*
   pintarHistorial();
+  aplicarContacto();
+  aplicarModoFormulario();
   activarModal();
   prepararWhatsAppRespaldo(null);   // por si el visitante llega al paso de error sin datos
   activarSelectorTema();
-  activarMenuMovil();
-  activarHeaderScroll();
   pintarAnio();
 });

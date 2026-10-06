@@ -1,73 +1,95 @@
-/* ============================================================
-   VARIABLES DE MARCA - PALETA GLOBAL
-   ============================================================
+/* ============================================================================
+   PALETA DE MARCA · los colores del programa (ui/tema.py)
+   ----------------------------------------------------------------------------
+   Es la ÚNICA fuente de colores de la landing (index.html + landing.css).
 
-   Estos colores están extraídos de la aplicación de escritorio
-   (cotizador de aberturas) y se aplican consistentemente en:
-   - Landing (index.html)
-   - Foro (foro.html)
-   - Admin (admin.html)
+   Dos modos, igual que el programa:
+       sin atributo / data-tema="blanco"   Modo Claro
+       data-tema="silver"                  Modo Silver
 
-   El sistema soporta dos modos: Blanco y Silver
-   ============================================================ */
+   El atributo lo pone script.js en la etiqueta <html>.
+   Para cambiar un color, tocá el mismo nombre en LOS DOS bloques.
+   ========================================================================== */
 
+/* --- Modo Claro --------------------------------------------------------- */
 :root {
-  /* Colores primarios del software */
-  --brand-primary-light: #1B3A57;     /* Azul oscuro (modo claro) */
-  --brand-primary-dark: #8D99AE;      /* Gris azulado (modo dark/silver) */
+  /* Fondos */
+  --color-brand-bg:            #EEF1F5;   /* ventana */
+  --color-brand-surface:       #FFFFFF;   /* superficie */
+  --color-brand-surface-2:     #F6F8FA;
+  --color-brand-surface-3:     #E8EDF3;
 
-  --brand-accent-light: #0F766E;      /* Teal (modo claro) */
-  --brand-accent-dark: #6EC1A7;       /* Teal claro (modo dark) */
+  /* Bordes */
+  --color-brand-border:        #D3DAE3;
+  --color-brand-border-soft:   #E4E9EF;
 
-  /* Paleta adicional (modo light) */
-  --brand-bg-light: #EEF1F5;          /* Fondo ventana claro */
-  --brand-surface-light: #FFFFFF;     /* Superficie principal claro */
-  --brand-border-light: #D3DAE3;      /* Bordes claro */
-  --brand-text-light: #16202B;        /* Texto principal claro */
-  --brand-text-muted-light: #5B6B7C;  /* Texto suave claro */
-  --brand-error-light: #B91C1C;       /* Error/advertencia claro */
-  --brand-ok-light: #15803D;          /* Éxito claro */
+  /* Textos */
+  --color-brand-text:          #16202B;
+  --color-brand-text-muted:    #5B6B7C;   /* texto_suave */
+  --color-brand-text-faint:    #8A98A6;   /* texto_tenue */
 
-  /* Paleta adicional (modo dark/silver) */
-  --brand-bg-dark: #2B2D42;           /* Fondo ventana oscuro */
-  --brand-surface-dark: #3D405B;      /* Superficie principal oscuro */
-  --brand-border-dark: #525777;       /* Bordes oscuro */
-  --brand-text-dark: #EDF0F6;         /* Texto principal oscuro */
-  --brand-text-muted-dark: #B4BECD;   /* Texto suave oscuro */
-  --brand-error-dark: #E87A7A;        /* Error/advertencia oscuro */
-  --brand-ok-dark: #7FD1A8;           /* Éxito oscuro */
+  /* Marca */
+  --color-brand-primary:       #1B3A57;
+  --color-brand-primary-hover: #2A5580;
+  --color-brand-on-primary:    #FFFFFF;
+  --color-brand-accent:        #0F766E;
+  --color-brand-accent-hover:  #0B5D57;
 
-  /* Alias para facilitar uso en CSS */
-  --color-brand-primary: var(--brand-primary-light);
-  --color-brand-accent: var(--brand-accent-light);
-  --color-brand-bg: var(--brand-bg-light);
-  --color-brand-surface: var(--brand-surface-light);
-  --color-brand-border: var(--brand-border-light);
-  --color-brand-text: var(--brand-text-light);
-  --color-brand-text-muted: var(--brand-text-muted-light);
-  --color-brand-error: var(--brand-error-light);
-  --color-brand-ok: var(--brand-ok-light);
+  /* Estados */
+  --color-brand-warn:          #B45309;
+  --color-brand-warn-bg:       #FEF6E7;
+  --color-brand-error:         #B91C1C;
+  --color-brand-ok:            #15803D;
+
+  /* Campos y selección */
+  --color-brand-field:         #FFFFFF;
+  --color-brand-field-border:  #C3CCD8;
+  --color-brand-selection:     #D7E4F1;
+
+  /* Barra superior y pie (el programa no las tiene: se usa el primario) */
+  --color-brand-header-bg:     #1B3A57;
+  --color-brand-header-text:   #FFFFFF;
 }
 
-/* Modo Silver (dark) */
-[data-tema="silver"],
-[data-tema="grises"],
-[data-tema="oscuro"] {
-  --color-brand-primary: var(--brand-primary-dark);
-  --color-brand-accent: var(--brand-accent-dark);
-  --color-brand-bg: var(--brand-bg-dark);
-  --color-brand-surface: var(--brand-surface-dark);
-  --color-brand-border: var(--brand-border-dark);
-  --color-brand-text: var(--brand-text-dark);
-  --color-brand-text-muted: var(--brand-text-muted-dark);
-  --color-brand-error: var(--brand-error-dark);
-  --color-brand-ok: var(--brand-ok-dark);
+/* --- Modo Silver -------------------------------------------------------- */
+[data-tema="silver"] {
+  --color-brand-bg:            #2B2D42;
+  --color-brand-surface:       #3D405B;
+  --color-brand-surface-2:     #363950;
+  --color-brand-surface-3:     #464A68;
+
+  --color-brand-border:        #525777;
+  --color-brand-border-soft:   #454965;
+
+  --color-brand-text:          #EDF0F6;
+  --color-brand-text-muted:    #B4BECD;
+  --color-brand-text-faint:    #8D99AE;
+
+  --color-brand-primary:       #8D99AE;
+  --color-brand-primary-hover: #A6B1C4;
+  --color-brand-on-primary:    #23253A;
+  --color-brand-accent:        #6EC1A7;
+  --color-brand-accent-hover:  #58A88E;
+
+  --color-brand-warn:          #E0A458;
+  --color-brand-warn-bg:       #463F32;
+  --color-brand-error:         #E87A7A;
+  --color-brand-ok:            #7FD1A8;
+
+  --color-brand-field:         #343751;
+  --color-brand-field-border:  #565B7C;
+  --color-brand-selection:     #5B6187;
+
+  --color-brand-header-bg:     #23253A;
+  --color-brand-header-text:   #EDF0F6;
 }
 
-/* Compatibilidad con nombres antiguos del foro */
+/* --- Nombres que usan foro.html y admin.html ---------------------------
+   Sólo valen como respaldo: cada una de esas páginas define sus propias
+   variables y esas pisan a estas. */
 :root {
   --color-primary: var(--color-brand-primary);
-  --color-primary-hover: var(--color-brand-primary);
+  --color-primary-hover: var(--color-brand-primary-hover);
   --color-accent: var(--color-brand-accent);
   --color-bg: var(--color-brand-bg);
   --color-surface: var(--color-brand-surface);

@@ -6,10 +6,13 @@ aparte, en Cloudflare (ver punto 11).
 ```
 landing-cotizador/
 ├── index.html              Estructura y textos de la página
-├── styles.css              Diseño y los DOS temas (Blanco / Silver)
+├── landing.css             Forma de la página: tipografía, espacios y componentes
+├── css/
+│   └── variables-brand.css Colores de la página: la paleta del programa (Blanco / Silver)
 ├── script.js               Versiones, datos de contacto y formulario de descarga
+├── styles.css              Estilos viejos: ya sólo los usa el panel admin.html
 ├── favicon.svg             Ícono de la pestaña
-├── img/                    Fotos de la galería  ← reemplazables (ver punto 5)
+├── img/                    portada.jpg (miniatura al compartir el link) y fotos del foro
 ├── apps-script/
 │   └── Codigo.gs           Script de Google: base de datos + mail con el link
 ├── foro.html / foro.js     Foro de Carpinteros (ver punto 11)
@@ -46,8 +49,12 @@ git push
 
 ## 2. Cómo funciona la descarga
 
-1. El visitante toca *Descargar* y se abre un formulario: nombre y apellido, localidad,
-   email y WhatsApp.
+> **Estado actual:** el formulario todavía no está conectado (`ENDPOINT` vacío en `script.js`),
+> así que la página ofrece el botón **Descargar** con el link directo a MediaFire, sin pedir
+> datos. Lo que sigue describe el esquema con formulario, que se activa con el punto 4.
+
+1. El visitante toca *Recibir el link por mail* y se abre un formulario: nombre y apellido,
+   localidad, email y WhatsApp.
 2. La página valida el formato (nombre con apellido, mail bien escrito, WhatsApp argentino
    de 10 dígitos) y descarta los correos temporales tipo `mailinator.com`.
 3. Los datos se mandan al script de Google, que **guarda la fila en tu planilla** y
@@ -58,7 +65,8 @@ git push
 posible en un sitio sin servidor. Validar el formato del mail con JavaScript no prueba nada —
 cualquiera escribe `juan@gmail.com`. Si el correo es falso, el link nunca le llega.
 
-El link tampoco está en el código de la página: vive únicamente dentro del script de Google.
+Ojo: con el formulario conectado, sacá el campo `enlace` de la versión destacada en `script.js`.
+Mientras esté, el botón «Descargar» muestra el link directo y la gente se saltea el formulario.
 
 ---
 
@@ -142,8 +150,9 @@ const ENDPOINT = "https://script.google.com/macros/s/AKfy...../exec";
 
 `git push` y listo.
 
-> Mientras `ENDPOINT` esté vacío, el formulario valida los datos igual pero le ofrece al
-> visitante pedirte el link por WhatsApp: la página nunca queda rota.
+> Mientras `ENDPOINT` esté vacío, la página no muestra el botón «Recibir el link por mail» ni la
+> pregunta frecuente del formulario: la descarga es sólo el botón «Descargar» (link directo a
+> MediaFire). Al pegar la URL, aparecen solos.
 
 **Cada vez que edites el script** (por ejemplo para sumar una versión a `LINKS`), acordate de
 **Implementar → Administrar implementaciones → ✏️ → Versión: Nueva → Implementar**, o los
@@ -151,38 +160,15 @@ cambios no salen a producción.
 
 ---
 
-## 5. IMÁGENES: rutas y nombres exactos
+## 5. Imágenes
 
-Todas viven en la carpeta **`img/`**. Para poner tus propias fotos, guardalas con
-**exactamente estos nombres** y reemplazá los archivos. No hay que tocar nada de código.
+La página ya no lleva galería de fotos: lo que muestra el producto son los dos videos. Queda una
+sola imagen en uso, **`img/portada.jpg`** (1200 × 630 px, formato `.jpg`, nombre en minúsculas):
+es la miniatura que se ve al compartir el link por WhatsApp o Facebook. Para cambiarla,
+reemplazá el archivo con el mismo nombre.
 
-| Ruta y nombre exacto | Dónde se ve | Medida ideal |
-|---|---|---|
-| `img/galeria-01-ventana-corrediza.jpg` | Galería, 1° | 1200 × 900 px |
-| `img/galeria-02-puerta-abrir.jpg` | Galería, 2° | 1200 × 900 px |
-| `img/galeria-03-pano-fijo.jpg` | Galería, 3° | 1200 × 900 px |
-| `img/galeria-04-perfiles-aluminio.jpg` | Galería, 4° | 1200 × 900 px |
-| `img/galeria-05-vidrio-dvh.jpg` | Galería, 5° | 1200 × 900 px |
-| `img/galeria-06-taller.jpg` | Galería, 6° | 1200 × 900 px |
-| `img/portada.jpg` | Miniatura al compartir el link por WhatsApp o Facebook | 1200 × 630 px |
-
-Reglas para que salgan bien:
-
-- **Formato `.jpg`** y el nombre en minúsculas, igual al de la tabla (Windows no distingue
-  mayúsculas, pero el servidor de GitHub sí: `Galeria-01.JPG` no lo encuentra).
-- **Apaisadas** (más anchas que altas). Las de la galería se recortan solas a 4:3 con
-  `object-fit: cover`, centradas: **nunca se deforman**, sólo se recorta lo que sobra
-  de los bordes. Por eso conviene que el motivo esté centrado.
-- Podés subir fotos más grandes sin problema; **más chicas que 1200 px de ancho se ven
-  borrosas** en pantallas grandes.
-- Pesá las fotos antes de subirlas (idealmente menos de 300 KB cada una): la página carga
-  más rápido. Las de la galería ya se cargan de a poco (`loading="lazy"`).
-
-Para cambiar el **texto** que aparece sobre cada foto, editá el `<figcaption>` de esa imagen
-en `index.html`, sección `<section id="galeria">`.
-
-Para agregar o sacar fotos, copiá o borrá un bloque `<figure class="galeria__item">` entero:
-la grilla se reacomoda sola (3 columnas en escritorio, 2 en tablet, 1 en celular).
+Las fotos `img/galeria-*.jpg` ya no se muestran en la página; quedaron en la carpeta por si las
+querés volver a usar.
 
 ---
 
@@ -192,11 +178,11 @@ El selector está en la barra de arriba y usa **las mismas paletas del programa*
 (`ui/tema.py`): *Blanco* es la paleta `claro` y *Silver* es la paleta `silver`.
 La elección de cada visitante queda guardada en su navegador.
 
-Los colores están en `styles.css`, arriba de todo, en dos bloques:
+Los colores están en **`css/variables-brand.css`**, en dos bloques:
 
 ```css
-:root, :root[data-tema="blanco"] { ... }   /* paleta claro  */
-:root[data-tema="silver"]        { ... }   /* paleta silver */
+:root                { ... }   /* Blanco (paleta claro)  */
+[data-tema="silver"] { ... }   /* Silver (paleta silver) */
 ```
 
 **Si cambiás un color, cambialo en los dos bloques**, con el mismo nombre de variable; si no,
@@ -204,62 +190,71 @@ un tema queda desparejo. Los principales:
 
 | Variable | Para qué sirve |
 |---|---|
-| `--color-primary` | Color de marca: botones, links, ícono del logo |
-| `--color-primary-hover` | El mismo, al pasar el mouse |
-| `--color-primary-soft` | Fondo suave de íconos y etiquetas |
-| `--color-sobre-primario` | Color del texto que va encima del color de marca |
-| `--color-accent` | Segundo color del degradé del título |
-| `--color-warning` | Cartel del aviso de licencia |
-| `--color-text` / `--color-text-body` | Títulos / párrafos |
-| `--color-bg` / `--color-bg-alt` | Fondo general / secciones alternadas |
-| `--color-surface` | Tarjetas |
-| `--color-campo` | Fondo de los campos del formulario |
+| `--color-brand-primary` / `-primary-hover` | Botones y raya de los títulos |
+| `--color-brand-on-primary` | Texto que va encima del color primario |
+| `--color-brand-accent` / `-accent-hover` | Links, tildes y etiquetas |
+| `--color-brand-bg` | Fondo de la página |
+| `--color-brand-surface` / `-surface-2` | Franjas y cuadros |
+| `--color-brand-border` / `-border-soft` | Bordes |
+| `--color-brand-text` / `-text-muted` | Títulos y párrafos / textos secundarios |
+| `--color-brand-header-bg` / `-header-text` | Barra superior y pie |
+| `--color-brand-field` / `-field-border` | Campos del formulario de descarga |
 
-Si cambiás `--color-primary`, cambiá también el `fill="#2563eb"` de `favicon.svg` y el color
-del botón del mail (`#2563eb` en `apps-script/Codigo.gs`).
+`landing.css` no tiene colores propios, salvo el verde de WhatsApp. El foro y el panel de
+moderación tienen sus propios estilos (`foro.html` y `styles.css`): no cambian con este archivo.
+
+Si cambiás `--color-brand-primary`, cambiá también el `fill` de `favicon.svg` y el color del
+botón del mail en `apps-script/Codigo.gs`.
 
 ---
 
-## 7. Publicar una versión nueva del programa
+## 7. Publicar una versión nueva del programa de escritorio
 
-Son dos lugares:
-
-1. **`apps-script/Codigo.gs`** → agregá el link de MediaFire al objeto `LINKS`
-   (y re-implementá el script, ver punto 4.4).
-
-```js
-var LINKS = {
-  "3.1.0": "https://www.mediafire.com/file/.../CotizadorAberturas_v3.1.0.zip/file",
-  "3.0.0": "...",
-};
-```
-
-2. **`script.js`, BLOQUE 2** → copiá un bloque `{ ... }`, pegalo arriba de todo y poné
-   `destacada: true` en el nuevo (sacáselo al anterior):
+1. Subí el `.zip` a MediaFire y copiá el vínculo.
+2. En **`script.js`, BLOQUE 2**, copiá un bloque `{ ... }`, pegalo arriba de todo, pegá el
+   vínculo en `enlace` y poné `destacada: true` en el nuevo (sacáselo al anterior):
 
 ```js
 {
-  version:   "3.1.0",            // tiene que coincidir EXACTO con la clave de LINKS
-  fecha:     "2026-09-15",       // AAAA-MM-DD
-  estado:    "estable",          // "estable" o "beta"
+  version:   "3.4.0",
+  fecha:     "2026-10-20",          // AAAA-MM-DD
+  estado:    "estable",             // "estable" o "beta"
   tamano:    "32 MB",
   destacada: true,
-  notas: ["Novedad principal", "Otra novedad"]
+  enlace:    "https://www.mediafire.com/file/.../CotizadorAberturas_v3.4.0.zip/file",
+  notas: ["Novedad principal", "Otra novedad"]     // puede quedar vacía: []
 },
 ```
 
-Con eso se actualizan solos la tarjeta grande de descarga, el cartel del hero y el historial.
+Con eso se actualizan solos la fila de descarga del programa y el historial de versiones.
+
+3. **Sólo si conectaste el formulario** (`ENDPOINT`, punto 4.4): sumá el mismo link al objeto
+   `LINKS` de `apps-script/Codigo.gs`, con la misma clave de versión, y re-implementá el script.
+
+```js
+var LINKS = {
+  "3.4.0": "https://www.mediafire.com/file/.../CotizadorAberturas_v3.4.0.zip/file",
+  "3.3.0": "...",
+};
+```
 
 ---
 
-## 8. Otros textos
+## 8. Otros textos y links
 
 - **Teléfono, mail y mensajes automáticos:** `script.js`, BLOQUE 1 (objeto `CONTACTO`).
-  Cambiándolo ahí se actualizan todos los botones y textos de la página.
-- **Características:** cada una es un `<article class="card">` en `index.html`.
-- **Preguntas frecuentes:** cada una es un `<details class="faq__item">`.
-- **Aviso de licencia:** sección `#descargas`, bloque `<div class="alert">`.
+  Cambiándolo ahí se actualizan todos los botones y textos de la página, incluido el botón
+  flotante de WhatsApp (`msgGeneral`).
+- **Versión web:** los links «Ingresar a la versión web» y «Probar la demo» están en
+  `index.html`, sección `id="web"`.
+- **Videos:** son los dos `<iframe>` de las secciones `id="web"` e `id="escritorio"`. El código
+  largo de la URL (`.../file/d/CODIGO/preview`) es el id del archivo de Google Drive, que tiene
+  que estar compartido como «Cualquier persona con el vínculo».
+- **Manual y catálogo de Herrero:** links directos a MediaFire en la sección `id="descargas"`
+  de `index.html` (buscá `Manual_del_Cotizador` y `linea_Herrero_Aluar`).
+- **Preguntas frecuentes:** cada una es un `<details>` dentro de `<div class="faq">`.
 - **Formulario de descarga:** al final del `index.html`, en `<div class="modal" id="modalDescarga">`.
+  Sólo aparece si `ENDPOINT` está conectado.
 
 ---
 
@@ -270,6 +265,9 @@ python -m http.server 8010
 ```
 
 y abrí `http://localhost:8010`. Para probar también el foro con su API local, ver el punto 11.5.
+
+> Evitá los puertos que Chrome bloquea por seguridad (por ejemplo 5060, 5061 o 6000): la página
+> simplemente no abre y no dice por qué.
 
 ---
 
