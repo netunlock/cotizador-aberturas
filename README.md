@@ -250,8 +250,11 @@ var LINKS = {
 - **Videos:** son los dos `<iframe>` de las secciones `id="web"` e `id="escritorio"`. El código
   largo de la URL (`.../file/d/CODIGO/preview`) es el id del archivo de Google Drive, que tiene
   que estar compartido como «Cualquier persona con el vínculo».
-- **Manual y catálogo de Herrero:** links directos a MediaFire en la sección `id="descargas"`
-  de `index.html` (buscá `Manual_del_Cotizador` y `linea_Herrero_Aluar`).
+- **Manual y catálogos (Herrero y Módena 2):** links directos a MediaFire en la sección
+  `id="descargas"` de `index.html` (buscá `Manual_del_Cotizador`, `linea_Herrero_Aluar` y
+  `linea_Modena2_Aluar`). La Módena 2 son dos archivos, cada uno en una opción distinta del
+  importador (Opción 1 «Importar tipologías o líneas compartidas», Opción 2 «Importar catálogo
+  de proveedor»).
 - **Preguntas frecuentes:** cada una es un `<details>` dentro de `<div class="faq">`.
 - **Formulario de descarga:** al final del `index.html`, en `<div class="modal" id="modalDescarga">`.
   Sólo aparece si `ENDPOINT` está conectado.

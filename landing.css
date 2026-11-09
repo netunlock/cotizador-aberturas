@@ -269,6 +269,17 @@ a:hover { color: var(--accent-hover); }
 .item__acc { display: flex; flex-wrap: wrap; gap: 8px; }
 .item__acc .btn { flex: 1 1 auto; }
 
+/* Archivos que van de a pares (Módena 2): cada botón junto a la opción del importador donde se carga */
+.item.item--una { grid-template-columns: minmax(0, 1fr); }
+.opcion-n { color: var(--text); font-weight: 700; }
+.archivos { margin: 10px 0 12px; padding: 0; list-style: none; }
+.archivo { display: grid; gap: 6px; padding: 10px 0; border-top: 1px solid var(--line-soft); }
+.archivo:last-child { border-bottom: 1px solid var(--line-soft); }
+.archivo p { margin: 0; }
+@media (min-width: 720px) {
+  .archivo { grid-template-columns: 280px minmax(0, 1fr); align-items: center; gap: 16px; }
+}
+
 .etiqueta {
   padding: 0 8px; border: 1px solid var(--accent); border-radius: 3px;
   color: var(--accent); font-size: .75rem; font-weight: 700; line-height: 1.6;
